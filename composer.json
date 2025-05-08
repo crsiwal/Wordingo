@@ -2,8 +2,13 @@
     "name": "wordiqo/blogging-platform",
     "type": "project",
     "description": "A modern blogging platform built with CodeIgniter 4",
-    "homepage": "https://wordiqo.com",
     "license": "MIT",
+    "homepage": "https://wordiqo.com",
+    "support": {
+        "forum": "https://forum.codeigniter.com/",
+        "source": "https://github.com/codeigniter4/CodeIgniter4",
+        "slack": "https://codeigniterchat.slack.com"
+    },
     "require": {
         "php": "^7.4 || ^8.0",
         "codeigniter4/framework": "^4.0",

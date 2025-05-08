@@ -25,19 +25,6 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- Confirm Password -->
-                    <div class="mb-6">
-                        <label for="password_confirm" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                        <input type="password" 
-                               name="password_confirm" 
-                               id="password_confirm"
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 <?= session('errors.password_confirm') ? 'border-red-500' : '' ?>"
-                               required>
-                        <?php if (session('errors.password_confirm')): ?>
-                            <p class="mt-1 text-sm text-red-600"><?= session('errors.password_confirm') ?></p>
-                        <?php endif; ?>
-                    </div>
-
                     <!-- Submit Button -->
                     <button type="submit" class="w-full bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700">
                         Reset Password

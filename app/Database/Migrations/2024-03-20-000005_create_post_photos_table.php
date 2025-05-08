@@ -35,7 +35,6 @@ class CreatePostPhotosTable extends Migration
         ]);
 
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('post_id', 'posts', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('post_photos');
     }
 

@@ -57,18 +57,26 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * Render view with common data
+     * Render a view with data
+     *
+     * @param string $view The view to render
+     * @param array $data Data to pass to the view
+     * @return string
      */
-    protected function render(string $view, array $data = [], array $options = []): string
+    protected function render(string $view, array $data = []): string
     {
         $data['title'] = $data['title'] ?? 'Blog';
         $data['description'] = $data['description'] ?? 'A modern blogging platform';
         
-        return view($view, $data, $options);
+        return view($view, $data);
     }
 
     /**
-     * Set flash message
+     * Set a flash message
+     *
+     * @param string $type The type of message (success, error, etc)
+     * @param string $message The message to display
+     * @return void
      */
     protected function setFlash(string $type, string $message): void
     {
