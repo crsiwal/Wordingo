@@ -1,65 +1,67 @@
 <?= $this->extend('layouts/admin') ?>
 
 <?= $this->section('content') ?>
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Manage Categories</h1>
-        <a href="<?= base_url('admin/categories/create') ?>" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Create New Category
-        </a>
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold">Categories</h1>
+                <p class="text-gray-600">Manage your blog categories</p>
+            </div>
+            <a href="<?= base_url('admin/categories/create') ?>" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                <i class="fas fa-plus mr-2"></i>
+                New Category
+            </a>
+        </div>
     </div>
 
-    <?php if (session()->getFlashdata('success')): ?>
-        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-            <?= session()->getFlashdata('success') ?>
+    <!-- Categories Table -->
+    <div class="bg-white rounded-lg shadow-md">
+        <div class="p-6">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-left border-b">
+                            <th class="pb-3 font-semibold">Name</th>
+                            <th class="pb-3 font-semibold">Slug</th>
+                            <th class="pb-3 font-semibold">Posts</th>
+                            <th class="pb-3 font-semibold">Created</th>
+                            <th class="pb-3 font-semibold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($categories as $category): ?>
+                            <tr class="border-b">
+                                <td class="py-4">
+                                    <a href="<?= base_url('blog/category/' . $category['slug']) ?>" class="text-gray-900 hover:text-primary-600">
+                                        <?= esc($category['name']) ?>
+                                    </a>
+                                </td>
+                                <td class="py-4 text-gray-600"><?= esc($category['slug']) ?></td>
+                                <td class="py-4"><?= number_format($category['post_count'] ?? 0) ?></td>
+                                <td class="py-4"><?= date('M d, Y', strtotime($category['created_at'])) ?></td>
+                                <td class="py-4">
+                                    <div class="flex space-x-2">
+                                        <a href="<?= base_url('admin/categories/edit/' . $category['id']) ?>" 
+                                           class="text-gray-600 hover:text-primary-600">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="<?= base_url('admin/categories/delete/' . $category['id']) ?>" 
+                                           class="text-red-600 hover:text-red-700"
+                                           onclick="return confirm('Are you sure you want to delete this category?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php if (isset($pager)): ?>
+                <div class="mt-4">
+                    <?= $pager->links() ?>
+                </div>
+            <?php endif; ?>
         </div>
-    <?php endif; ?>
-
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <?= session()->getFlashdata('error') ?>
-        </div>
-    <?php endif; ?>
-
-    <div class="bg-white shadow-md rounded my-6">
-        <table class="min-w-full">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Slug</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Posts</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                    <th class="px-6 py-3 border-b border-gray-200 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white">
-                <?php foreach ($categories as $category): ?>
-                    <tr>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                            <div class="text-sm leading-5 font-medium text-gray-900"><?= esc($category['name']) ?></div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                            <div class="text-sm leading-5 text-gray-900"><?= esc($category['slug']) ?></div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                            <div class="text-sm leading-5 text-gray-900"><?= $category['post_count'] ?? 0 ?></div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
-                            <?= date('M d, Y', strtotime($category['created_at'])) ?>
-                        </td>
-                        <td class="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 font-medium">
-                            <a href="<?= base_url('admin/categories/edit/' . $category['id']) ?>" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                            <form action="<?= base_url('admin/categories/delete/' . $category['id']) ?>" method="post" class="inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
-                                <?= csrf_field() ?>
-                                <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
     </div>
-
-    <?= $pager->links() ?>
-</div>
 <?= $this->endSection() ?> 

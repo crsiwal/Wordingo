@@ -12,7 +12,7 @@ class PostPhotoModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['post_id', 'file_path'];
+    protected $allowedFields    = ['user_id', 'post_id', 'file_title', 'file_path', 'created_at', 'updated_at'];
 
     // Dates
     protected $useTimestamps = true;
@@ -23,7 +23,7 @@ class PostPhotoModel extends Model
     // Validation
     protected $validationRules      = [
         'post_id'   => 'required|numeric',
-        'file_path' => 'required|max_length[255]',
+        'file_path' => 'required|max_length[512]',
     ];
     protected $validationMessages   = [];
     protected $skipValidation       = false;

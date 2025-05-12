@@ -22,19 +22,21 @@ class CreatePostsTable extends Migration
             ],
             'title' => [
                 'type'       => 'VARCHAR',
-                'constraint' => 255,
+                'constraint' => 2048,
+                'null'       => true,
             ],
             'slug' => [
                 'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'unique'     => true,
+                'constraint' => 2048,
+                'null'       => true,
             ],
             'content' => [
                 'type' => 'TEXT',
+                'null'       => true,
             ],
             'thumbnail' => [
                 'type'       => 'VARCHAR',
-                'constraint' => 255,
+                'constraint' => 2048,
                 'null'       => true,
             ],
             'category_id' => [

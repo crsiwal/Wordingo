@@ -1,5 +1,4 @@
 <?php
-
 namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
@@ -36,10 +35,15 @@ class Filters extends BaseConfig
     public array $globals = [
         'before' => [
             // 'honeypot',
-            'csrf',
+            'csrf' => [
+                'except' => [
+                    'admin/files/upload',
+                    'admin/files/delete',
+                    'admin/posts/validate-slug',
+                ]],
             // 'invalidchars',
         ],
-        'after' => [
+        'after'  => [
             'toolbar',
             // 'honeypot',
             // 'secureheaders',
@@ -78,4 +82,4 @@ class Filters extends BaseConfig
             ],
         ],
     ];
-} 
+}
