@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
@@ -10,17 +9,17 @@ class CreateTagsTables extends Migration
     {
         // Create tags table
         $this->forge->addField([
-            'id' => [
+            'id'         => [
                 'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'name' => [
+            'name'       => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
             ],
-            'slug' => [
+            'slug'       => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
                 'unique'     => true,
@@ -40,12 +39,18 @@ class CreateTagsTables extends Migration
 
         // Create post_tags table
         $this->forge->addField([
-            'post_id' => [
+            'id'         => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'auto_increment' => true,
+            ],
+            'post_id'    => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'tag_id' => [
+            'tag_id'     => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
@@ -54,9 +59,12 @@ class CreateTagsTables extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
+            'updated_at' => [
+                'type' => 'DATETIME',
+                'null' => true,
+            ],
         ]);
-
-        $this->forge->addKey(['post_id', 'tag_id'], true);
+        $this->forge->addKey('id', true);
         $this->forge->createTable('post_tags');
     }
 
@@ -65,4 +73,4 @@ class CreateTagsTables extends Migration
         $this->forge->dropTable('post_tags');
         $this->forge->dropTable('tags');
     }
-} 
+}

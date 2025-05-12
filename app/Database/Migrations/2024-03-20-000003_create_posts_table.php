@@ -31,7 +31,7 @@ class CreatePostsTable extends Migration
                 'null'       => true,
             ],
             'content' => [
-                'type' => 'TEXT',
+                'type' => 'LONGTEXT',
                 'null'       => true,
             ],
             'thumbnail' => [

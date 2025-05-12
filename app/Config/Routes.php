@@ -39,7 +39,6 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     // Posts
     $routes->get('posts', 'Admin\Posts::index');
     $routes->get('posts/create', 'Admin\Posts::create');
-    $routes->post('posts/create', 'Admin\Posts::create');
     $routes->get('posts/edit/(:num)', 'Admin\Posts::edit/$1');
     $routes->post('posts/edit/(:num)', 'Admin\Posts::edit/$1');
     $routes->post('posts/delete/(:num)', 'Admin\Posts::delete/$1');

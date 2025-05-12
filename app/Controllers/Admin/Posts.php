@@ -56,91 +56,163 @@ class Posts extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
+        $data = [
+            'title'      => 'Edit Post',
+            'post'       => $post,
+            'categories' => $this->categoryModel->findAll(),
+        ];
+
         if ($this->request->getMethod() === 'post') {
             $rules = [
-                'title'       => 'required|min_length[3]|max_length[255]',
+                'title'       => 'required|min_length[3]|max_length[256]',
                 'content'     => 'required',
                 'category_id' => 'required|numeric',
                 'status'      => 'required|in_list[draft,published]',
             ];
 
+            // Handle tags
+            $tagsString = $this->request->getPost('tags');
+
+            // Only validate slug if it's being changed or newly created
+            $newSlug = $this->request->getPost('slug');
+            if ($newSlug && ($post['slug'] === '' || $post['slug'] !== $newSlug)) {
+                $rules['slug'] = 'required|min_length[8]|max_length[256]|is_unique[posts.slug,id,' . $id . ']';
+            }
+
+            if ($this->request->getPost('status') === 'published') {
+                $rules['published_at'] = 'required|valid_date';
+            }
+
             if ($this->validate($rules)) {
-                $data = [
+                $content = [
                     'title'        => $this->request->getPost('title'),
-                    'slug'         => url_title($this->request->getPost('title'), '-', true),
                     'content'      => $this->request->getPost('content'),
+                    'thumbnail'    => $this->request->getPost('featured_image_url') ?? null,
                     'category_id'  => $this->request->getPost('category_id'),
                     'status'       => $this->request->getPost('status'),
-                    'published_at' => $this->request->getPost('status') === 'published' ? date('Y-m-d H:i:s') : null,
+                    'published_at' => $this->request->getPost('published_at') ?? null,
                 ];
 
-                if ($this->postModel->update($id, $data)) {
-                    // Handle tags (comma-separated string)
-                    $tagsString = $this->request->getPost('tags');
-                    $this->postTagModel->where('post_id', $id)->delete(); // Remove old tags
-                    if ($tagsString) {
-                        $tagsArr = array_filter(array_map('trim', explode(',', $tagsString)));
-                        // 1. Find which tags are new
-                        $existingTags     = $this->tagModel->whereIn('name', $tagsArr)->findAll();
-                        $existingTagNames = array_column($existingTags, 'name');
-                        $existingTagIds   = array_column($existingTags, 'id', 'name');
-                        $newTagNames      = array_diff($tagsArr, $existingTagNames);
-                        // 2. Bulk insert new tags
-                        $newTagData = [];
-                        foreach ($newTagNames as $tagName) {
-                            $newTagData[] = [
-                                'name' => $tagName,
-                                'slug' => url_title($tagName, '-', true),
-                            ];
-                        }
-                        if ($newTagData) {
-                            $this->tagModel->insertBatch($newTagData);
-                            // Get all tags again (assume names are unique)
-                            $allTags = $this->tagModel->whereIn('name', $tagsArr)->findAll();
-                            $tagIds  = array_column($allTags, 'id', 'name');
-                        } else {
-                            $tagIds = $existingTagIds;
-                        }
-                        // 3. Prepare post_tags data
-                        $postTagData = [];
-                        foreach ($tagsArr as $tagName) {
-                            if (isset($tagIds[$tagName])) {
-                                $postTagData[] = [
-                                    'post_id'    => $id,
-                                    'tag_id'     => $tagIds[$tagName],
-                                    'created_at' => date('Y-m-d H:i:s'),
-                                ];
-                            }
-                        }
-                        if ($postTagData) {
-                            $this->postTagModel->insertBatch($postTagData);
-                        }
-                    }
-                    $this->setFlash('success', 'Post updated successfully');
-                    return redirect()->to('/admin/posts/edit/' . $id);
+                // Only update slug if it's changed or newly created
+                if ($newSlug && ($post['slug'] === '' || $post['slug'] !== $newSlug)) {
+                    $content['slug'] = url_title($newSlug, '-', true);
                 }
-                $this->setFlash('error', 'Failed to update post');
+
+                try {
+                    if ($this->postModel->update($id, $content)) {
+                        // Remove all existing tags
+                        $this->postTagModel->where('post_id', $id)->delete();
+                        // Add new tags
+                        if ($tagsString) {
+                            $this->handleTags($id, $tagsString);
+                        }
+                        $this->setFlash('success', 'Post updated successfully');
+                        return redirect()->to('/admin/posts/edit/' . $id);
+                    } else {
+                        // Validation failed
+                        return redirect()->back()->withInput()->with('error', 'Validation failed.');
+                    }
+                } catch (\Exception $e) {
+                    // Check for specific error (e.g., Data too long)
+                    if (strpos($e->getMessage(), 'Data too long') !== false) {
+                        return redirect()->back()->withInput()->with('error', 'The post content is too long. Please reduce the size.');
+                    }
+                    // Generic error
+                    return redirect()->back()->withInput()->with('error', 'An unexpected error occurred: ' . $e->getMessage());
+                }
+            } else {
+                $this->setFlash('error', $this->validator->listErrors());
+            }
+
+            // Update form data with submitted values
+            $data['post'] = array_merge($data['post'], [
+                'title'        => $this->request->getPost('title'),
+                'slug'         => $newSlug,
+                'content'      => $this->request->getPost('content'),
+                'thumbnail'    => $this->request->getPost('featured_image'),
+                'category_id'  => $this->request->getPost('category_id'),
+                'status'       => $this->request->getPost('status'),
+                'published_at' => $this->request->getPost('published_at'),
+                'tags'         => $tagsString,
+            ]);
+        } else {
+            // Get tags for this post
+            $data['post']['tags'] = $this->getPostTags($id);
+        }
+
+        $data['validation'] = $this->validator;
+        return $this->render('admin/posts/edit', $data);
+    }
+
+    /**
+     * Handle tag operations for a post
+     */
+    private function handleTags($postId, $tagsString)
+    {
+        $tagsArr = array_filter(array_map('trim', explode(',', $tagsString)));
+        if (empty($tagsArr)) {
+            return;
+        }
+
+        // Get existing tags
+        $existingTags     = $this->tagModel->whereIn('name', $tagsArr)->findAll();
+        $existingTagNames = array_column($existingTags, 'name');
+        $tagIds           = array_column($existingTags, 'id', 'slug');
+
+        // Find new tags
+        $newTagNames = array_diff($tagsArr, $existingTagNames);
+
+        // Insert new tags
+        if (! empty($newTagNames)) {
+            $newTagData = array_map(function ($name) {
+                return [
+                    'name'       => $name,
+                    'slug'       => url_title($name, '-', true),
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+            }, $newTagNames);
+
+            $this->tagModel->insertBatch($newTagData);
+
+            // Get all tags including newly inserted ones
+            $allTags = $this->tagModel->whereIn('name', $tagsArr)->findAll();
+            $tagIds  = array_column($allTags, 'id', 'slug');
+        }
+
+        // Create post-tag relationships
+        $postTagData = [];
+        foreach ($tagIds as $tagSlug => $tagId) {
+            if ($tagId) {
+                $postTagData[] = [
+                    'post_id'    => (int) $postId,
+                    'tag_id'     => (int) $tagId,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
             }
         }
 
-        // Get tags for this post
-        $postTags = $this->postTagModel->where('post_id', $id)->findAll();
-        $tagIds   = array_column($postTags, 'tag_id');
-        $tagNames = [];
-        if ($tagIds) {
-            $tagNames = array_column($this->tagModel->whereIn('id', $tagIds)->findAll(), 'name');
+        if (is_array($postTagData) && count($postTagData) > 0) {
+            $inserted = $this->postTagModel->insertBatch($postTagData);
+            if ($inserted) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get tags for a post
+     */
+    private function getPostTags($postId)
+    {
+        $postTags = $this->postTagModel->where('post_id', $postId)->findAll();
+        if (empty($postTags)) {
+            return '';
         }
 
-        $data = [
-            'title'      => 'Edit Post',
-            'post'       => $post,
-            'categories' => $this->categoryModel->findAll(),
-            'tags'       => $this->tagModel->findAll(),
-            'postTags'   => implode(',', $tagNames),
-            'validation' => $this->validator,
-        ];
-
-        return $this->render('admin/posts/edit', $data);
+        $tagIds   = array_column($postTags, 'tag_id');
+        $tagNames = array_column($this->tagModel->whereIn('id', $tagIds)->findAll(), 'name');
+        return implode(',', $tagNames);
     }
 
     public function delete($id)
