@@ -6,6 +6,10 @@ module.exports = {
     ],
     theme: {
         extend: {
+            fontFamily: {
+                sans: ['Geist Mono', 'monospace'],
+                mono: ['Geist Mono', 'monospace'],
+            },
             colors: {
                 primary: {
                     50: '#f0f9ff',
@@ -30,6 +34,9 @@ module.exports = {
                             '&:hover': {
                                 color: '#2c5282',
                             },
+                        },
+                        fontFamily: {
+                            sans: ['Geist Mono', 'monospace'],
                         },
                     },
                 },

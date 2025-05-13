@@ -41,7 +41,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->get('posts/create', 'Admin\Posts::create');
     $routes->get('posts/edit/(:num)', 'Admin\Posts::edit/$1');
     $routes->post('posts/edit/(:num)', 'Admin\Posts::edit/$1');
-    $routes->post('posts/delete/(:num)', 'Admin\Posts::delete/$1');
+    $routes->get('posts/delete/(:num)', 'Admin\Posts::delete/$1');
     $routes->post('posts/validate-slug', 'Admin\Posts::validateSlug');
 
     // Categories

@@ -2,12 +2,12 @@
 
 <?= $this->section('content') ?>
     <div class="mb-8">
-        <h1 class="text-3xl font-bold">Dashboard</h1>
-        <p class="text-gray-600">Welcome back, <?= session()->get('user_name') ?>!</p>
+        <h1 class="text-5xl font-bold leading-[3.625rem]">Dashboard</h1>
+        <p class="text-gray-600 text-[1.375rem] leading-[1.6875rem] mt-2">Welcome back, <?= session()->get('user_name') ?>!</p>
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
         <div class="bg-white rounded-lg shadow-md p-6">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-primary-100 text-primary-600">
@@ -62,7 +62,7 @@
         <div class="p-6 border-b">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold">Recent Posts</h2>
-                <a href="<?= base_url('admin/posts/create') ?>" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                <a href="<?= base_url('admin/posts/create') ?>" class="bg-primary-600 text-white px-7 py-2 rounded-full font-medium inline-block transition-colors duration-200 hover:bg-primary-700">
                     <i class="fas fa-plus mr-2"></i>
                     New Post
                 </a>

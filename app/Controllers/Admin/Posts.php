@@ -145,6 +145,77 @@ class Posts extends BaseController
     }
 
     /**
+     * Delete a post
+     */
+    public function delete($id)
+    {
+        // Check if post exists and user has permission
+        $post = $this->postModel->find($id);
+        if (! $post) {
+            $this->setFlash('error', 'Post not found');
+            return redirect()->to('/admin/posts');
+        }
+
+        // Allow both admins and post owners to delete
+        $userId   = session()->get('user_id');
+        $userRole = session()->get('role');
+        $isAdmin  = ($userRole == 'admin');
+
+        if (! $isAdmin && $post['user_id'] != $userId) {
+            $this->setFlash('error', 'You do not have permission to delete this post');
+            return redirect()->to('/admin/posts');
+        }
+
+        // Delete post tags first
+        $this->postTagModel->where('post_id', $id)->delete();
+
+        // Now delete the post
+        if ($this->postModel->delete($id)) {
+            $this->setFlash('success', 'Post deleted successfully');
+        } else {
+            $this->setFlash('error', 'Failed to delete post');
+        }
+
+        return redirect()->to('/admin/posts');
+    }
+
+    /**
+     * Validate if a slug is unique
+     */
+    public function validateSlug()
+    {
+        $slug   = $this->request->getPost('slug');
+        $postId = $this->request->getPost('post_id');
+
+        if (! $slug) {
+            return $this->response->setJSON(['valid' => false, 'message' => 'Slug is required']);
+        }
+
+        if (strlen($slug) < 8) {
+            return $this->response->setJSON(['valid' => false, 'message' => 'Slug must be at least 8 characters long']);
+        }
+
+        if (strlen($slug) > 256) {
+            return $this->response->setJSON(['valid' => false, 'message' => 'Slug cannot be longer than 256 characters']);
+        }
+
+        // Check if slug exists
+        $builder = $this->postModel->where('slug', $slug);
+
+        // If editing, exclude current post
+        if ($postId) {
+            $builder->where('id !=', $postId);
+        }
+
+        $exists = $builder->first();
+
+        return $this->response->setJSON([
+            'valid'   => ! $exists,
+            'message' => $exists ? 'This slug is already taken' : 'Slug is available',
+        ]);
+    }
+
+    /**
      * Handle tag operations for a post
      */
     private function handleTags($postId, $tagsString)
@@ -213,52 +284,5 @@ class Posts extends BaseController
         $tagIds   = array_column($postTags, 'tag_id');
         $tagNames = array_column($this->tagModel->whereIn('id', $tagIds)->findAll(), 'name');
         return implode(',', $tagNames);
-    }
-
-    public function delete($id)
-    {
-        if ($this->postModel->delete($id)) {
-            $this->setFlash('success', 'Post deleted successfully');
-        } else {
-            $this->setFlash('error', 'Failed to delete post');
-        }
-
-        return redirect()->to('/admin/posts');
-    }
-
-    /**
-     * Validate if a slug is unique
-     */
-    public function validateSlug()
-    {
-        $slug   = $this->request->getPost('slug');
-        $postId = $this->request->getPost('post_id');
-
-        if (! $slug) {
-            return $this->response->setJSON(['valid' => false, 'message' => 'Slug is required']);
-        }
-
-        if (strlen($slug) < 8) {
-            return $this->response->setJSON(['valid' => false, 'message' => 'Slug must be at least 8 characters long']);
-        }
-
-        if (strlen($slug) > 256) {
-            return $this->response->setJSON(['valid' => false, 'message' => 'Slug cannot be longer than 256 characters']);
-        }
-
-        // Check if slug exists
-        $builder = $this->postModel->where('slug', $slug);
-
-        // If editing, exclude current post
-        if ($postId) {
-            $builder->where('id !=', $postId);
-        }
-
-        $exists = $builder->first();
-
-        return $this->response->setJSON([
-            'valid'   => ! $exists,
-            'message' => $exists ? 'This slug is already taken' : 'Slug is available',
-        ]);
     }
 }

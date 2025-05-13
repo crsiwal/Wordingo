@@ -3,7 +3,10 @@
 <?= $this->section('content') ?>
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
-        <h1 class="text-2xl font-bold mb-6">Create User</h1>
+        <div>
+            <h1 class="text-5xl font-bold leading-[3.625rem]">Create User</h1>
+            <p class="text-gray-600 text-[1.375rem] leading-[1.6875rem] mt-2">Add a new system user</p>
+        </div>
 
         <?php if (session()->getFlashdata('error')): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

@@ -6,6 +6,9 @@
     <title><?php echo $title ?? 'Blog' ?></title>
     <meta name="description" content="<?php echo $description ?? 'A modern blogging platform' ?>">
 
+    <!-- Geist Mono Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&display=swap">
+
     <!-- Tailwind CSS -->
     <link href="<?php echo base_url('css/style.css') ?>" rel="stylesheet">
 
@@ -15,17 +18,81 @@
     <!-- CKEditor -->
     <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
 
+    <style>
+        html, body {
+            font-family: 'Geist Mono', monospace;
+        }
+        
+        /* Adjust heading weights for Geist Mono */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Geist Mono', monospace;
+            font-weight: 600;
+        }
+        
+        /* Make sure buttons and inputs use the font */
+        button, input, select, textarea {
+            font-family: 'Geist Mono', monospace;
+        }
+
+        /* Mobile nav menu animation */
+        .mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        .mobile-menu.closed {
+            transform: translateX(-100%);
+        }
+
+        /* Responsive text adjustments */
+        @media (max-width: 768px) {
+            h1.text-5xl {
+                font-size: 2.5rem;
+                line-height: 2.75rem;
+            }
+            p.text-\[1\.375rem\] {
+                font-size: 1.125rem;
+                line-height: 1.5rem;
+            }
+        }
+
+        /* Responsive tables */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Add spacing to table cells on mobile */
+        @media (max-width: 768px) {
+            .table-responsive table th,
+            .table-responsive table td {
+                padding-top: 0.75rem;
+                padding-bottom: 0.75rem;
+                white-space: nowrap;
+            }
+        }
+    </style>
+
     <script>
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('hidden');
         }
 
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+            menu.classList.toggle('closed');
+        }
+
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('userDropdown');
             const button = document.getElementById('userDropdownButton');
-            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
                 dropdown.classList.add('hidden');
             }
         });
@@ -33,86 +100,140 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <nav class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <a href="<?php echo base_url("admin") ?>" class="text-2xl font-bold text-primary-600">
-                    Blog
-                </a>
-                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="<?php echo base_url('admin') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo - Left Aligned -->
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <a href="<?php echo base_url("admin") ?>" class="flex items-center">
+                            <span class="text-2xl font-bold text-gray-800">Wordiqo</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Mobile menu button -->
+                    <div class="ml-4 md:hidden">
+                        <button type="button" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:bg-gray-100">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation Links - Centered (Desktop only) -->
+                <div class="hidden md:flex md:justify-center md:flex-1">
+                    <div class="flex space-x-8">
+                        <a href="<?php echo base_url('admin') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Dashboard
                         </a>
-                        <a href="<?php echo base_url('admin/posts') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="<?php echo base_url('admin/posts') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Posts
                         </a>
-                        <a href="<?php echo base_url('admin/categories') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="<?php echo base_url('admin/categories') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Categories
                         </a>
-                        <a href="<?php echo base_url('admin/tags') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="<?php echo base_url('admin/tags') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Tags
                         </a>
-                        <a href="<?php echo base_url('admin/users') ?>" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="<?php echo base_url('admin/users') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Users
                         </a>
                     </div>
-
-                <div class="flex items-center space-x-4">
-                    <form action="<?php echo base_url('search') ?>" method="get" class="relative">
-                        <input type="text" name="q" placeholder="Search..."
-                               class="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <button type="submit" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-
+                </div>
+                
+                <!-- User Profile - Right Aligned -->
+                <div class="flex items-center">
                     <?php if (session()->get('logged_in')): ?>
                         <div class="relative">
                             <button id="userDropdownButton" onclick="toggleDropdown()" class="flex items-center text-gray-700 hover:text-gray-900 focus:outline-none">
-                                <span class="mr-2"><?php echo session()->get('user_name') ?></span>
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
+                                <i class="fas fa-user-circle mr-2 text-lg"></i>
+                                <div class="flex items-center justify-center">
+                                    <?php echo substr(session()->get('user_name'), 0, 20); ?>
+                                </div>
                             </button>
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
                                 <div class="py-1" role="menu" aria-orientation="vertical">
-                                    <a href="<?php echo base_url('admin/categories') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                        Categories
+                                    <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                                        <div class="font-semibold"><?php echo session()->get('user_name') ?></div>
+                                    </div>
+                                    <a href="<?php echo base_url('admin/profile') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                        <i class="fas fa-user-circle mr-2"></i> Profile
                                     </a>
-                                    <a href="<?php echo base_url('admin/tags') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                        Tags
+                                    <a href="<?php echo base_url('admin/settings') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                        <i class="fas fa-cog mr-2"></i> Settings
                                     </a>
                                     <div class="border-t border-gray-100"></div>
                                     <a href="<?php echo base_url('logout') ?>" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100" role="menuitem">
-                                        Logout
+                                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
                                     </a>
                                 </div>
                             </div>
                         </div>
                     <?php else: ?>
-                        <a href="<?php echo base_url('login') ?>" class="text-gray-700 hover:text-primary-600">
-                            Login
-                        </a>
-                        <a href="<?php echo base_url('register') ?>" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
-                            Register
-                        </a>
+                        <div class="flex items-center space-x-4">
+                            <a href="<?php echo base_url('login') ?>" class="text-gray-700 hover:text-gray-900">
+                                Login
+                            </a>
+                            <a href="<?php echo base_url('register') ?>" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                Register
+                            </a>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
-        </nav>
+        </div>
+
+        <!-- Mobile menu (off-canvas) -->
+        <div id="mobile-menu" class="md:hidden bg-white fixed inset-y-0 left-0 w-64 px-4 py-4 shadow-lg z-30 mobile-menu closed">
+            <div class="flex items-center justify-between mb-6">
+                <div class="text-xl font-bold text-gray-800">Menu</div>
+                <button onclick="toggleMobileMenu()" class="text-gray-700 hover:text-gray-900">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="flex flex-col space-y-3">
+                <a href="<?php echo base_url('admin') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                    Dashboard
+                </a>
+                <a href="<?php echo base_url('admin/posts') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                    Posts
+                </a>
+                <a href="<?php echo base_url('admin/categories') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                    Categories
+                </a>
+                <a href="<?php echo base_url('admin/tags') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                    Tags
+                </a>
+                <a href="<?php echo base_url('admin/users') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                    Users
+                </a>
+                <?php if (session()->get('logged_in')): ?>
+                    <div class="border-t border-gray-200 pt-3 mt-3">
+                        <a href="<?php echo base_url('admin/profile') ?>" class="flex items-center text-gray-600 hover:text-gray-900 py-2">
+                            <i class="fas fa-user-circle mr-2"></i> Profile
+                        </a>
+                        <a href="<?php echo base_url('admin/settings') ?>" class="flex items-center text-gray-600 hover:text-gray-900 py-2">
+                            <i class="fas fa-cog mr-2"></i> Settings
+                        </a>
+                        <a href="<?php echo base_url('logout') ?>" class="flex items-center text-red-600 hover:text-red-700 py-2">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </nav>
+        </div>
     </header>
 
     <!-- Flash Messages -->
     <?php if ($flash = session()->getFlashdata('flash')): ?>
-        <div class="container mx-auto px-4 mt-4">
-            <div class="p-4 rounded-lg                                                                                                                                                                                                                                                                                                                 <?php echo $flash['type'] === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+            <div class="p-4 rounded-lg <?php echo $flash['type'] === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
                 <?php echo $flash['message'] ?>
             </div>
         </div>
     <?php endif; ?>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 min-h-screen">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
         <?php echo $this->renderSection('content') ?>
     </main>
 
@@ -120,7 +241,7 @@
     <footer class="bg-white shadow-lg mt-8">
         <div class="max-w-7xl mx-auto py-4 px-4">
             <p class="text-center text-gray-500 text-sm">
-                &copy;                                                                                         <?php echo date('Y') ?> Wordiqo. All rights reserved.
+                &copy; <?php echo date('Y') ?> Wordiqo. All rights reserved.
             </p>
         </div>
     </footer>

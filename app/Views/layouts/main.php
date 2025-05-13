@@ -6,6 +6,9 @@
     <title><?php echo $title ?? 'Blog' ?></title>
     <meta name="description" content="<?php echo $description ?? 'A modern blogging platform' ?>">
 
+    <!-- Geist Mono Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&display=swap">
+
     <!-- Tailwind CSS -->
     <link href="<?php echo base_url('css/style.css') ?>" rel="stylesheet">
 
@@ -30,6 +33,23 @@
             }
         });
     </script>
+
+    <style>
+        html, body {
+            font-family: 'Geist Mono', monospace;
+        }
+        
+        /* Adjust heading weights for Geist Mono */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Geist Mono', monospace;
+            font-weight: 600;
+        }
+        
+        /* Make sure buttons and inputs use the font */
+        button, input, select, textarea {
+            font-family: 'Geist Mono', monospace;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
