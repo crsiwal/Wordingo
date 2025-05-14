@@ -32,6 +32,13 @@ $routes->post('forgot-password', 'Auth::attemptForgotPassword');
 $routes->get('reset-password/(:segment)', 'Auth::resetPassword/$1');
 $routes->post('reset-password/(:segment)', 'Auth::attemptResetPassword/$1');
 
+// User Routes
+$routes->group('users', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'Users\Dashboard::index');
+    $routes->get('profile', 'Users\Profile::index');
+    $routes->get('posts/bookmarks', 'Users\UserPosts::bookmarks');
+});
+
 // Admin Routes
 $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->get('/', 'Admin\Dashboard::index');
@@ -50,7 +57,7 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->post('categories/create', 'Admin\Categories::create');
     $routes->get('categories/edit/(:num)', 'Admin\Categories::edit/$1');
     $routes->post('categories/edit/(:num)', 'Admin\Categories::edit/$1');
-    $routes->post('categories/delete/(:num)', 'Admin\Categories::delete/$1');
+    $routes->get('categories/delete/(:num)', 'Admin\Categories::delete/$1');
 
     // Tags
     $routes->get('tags', 'Admin\Tags::index');
@@ -66,10 +73,13 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->post('users/create', 'Admin\Users::create');
     $routes->get('users/edit/(:num)', 'Admin\Users::edit/$1');
     $routes->post('users/edit/(:num)', 'Admin\Users::edit/$1');
-    $routes->post('users/delete/(:num)', 'Admin\Users::delete/$1');
+    $routes->get('users/delete/(:num)', 'Admin\Users::delete/$1');
 
     // File/Image Store
     $routes->post('files/upload', 'Admin\FileStore::upload');
     $routes->get('files/list', 'Admin\FileStore::list');
     $routes->delete('files/delete', 'Admin\FileStore::delete');
+
+    // Admin User Profile
+    $routes->get('profile', 'Users\Profile::index');
 });

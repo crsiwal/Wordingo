@@ -6,6 +6,8 @@
     <title><?php echo $title ?? 'Blog' ?></title>
     <meta name="description" content="<?php echo $description ?? 'A modern blogging platform' ?>">
 
+    <!-- Inter Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
     <!-- Geist Mono Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&display=swap">
 
@@ -19,158 +21,389 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
 
     <script>
-        function toggleDropdown() {
-            const dropdown = document.getElementById('userDropdown');
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
             dropdown.classList.toggle('hidden');
         }
 
-        // Close dropdown when clicking outside
+        // Close dropdowns when clicking outside
         document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('userDropdown');
-            const button = document.getElementById('userDropdownButton');
-            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-                dropdown.classList.add('hidden');
-            }
+            const dropdowns = ['userDropdown', 'mobileMenu'];
+            dropdowns.forEach(id => {
+                const dropdown = document.getElementById(id);
+                const button = document.getElementById(id + 'Button');
+                if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
         });
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('themeIcon').classList.replace('fa-sun', 'fa-moon');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+            }
+        }
+
+        // Check for saved theme preference or respect OS preference
+        if (localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
     </script>
 
     <style>
-        html, body {
+        :root {
+            --gradient-start: theme('colors.indigo.600');
+            --gradient-end: theme('colors.purple.600');
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Use monospace for code-related content */
+        code, pre, .monospace {
             font-family: 'Geist Mono', monospace;
         }
-        
-        /* Adjust heading weights for Geist Mono */
+
+        /* Adjust heading styles */
         h1, h2, h3, h4, h5, h6 {
-            font-family: 'Geist Mono', monospace;
+            font-family: 'Inter', sans-serif;
             font-weight: 600;
         }
-        
-        /* Make sure buttons and inputs use the font */
-        button, input, select, textarea {
-            font-family: 'Geist Mono', monospace;
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(79, 70, 229, 0.5);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(79, 70, 229, 0.7);
+        }
+
+        /* Animated gradient background */
+        .animated-gradient {
+            background: linear-gradient(-45deg, #4f46e5, #8b5cf6, #3b82f6, #6366f1);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Grid pattern */
+        .bg-grid {
+            mask-image: linear-gradient(to bottom, transparent, black);
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        }
+
+        /* Float animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Slide-up animation */
+        .slide-up {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Dark mode transitions */
+        .dark-transition {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="dark-transition bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
     <!-- Header -->
-    <header class="bg-white shadow-sm">
+    <header class="dark-transition relative bg-white dark:bg-gray-800 shadow-sm">
+        <!-- Top accent bar -->
+        <div class="h-1 w-full animated-gradient"></div>
+
         <nav class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <a href="<?php echo base_url() ?>" class="text-2xl font-bold text-primary-600">
-                    Blog
-                </a>
+                <div class="flex items-center">
+                    <a href="<?php echo base_url() ?>" class="flex items-center space-x-2">
+                        <div class="w-10 h-10 rounded-full animated-gradient flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">B</span>
+                        </div>
+                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+                            Wordiqo
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="<?php echo base_url() ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+                        Home
+                    </a>
+                    <a href="<?php echo base_url('blogs') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+                        Blogs
+                    </a>
+                    <a href="<?php echo base_url('about') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+                        About
+                    </a>
+                    <a href="<?php echo base_url('contact') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+                        Contact
+                    </a>
+                </div>
 
                 <div class="flex items-center space-x-4">
-                    <form action="<?php echo base_url('search') ?>" method="get" class="relative">
-                        <input type="text" name="q" placeholder="Search..."
-                               class="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <button type="submit" class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i id="themeIcon" class="fas                                                                                                                                                             <?php echo isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark' ? 'fa-sun' : 'fa-moon' ?>"></i>
+                    </button>
+
+                    <!-- Search Button (Trigger Modal) -->
+                    <button onclick="document.getElementById('searchModal').classList.remove('hidden')" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-search"></i>
+                    </button>
 
                     <?php if (session()->get('logged_in')): ?>
                         <div class="relative">
-                            <button id="userDropdownButton" onclick="toggleDropdown()" class="flex items-center text-gray-700 hover:text-gray-900 focus:outline-none">
-                                <span class="mr-2"><?php echo session()->get('user_name') ?></span>
+                            <button id="userDropdownButton" onclick="toggleDropdown('userDropdown')" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                                    <span><?php echo substr(session()->get('user_name'), 0, 1) ?></span>
+                                </div>
+                                <span class="hidden sm:inline"><?php echo session()->get('user_name') ?></span>
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 z-50">
                                 <div class="py-1" role="menu" aria-orientation="vertical">
-                                    <a href="<?php echo base_url('admin') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                                    <a href="<?php echo base_url('users') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
                                         Dashboard
                                     </a>
-                                    <a href="<?php echo base_url('admin/posts') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                        Posts
+                                    <a href="<?php echo base_url('users/profile') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                                        My Profile
                                     </a>
-                                    <a href="<?php echo base_url('admin/categories') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                        Categories
+                                    <a href="<?php echo base_url('users/posts/bookmarks') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                                        Saved Posts
                                     </a>
-                                    <a href="<?php echo base_url('admin/tags') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                        Tags
-                                    </a>
-                                    <a href="<?php echo base_url('admin/users') ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                                        Users
-                                    </a>
-                                    <div class="border-t border-gray-100"></div>
-                                    <a href="<?php echo base_url('logout') ?>" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100" role="menuitem">
+                                    <?php if (in_array(session()->get('user_role'), ['admin', 'editor'])): ?>
+                                        <a href="<?php echo base_url('admin') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
+                                            Admin Dashboard
+                                        </a>
+                                    <?php endif; ?>
+                                    <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                                    <a href="<?php echo base_url('logout') ?>" class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
                                         Logout
                                     </a>
                                 </div>
                             </div>
                         </div>
                     <?php else: ?>
-                        <a href="<?php echo base_url('login') ?>" class="text-gray-700 hover:text-primary-600">
-                            Login
-                        </a>
-                        <a href="<?php echo base_url('register') ?>" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
-                            Register
-                        </a>
+                        <div class="hidden sm:flex items-center space-x-3">
+                            <a href="<?php echo base_url('login') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+                                Login
+                            </a>
+                            <a href="<?php echo base_url('register') ?>" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+                                Register
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Mobile menu button -->
+                    <button id="mobileMenuButton" onclick="toggleDropdown('mobileMenu')" class="md:hidden p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="hidden md:hidden mt-4">
+                <div class="flex flex-col space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <a href="<?php echo base_url() ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
+                        Home
+                    </a>
+                    <a href="<?php echo base_url('blogs') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
+                        Blogs
+                    </a>
+                    <a href="<?php echo base_url('about') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
+                        About
+                    </a>
+                    <a href="<?php echo base_url('contact') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
+                        Contact
+                    </a>
+
+                    <?php if (! session()->get('logged_in')): ?>
+                        <div class="flex flex-col space-y-2 sm:hidden pt-2 border-t border-gray-200 dark:border-gray-700">
+                            <a href="<?php echo base_url('login') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
+                                Login
+                            </a>
+                            <a href="<?php echo base_url('register') ?>" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-center">
+                                Register
+                            </a>
+                        </div>
                     <?php endif; ?>
                 </div>
             </div>
         </nav>
     </header>
 
+    <!-- Search Modal -->
+    <div id="searchModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-modal="true" role="dialog">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" aria-hidden="true" onclick="this.parentElement.parentElement.classList.add('hidden')"></div>
+
+            <!-- Modal panel -->
+            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="p-6">
+                    <form action="<?php echo base_url('search') ?>" method="get">
+                        <div class="flex items-center border-b-2 border-indigo-500 dark:border-indigo-400 pb-2">
+                            <i class="fas fa-search text-gray-400 mr-2"></i>
+                            <input type="text" name="q" placeholder="Search for articles, topics, or keywords..." autofocus
+                                class="w-full bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400">
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Popular Topics:</span>
+                            <a href="<?php echo base_url('search?q=technology') ?>" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full">Technology</a>
+                            <a href="<?php echo base_url('search?q=design') ?>" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full">Design</a>
+                            <a href="<?php echo base_url('search?q=programming') ?>" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full">Programming</a>
+                            <a href="<?php echo base_url('search?q=ai') ?>" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full">AI</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Flash Messages -->
     <?php if ($flash = session()->getFlashdata('flash')): ?>
-        <div class="container mx-auto px-4 mt-4">
-            <div class="p-4 rounded-lg                                                                                                                                                                                               <?php echo $flash['type'] === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
-                <?php echo $flash['message'] ?>
+        <div class="container mx-auto px-4 mt-4 slide-up">
+            <div class="p-4 rounded-lg shadow-md border-l-4                                                                                                                                                                                  <?php echo $flash['type'] === 'success'
+                                                                                                                                                                                  ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-500'
+                                                                                                                                                                                  : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-500' ?>">
+                <div class="flex items-center">
+                    <i class="<?php echo $flash['type'] === 'success' ? 'fas fa-check-circle text-green-500' : 'fas fa-exclamation-circle text-red-500' ?> mr-3 text-lg"></i>
+                    <p><?php echo $flash['message'] ?></p>
+                </div>
             </div>
         </div>
     <?php endif; ?>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8 flex-grow">
         <?php echo $this->renderSection('content') ?>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t mt-8">
+    <footer class="dark-transition bg-white dark:bg-gray-800 border-t dark:border-gray-700 mt-8">
         <div class="container mx-auto px-4 py-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">About</h3>
-                    <p class="text-gray-600">
-                        A modern blogging platform built with CodeIgniter 4 and Tailwind CSS.
+                    <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">About Wordiqo</h3>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        A modern blogging platform built with CodeIgniter 4 and Tailwind CSS, focusing on a clean design and great user experience.
                     </p>
+                    <div class="mt-4 flex space-x-3">
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Quick Links</h3>
                     <ul class="space-y-2">
                         <li>
-                            <a href="<?php echo base_url() ?>" class="text-gray-600 hover:text-primary-600">
-                                Home
+                            <a href="<?php echo base_url() ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Home
                             </a>
                         </li>
                         <li>
-                            <a href="<?php echo base_url('about') ?>" class="text-gray-600 hover:text-primary-600">
-                                About
+                            <a href="<?php echo base_url('blogs') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Blogs
                             </a>
                         </li>
                         <li>
-                            <a href="<?php echo base_url('contact') ?>" class="text-gray-600 hover:text-primary-600">
-                                Contact
+                            <a href="<?php echo base_url('about') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> About
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo base_url('contact') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Contact
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo base_url('privacy') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Privacy Policy
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo base_url('terms') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
+                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Terms of Service
                             </a>
                         </li>
                     </ul>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Newsletter</h3>
+                    <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Newsletter</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">Subscribe to our newsletter for the latest updates and articles.</p>
                     <form action="<?php echo base_url('newsletter/subscribe') ?>" method="post" class="space-y-2">
-                        <input type="email" name="email" placeholder="Enter your email"
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <button type="submit" class="w-full bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
-                            Subscribe
-                        </button>
+                        <div class="relative">
+                            <input type="email" name="email" placeholder="Enter your email" required
+                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400">
+                            <button type="submit" class="absolute right-1 top-1 bg-indigo-600 dark:bg-indigo-500 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">We respect your privacy. Unsubscribe at any time.</p>
                     </form>
                 </div>
             </div>
-            <div class="mt-8 pt-8 border-t text-center text-gray-600">
-                <p>&copy;                                                                                                                              <?php echo date('Y') ?> Blog. All rights reserved.</p>
+            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-gray-600 dark:text-gray-400">
+                <p>&copy;                                                                            <?php echo date('Y') ?> Wordiqo. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -204,7 +437,8 @@
                         break;
                     case 's':
                         e.preventDefault();
-                        document.querySelector('form').dispatchEvent(new Event('submit'));
+                        const form = document.querySelector('form');
+                        if (form) form.dispatchEvent(new Event('submit'));
                         break;
                     case 'p':
                         e.preventDefault();
@@ -214,6 +448,13 @@
                             document.querySelector('form').dispatchEvent(new Event('submit'));
                         }
                         break;
+                    case '/':
+                        e.preventDefault();
+                        document.getElementById('searchModal').classList.remove('hidden');
+                        setTimeout(() => {
+                            document.querySelector('#searchModal input').focus();
+                        }, 100);
+                        break;
                 }
             }
         });
@@ -221,6 +462,20 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setupAutoSave();
+
+            // Update theme icon on load
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            document.getElementById('themeIcon').classList.replace(
+                isDarkMode ? 'fa-moon' : 'fa-sun',
+                isDarkMode ? 'fa-sun' : 'fa-moon'
+            );
+
+            // Close search modal with escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.getElementById('searchModal').classList.add('hidden');
+                }
+            });
         });
     </script>
 </body>

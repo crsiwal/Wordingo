@@ -61,14 +61,15 @@ abstract class BaseController extends Controller
      *
      * @param string $view The view to render
      * @param array $data Data to pass to the view
+     * @param string $layout The layout to use (main, admin, user)
      * @return string
      */
-    protected function render(string $view, array $data = []): string
+    protected function render(string $view, array $data = [], string $layout = 'main'): string
     {
         $data['title'] = $data['title'] ?? 'Blog';
         $data['description'] = $data['description'] ?? 'A modern blogging platform';
         
-        return view($view, $data);
+        return view($view, $data, ['layout' => "layouts/$layout"]);
     }
 
     /**

@@ -26,7 +26,7 @@ class Tags extends BaseController
 
     public function create()
     {
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->is('post')) {
             $rules = [
                 'name' => 'required|min_length[2]|max_length[50]',
             ];
@@ -62,7 +62,7 @@ class Tags extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->is('post')) {
             $rules = [
                 'name' => 'required|min_length[2]|max_length[50]',
             ];

@@ -12,7 +12,7 @@ class CategoryModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['name', 'slug'];
+    protected $allowedFields    = ['name', 'slug', 'description'];
 
     // Dates
     protected $useTimestamps = true;
@@ -21,10 +21,7 @@ class CategoryModel extends Model
     protected $updatedField  = 'updated_at';
 
     // Validation
-    protected $validationRules      = [
-        'name' => 'required|min_length[3]|max_length[255]',
-        'slug' => 'required|alpha_dash|is_unique[categories.slug,id,{id}]',
-    ];
+    protected $validationRules      = [];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;

@@ -62,7 +62,7 @@ class Posts extends BaseController
             'categories' => $this->categoryModel->findAll(),
         ];
 
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->is('post')) {
             $rules = [
                 'title'       => 'required|min_length[3]|max_length[256]',
                 'content'     => 'required',

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use CodeIgniter\Model;
@@ -12,7 +11,24 @@ class UserModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['email', 'password', 'name', 'role'];
+    protected $allowedFields    = [
+        'parent_id',
+        'name',
+        'username',
+        'email',
+        'email_verified_at',
+        'phone',
+        'phone_verified_at',
+        'date_of_birth',
+        'gender',
+        'address',
+        'avatar',
+        'password',
+        'salt',
+        'role',
+        'status',
+        'is_verified',
+    ];
 
     // Dates
     protected $useTimestamps = true;
@@ -21,12 +37,8 @@ class UserModel extends Model
     protected $updatedField  = 'updated_at';
 
     // Validation
-    protected $validationRules      = [
-        'email'    => 'required|valid_email|is_unique[users.email,id,{id}]',
-        'password' => 'required|min_length[8]',
-        'name'     => 'required|min_length[3]',
-        'role'     => 'required|in_list[admin,editor,user]',
-    ];
+    protected $validationRules = [];
+
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
@@ -38,11 +50,11 @@ class UserModel extends Model
 
     protected function hashPassword(array $data)
     {
-        if (!isset($data['data']['password'])) {
+        if (! isset($data['data']['password'])) {
             return $data;
         }
 
-        $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+        $data['data']['password'] = password_hash($data['data']['password'] . $data['data']['salt'], PASSWORD_DEFAULT);
         return $data;
     }
 
@@ -50,4 +62,4 @@ class UserModel extends Model
     {
         return password_verify($password, $hash);
     }
-} 
+}

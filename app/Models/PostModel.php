@@ -31,14 +31,7 @@ class PostModel extends Model
     protected $updatedField  = 'updated_at';
 
     // Validation
-    protected $validationRules      = [
-        'user_id'     => 'required|numeric',
-        'title'       => 'required|min_length[3]|max_length[255]',
-        'slug'        => 'required|alpha_dash|is_unique[posts.slug,id,{id}]',
-        'content'     => 'required',
-        'category_id' => 'required|numeric',
-        'status'      => 'required|in_list[draft,published]',
-    ];
+    protected $validationRules      = [];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;

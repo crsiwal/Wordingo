@@ -2,14 +2,26 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Libraries\EmailService;
 
 class Auth extends BaseController
 {
     protected $userModel;
+    protected $emailService;
+    protected $avatarPath = 'uploads/avatars';
+    protected $fullAvatarPath;
+    protected $tempAvatarPath = null; // Variable to store temporary avatar path
 
     public function __construct()
     {
-        $this->userModel = new UserModel();
+        $this->userModel      = new UserModel();
+        $this->emailService   = new EmailService();
+        $this->fullAvatarPath = FCPATH . $this->avatarPath;
+
+        // Create avatar directory if it doesn't exist
+        if (! is_dir($this->fullAvatarPath)) {
+            mkdir($this->fullAvatarPath, 0777, true);
+        }
     }
 
     public function login()
@@ -27,38 +39,67 @@ class Auth extends BaseController
     public function attemptLogin()
     {
         $rules = [
-            'email'    => 'required|valid_email',
+            'email'    => 'required',
             'password' => 'required',
         ];
 
         if ($this->validate($rules)) {
-            $user = $this->userModel->where('email', $this->request->getPost('email'))->first();
+            $user = $this->userModel->where('email', $this->request->getPost('email'))
+                ->orWhere('username', $this->request->getPost('email'))
+                ->first();
 
             if ($user) {
                 // Debug information
                 log_message('debug', 'Login attempt for user: ' . $user['email']);
-                log_message('debug', 'Stored hash: ' . $user['password']);
-                log_message('debug', 'Provided password: ' . $this->request->getPost('password'));
-                
-                $verify = password_verify($this->request->getPost('password'), $user['password']);
+
+                log_message('debug', 'Password: ' . $this->request->getPost('password'));
+                log_message('debug', 'Salt: ' . $user['salt']);
+                log_message('debug', 'Password with salt: ' . $this->request->getPost('password') . $user['salt']);
+                log_message('debug', 'User password: ' . $user['password']);
+
+                // Verify password with salt
+                $verify = password_verify($this->request->getPost('password') . $user['salt'], $user['password']);
                 log_message('debug', 'Password verification result: ' . ($verify ? 'true' : 'false'));
 
                 if ($verify) {
+                    // Check if account is active
+                    if ($user['status'] !== 'active') {
+                        $this->setFlash('error', 'Your account is ' . $user['status'] . '. Please contact the administrator.');
+                        return redirect()->back()->withInput();
+                    }
+
                     $sessionData = [
-                        'user_id'    => $user['id'],
-                        'user_name'  => $user['name'],
-                        'user_email' => $user['email'],
-                        'user_role'  => $user['role'],
-                        'logged_in'  => true,
+                        'user_id'       => $user['id'],
+                        'user_name'     => $user['name'],
+                        'user_username' => $user['username'],
+                        'user_email'    => $user['email'],
+                        'user_phone'    => $user['phone'],
+                        'user_role'     => $user['role'],
+                        'is_verified'   => $user['is_verified'],
+                        'is_admin'      => $user['role'] == 'admin',
+                        'avatar'        => $user['avatar'],
+                        'logged_in'     => true,
                     ];
 
                     session()->set($sessionData);
                     $this->setFlash('success', 'Welcome back, ' . $user['name']);
-                    return redirect()->to('/admin');
+                    
+                    // Redirect based on role
+                    switch ($user['role']) {
+                        case 'admin':
+                        case 'editor':
+                            return redirect()->to('/admin');
+                        case 'user':
+                            return redirect()->to('/users');
+                        default:
+                            return redirect()->to('/');
+                    }
                 }
             }
 
-            $this->setFlash('error', 'Invalid email or password');
+            $this->setFlash('error', 'Invalid email/username or password');
+        } else {
+            $this->setFlash('error', $this->validator->listErrors());
         }
 
         return redirect()->back()->withInput();
@@ -80,39 +121,81 @@ class Auth extends BaseController
     {
         $rules = [
             'name'     => 'required|min_length[3]|max_length[255]',
+            'username' => 'required|min_length[3]|max_length[32]|is_unique[users.username]|alpha_numeric',
             'email'    => 'required|valid_email|is_unique[users.email]',
             'password' => 'required|min_length[8]',
             'terms'    => 'required',
+            'avatar'   => 'permit_empty|is_image[avatar]|max_size[avatar,2048]',
         ];
 
+        $avatarUploaded = false;
+        $avatarPath = null;
+
         if ($this->validate($rules)) {
-            $password = $this->request->getPost('password');
-            
-            // Debug information
-            log_message('debug', 'Registration for user: ' . $this->request->getPost('email'));
-            log_message('debug', 'Original password: ' . $password);
-            
-            // Create user data array - let the model handle password hashing
+            // Generate random salt for password
+            $salt = bin2hex(random_bytes(8));
+
+            // Create user data array
             $data = [
-                'name'     => $this->request->getPost('name'),
-                'email'    => $this->request->getPost('email'),
-                'password' => $password, // Pass the plain password, model will hash it
-                'role'     => 'user',
+                'name'       => $this->request->getPost('name'),
+                'username'   => $this->request->getPost('username'),
+                'email'      => $this->request->getPost('email'),
+                'password'   => $this->request->getPost('password'), // Store plain password to let model hash it
+                'salt'       => $salt,
+                'role'       => 'user',
+                'status'     => 'active',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ];
-            
+
+            // Handle avatar upload if provided
+            $avatar = $this->request->getFile('avatar');
+            if ($avatar && $avatar->isValid() && ! $avatar->hasMoved()) {
+                $avatarResult = $this->processAvatar($avatar);
+
+                if ($avatarResult['status']) {
+                    $data['avatar'] = $avatarResult['path'];
+                    $avatarUploaded = true;
+                    $avatarPath = $avatarResult['path'];
+                } else {
+                    $this->setFlash('error', 'Failed to process avatar: ' . $avatarResult['message']);
+                    return redirect()->back()->withInput();
+                }
+            }
+
             // Debug the final data being inserted
             log_message('debug', 'User data to be inserted: ' . json_encode($data));
 
             if ($this->userModel->insert($data)) {
-                // Verify the stored hash
-                $storedUser = $this->userModel->where('email', $data['email'])->first();
-                log_message('debug', 'Stored hash in database: ' . $storedUser['password']);
+                // Send welcome email to the user
+                try {
+                    $this->emailService->sendWelcomeEmail($data);
+                    
+                    // Send notification to admin
+                    $this->emailService->sendAdminNotification($data);
+                    
+                    log_message('info', 'Registration emails sent successfully to user and admin');
+                } catch (\Exception $e) {
+                    log_message('error', 'Failed to send registration emails: ' . $e->getMessage());
+                }
                 
-                $this->setFlash('success', 'Registration successful. Please login.');
+                $this->setFlash('success', 'Registration successful. Please check your email for welcome information and login.');
                 return redirect()->to('/login');
             }
 
-            $this->setFlash('error', 'Failed to register');
+            // If we reach here, registration failed but avatar might have been uploaded
+            if ($avatarUploaded && $avatarPath) {
+                // Delete the uploaded avatar to prevent junk files
+                $fullPath = FCPATH . $avatarPath;
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                    log_message('debug', 'Deleted avatar after failed registration: ' . $fullPath);
+                }
+            }
+
+            $this->setFlash('error', 'Failed to register: ' . $this->userModel->errors());
+        } else {
+            $this->setFlash('error', $this->validator->listErrors());
         }
 
         return redirect()->back()->withInput();
@@ -149,14 +232,16 @@ class Auth extends BaseController
             if ($user) {
                 // Generate reset token
                 $token = bin2hex(random_bytes(32));
-                $this->userModel->update($user['id'], ['reset_token' => $token]);
+                $this->userModel->update($user['id'], [
+                    'reset_token' => $token,
+                    'updated_at'  => date('Y-m-d H:i:s'),
+                ]);
 
-                // Send reset email
-                $email = \Config\Services::email();
-                $email->setTo($user['email']);
-                $email->setSubject('Password Reset');
-                $email->setMessage('Click here to reset your password: ' . base_url('reset-password/' . $token));
-                $email->send();
+                // Update user data with reset token
+                $user['reset_token'] = $token;
+                
+                // Send reset email using EmailService
+                $this->emailService->sendPasswordResetEmail($user);
 
                 $this->setFlash('success', 'Password reset instructions have been sent to your email');
                 return redirect()->to('/login');
@@ -200,9 +285,14 @@ class Auth extends BaseController
         ];
 
         if ($this->validate($rules)) {
+            // Generate a new salt for extra security
+            $salt = bin2hex(random_bytes(8));
+
             $data = [
-                'password'    => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
+                'password'    => $this->request->getPost('password'), // Let model handle hashing
+                'salt'        => $salt,
                 'reset_token' => null,
+                'updated_at'  => date('Y-m-d H:i:s'),
             ];
 
             if ($this->userModel->update($user['id'], $data)) {
@@ -214,5 +304,46 @@ class Auth extends BaseController
         }
 
         return redirect()->back()->withInput();
+    }
+
+    /**
+     * Process an avatar image - convert to PNG and save with unique name
+     *
+     * @param object $file The uploaded file object
+     * @return array Status and results of the operation
+     */
+    private function processAvatar($file)
+    {
+        try {
+            // Generate a unique filename with timestamp to avoid cache issues
+            $newName = 'avatar_' . time() . '_' . uniqid() . '.png';
+
+            // Load image library
+            $image = \Config\Services::image();
+
+            // Get the temporary path of the uploaded file
+            $tempPath = $file->getTempName();
+
+            // Create a new path for the converted image
+            $savePath = $this->fullAvatarPath . '/' . $newName;
+
+            // Resize and convert to PNG
+            $image->withFile($tempPath)
+                ->resize(300, 300, true)
+                ->convert(IMAGETYPE_PNG)
+                ->save($savePath);
+
+            // Return the relative path to store in the database
+            return [
+                'status' => true,
+                'path'   => $this->avatarPath . '/' . $newName,
+                'fullPath' => $savePath // Include the full path for potential deletion
+            ];
+        } catch (\Exception $e) {
+            return [
+                'status'  => false,
+                'message' => $e->getMessage(),
+            ];
+        }
     }
 }

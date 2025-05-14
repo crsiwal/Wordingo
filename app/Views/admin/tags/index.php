@@ -19,12 +19,12 @@
                     </span>
                 </div>
             </div>
-            <a href="#" class="group relative px-8 py-3 bg-white text-blue-600 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+            <a href="<?php echo base_url('admin/posts/create') ?>" class="group relative px-8 py-3 bg-white text-blue-600 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <span class="relative z-10 flex items-center">
                     <span class="w-7 h-7 flex items-center justify-center bg-blue-100 rounded-full mr-2 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-edit"></i>
                     </span>
-                    New Tag
+                    Add Post
                 </span>
                 <span class="absolute inset-0 w-0 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
                 <span class="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-20 bg-grid-white/20 bg-grid-8 transition-opacity duration-300"></span>

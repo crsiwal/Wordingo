@@ -120,7 +120,7 @@ class Home extends BaseController
 
     public function contact()
     {
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->is('post')) {
             $rules = [
                 'name' => 'required|min_length[3]|max_length[255]',
                 'email' => 'required|valid_email',

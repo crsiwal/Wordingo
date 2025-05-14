@@ -21,10 +21,7 @@ class TagModel extends Model
     protected $updatedField  = 'updated_at';
 
     // Validation
-    protected $validationRules      = [
-        'name' => 'required|min_length[2]|max_length[255]',
-        'slug' => 'required|alpha_dash|is_unique[tags.slug,id,{id}]',
-    ];
+    protected $validationRules      = [];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;

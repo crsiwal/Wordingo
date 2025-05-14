@@ -21,10 +21,7 @@ class PostPhotoModel extends Model
     protected $updatedField  = 'updated_at';
 
     // Validation
-    protected $validationRules      = [
-        'post_id'   => 'required|numeric',
-        'file_path' => 'required|max_length[512]',
-    ];
+    protected $validationRules      = [];
     protected $validationMessages   = [];
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;

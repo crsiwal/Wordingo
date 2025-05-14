@@ -24,6 +24,10 @@ class CreateCategoriesTable extends Migration
                 'constraint' => 255,
                 'unique'     => true,
             ],
+            'description' => [
+                'type'       => 'TEXT',
+                'null'       => true,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
