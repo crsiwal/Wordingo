@@ -9,11 +9,13 @@ class Categories extends BaseController
 {
     protected $categoryModel;
     protected $postModel;
+    protected $userRole;
 
     public function __construct()
     {
         $this->categoryModel = new CategoryModel();
         $this->postModel = new PostModel();
+        $this->userRole = session()->get('user_role');
     }
 
     public function index()
@@ -26,6 +28,7 @@ class Categories extends BaseController
                 ->orderBy('categories.created_at', 'DESC')
                 ->paginate(10),
             'pager'      => $this->categoryModel->pager,
+            'userRole'   => $this->userRole,
         ];
 
         return $this->render('admin/categories/index', $data);
@@ -33,6 +36,12 @@ class Categories extends BaseController
 
     public function create()
     {
+        // Check if user is admin
+        if ($this->userRole !== 'admin') {
+            $this->setFlash('error', 'Only administrators can create categories');
+            return redirect()->to('/admin/categories');
+        }
+
         if ($this->request->is('post')) {
             $rules = [
                 'name'        => 'required|min_length[3]|max_length[255]',
@@ -68,6 +77,12 @@ class Categories extends BaseController
 
     public function edit($id)
     {
+        // Check if user is admin
+        if ($this->userRole !== 'admin') {
+            $this->setFlash('error', 'Only administrators can edit categories');
+            return redirect()->to('/admin/categories');
+        }
+
         $category = $this->categoryModel->find($id);
 
         if (! $category) {
@@ -109,6 +124,12 @@ class Categories extends BaseController
 
     public function delete($id)
     {
+        // Check if user is admin
+        if ($this->userRole !== 'admin') {
+            $this->setFlash('error', 'Only administrators can delete categories');
+            return redirect()->to('/admin/categories');
+        }
+
         // Get the category before deletion
         $category = $this->categoryModel->find($id);
         if (!$category) {
@@ -118,13 +139,13 @@ class Categories extends BaseController
 
         // Update posts that use this category to have null category_id
         $affectedPosts = $this->postModel->where('category_id', $id)->countAllResults();
-        
+
         if ($affectedPosts > 0) {
             // Update posts to remove the category reference
             $this->postModel->set('category_id', null)
                      ->where('category_id', $id)
                      ->update();
-            
+
             $this->setFlash('info', "$affectedPosts posts were updated to have no category");
         }
 

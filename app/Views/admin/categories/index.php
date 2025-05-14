@@ -19,7 +19,8 @@
                     </span>
                 </div>
             </div>
-            <a href="<?php echo base_url('admin/categories/create') ?>" 
+            <?php if ($userRole === 'admin'): ?>
+            <a href="<?php echo base_url('admin/categories/create') ?>"
                class="group relative px-8 py-3 bg-white text-blue-600 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
                 <span class="relative z-10 flex items-center">
                     <span class="w-7 h-7 flex items-center justify-center bg-blue-100 rounded-full mr-2 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
@@ -30,6 +31,7 @@
                 <span class="absolute inset-0 w-0 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
                 <span class="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-20 bg-grid-white/20 bg-grid-8 transition-opacity duration-300"></span>
             </a>
+            <?php endif; ?>
         </div>
 
         <!-- Animated bubbles background effect -->
@@ -74,6 +76,7 @@
                             </a>
                         </h3>
                         <div class="flex gap-1">
+                            <?php if ($userRole === 'admin'): ?>
                             <a href="<?php echo base_url('admin/categories/edit/' . $category['id']) ?>"
                                class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
                                 <i class="fas fa-edit"></i>
@@ -83,14 +86,15 @@
                                onclick="return confirm('Are you sure you want to delete this category?')">
                                 <i class="fas fa-trash"></i>
                             </a>
+                            <?php endif; ?>
                         </div>
                     </div>
-                    
+
                     <div class="flex items-center text-sm text-gray-500 mb-3">
                         <i class="fas fa-link mr-2 text-gray-400"></i>
                         <span class="category-slug truncate"><?php echo esc($category['slug']) ?></span>
                     </div>
-                    
+
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
                             <div class="flex items-center text-sm">
@@ -132,14 +136,14 @@
         .bg-grid-white\/20 {
             mask-image: linear-gradient(to bottom, transparent, black);
         }
-        
+
         .bg-grid-8 {
             background-size: 40px 40px;
-            background-image: 
+            background-image:
                 linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
                 linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
         }
-        
+
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
@@ -152,11 +156,11 @@
             const searchTerm = document.getElementById('category-search').value.toLowerCase();
             const categoryCards = document.querySelectorAll('.category-card');
             let visibleCount = 0;
-            
+
             categoryCards.forEach(card => {
                 const name = card.querySelector('.category-name').textContent.toLowerCase();
                 const slug = card.querySelector('.category-slug').textContent.toLowerCase();
-                
+
                 if (name.includes(searchTerm) || slug.includes(searchTerm)) {
                     card.style.display = 'block';
                     visibleCount++;
@@ -164,7 +168,7 @@
                     card.style.display = 'none';
                 }
             });
-            
+
             // Show/hide empty state
             const emptyState = document.getElementById('empty-state');
             if (visibleCount === 0) {
@@ -173,7 +177,7 @@
                 emptyState.classList.add('hidden');
             }
         }
-        
+
         function resetSearch() {
             document.getElementById('category-search').value = '';
             filterCategories();

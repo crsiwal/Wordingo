@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
@@ -6,38 +7,64 @@ use App\Models\CategoryModel;
 use App\Models\PostModel;
 use App\Models\PostTagModel;
 use App\Models\TagModel;
+use App\Models\UserModel;
 
-class Posts extends BaseController
-{
+class Posts extends BaseController {
     protected $postModel;
     protected $categoryModel;
     protected $tagModel;
     protected $postTagModel;
+    protected $userModel;
+    protected $userRole;
+    protected $userId;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->postModel     = new PostModel();
         $this->categoryModel = new CategoryModel();
         $this->tagModel      = new TagModel();
         $this->postTagModel  = new PostTagModel();
+        $this->userModel     = new UserModel();
+        $this->userRole      = session()->get('user_role');
+        $this->userId        = session()->get('user_id');
     }
 
-    public function index()
-    {
+    public function index() {
+        // Build the base query
+        $builder = $this->postModel->select('posts.*, users.name as author_name, users.status as user_status, categories.name as category_name')
+            ->join('users', 'users.id = posts.user_id')
+            ->join('categories', 'categories.id = posts.category_id', 'left'); // Left join to categories table
+
+        // Filter posts based on user role
+        if ($this->userRole === 'admin') {
+            // Admin can see all posts, but exclude posts from banned users
+            $builder->where('users.status !=', 'banned');
+        } elseif ($this->userRole === 'manager') {
+            // Manager can see their own posts and posts from their editors
+            $editorIds = $this->userModel->where('parent_id', $this->userId)->findColumn('id') ?? [];
+            $userIds = array_merge([$this->userId], $editorIds);
+            $builder->whereIn('posts.user_id', $userIds)
+                ->where('users.status !=', 'banned');
+        } else {
+            // Editor can only see their own posts
+            $builder->where('posts.user_id', $this->userId)
+                ->where('users.status !=', 'banned');
+        }
+
         $data = [
             'title' => 'Manage Posts',
-            'posts' => $this->postModel->orderBy('created_at', 'DESC')->paginate(10),
+            'posts' => $builder->orderBy('posts.created_at', 'DESC')->paginate(10),
             'pager' => $this->postModel->pager,
+            'userRole' => $this->userRole,
+            'userId' => $this->userId
         ];
 
         return $this->render('admin/posts/index', $data);
     }
 
-    public function create()
-    {
+    public function create() {
         // Create a blank draft post and redirect to edit
         $data = [
-            'user_id' => session()->get('user_id'),
+            'user_id' => $this->userId,
             'status'  => 'draft',
         ];
         $postId = $this->postModel->skipValidation(true)->insert($data, true);
@@ -48,12 +75,24 @@ class Posts extends BaseController
         return redirect()->to('/admin/posts');
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         $post = $this->postModel->find($id);
 
         if (! $post) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        // Check if user has permission to edit this post
+        if (!$this->canEditPost($post)) {
+            $this->setFlash('error', 'You do not have permission to edit this post');
+            return redirect()->to('/admin/posts');
+        }
+
+        // Check if post author is banned
+        $postAuthor = $this->userModel->find($post['user_id']);
+        if ($postAuthor && $postAuthor['status'] === 'banned') {
+            $this->setFlash('error', 'Cannot edit posts from banned users');
+            return redirect()->to('/admin/posts');
         }
 
         $data = [
@@ -65,6 +104,7 @@ class Posts extends BaseController
         if ($this->request->is('post')) {
             $rules = [
                 'title'       => 'required|min_length[3]|max_length[256]',
+                'description' => 'permit_empty|max_length[160]', // Add validation for description field
                 'content'     => 'required',
                 'category_id' => 'required|numeric',
                 'status'      => 'required|in_list[draft,published]',
@@ -86,6 +126,7 @@ class Posts extends BaseController
             if ($this->validate($rules)) {
                 $content = [
                     'title'        => $this->request->getPost('title'),
+                    'description'  => $this->request->getPost('description') ?? '', // Add description field
                     'content'      => $this->request->getPost('content'),
                     'thumbnail'    => $this->request->getPost('featured_image_url') ?? null,
                     'category_id'  => $this->request->getPost('category_id'),
@@ -128,6 +169,7 @@ class Posts extends BaseController
             $data['post'] = array_merge($data['post'], [
                 'title'        => $this->request->getPost('title'),
                 'slug'         => $newSlug,
+                'description'  => $this->request->getPost('description'), // Add description field
                 'content'      => $this->request->getPost('content'),
                 'thumbnail'    => $this->request->getPost('featured_image'),
                 'category_id'  => $this->request->getPost('category_id'),
@@ -147,22 +189,24 @@ class Posts extends BaseController
     /**
      * Delete a post
      */
-    public function delete($id)
-    {
-        // Check if post exists and user has permission
+    public function delete($id) {
+        // Check if post exists
         $post = $this->postModel->find($id);
         if (! $post) {
             $this->setFlash('error', 'Post not found');
             return redirect()->to('/admin/posts');
         }
 
-        // Allow both admins and post owners to delete
-        $userId   = session()->get('user_id');
-        $userRole = session()->get('role');
-        $isAdmin  = ($userRole == 'admin');
-
-        if (! $isAdmin && $post['user_id'] != $userId) {
+        // Check if user has permission to delete this post
+        if (!$this->canEditPost($post)) {
             $this->setFlash('error', 'You do not have permission to delete this post');
+            return redirect()->to('/admin/posts');
+        }
+
+        // Check if post author is banned
+        $postAuthor = $this->userModel->find($post['user_id']);
+        if ($postAuthor && $postAuthor['status'] === 'banned') {
+            $this->setFlash('error', 'Cannot delete posts from banned users');
             return redirect()->to('/admin/posts');
         }
 
@@ -180,10 +224,33 @@ class Posts extends BaseController
     }
 
     /**
+     * Check if current user can edit a post
+     */
+    private function canEditPost($post) {
+        // Admin can edit any post
+        if ($this->userRole === 'admin') {
+            return true;
+        }
+
+        // Manager can edit own posts and posts from their editors
+        if ($this->userRole === 'manager') {
+            if ($post['user_id'] == $this->userId) {
+                return true; // Own post
+            }
+
+            // Check if post belongs to one of their editors
+            $editorIds = $this->userModel->where('parent_id', $this->userId)->findColumn('id') ?? [];
+            return in_array($post['user_id'], $editorIds);
+        }
+
+        // Editor can only edit own posts
+        return $post['user_id'] == $this->userId;
+    }
+
+    /**
      * Validate if a slug is unique
      */
-    public function validateSlug()
-    {
+    public function validateSlug() {
         $slug   = $this->request->getPost('slug');
         $postId = $this->request->getPost('post_id');
 
@@ -218,8 +285,7 @@ class Posts extends BaseController
     /**
      * Handle tag operations for a post
      */
-    private function handleTags($postId, $tagsString)
-    {
+    private function handleTags($postId, $tagsString) {
         $tagsArr = array_filter(array_map('trim', explode(',', $tagsString)));
         if (empty($tagsArr)) {
             return;
@@ -274,8 +340,7 @@ class Posts extends BaseController
     /**
      * Get tags for a post
      */
-    private function getPostTags($postId)
-    {
+    private function getPostTags($postId) {
         $postTags = $this->postTagModel->where('post_id', $postId)->findAll();
         if (empty($postTags)) {
             return '';

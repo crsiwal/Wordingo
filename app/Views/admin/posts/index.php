@@ -86,6 +86,16 @@
                                     </a>
                                 </h3>
 
+                                <!-- Add the description section right after the title -->
+                                <p class="post-description text-gray-600 mb-4">
+                                    <?php
+                                    // Show the SEO description if available, otherwise show truncated content
+                                    echo !empty($post['description'])
+                                        ? esc($post['description'])
+                                        : character_limiter(strip_tags($post['content'] ?? ''), 160);
+                                    ?>
+                                </p>
+
                                 <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
                                     <span class="flex items-center">
                                         <i class="fas fa-folder text-blue-400 mr-1"></i>
@@ -97,8 +107,14 @@
                                     </span>
                                     <span class="flex items-center">
                                         <i class="fas fa-eye text-green-400 mr-1"></i>
-                                        <?php echo number_format($post['views'])?> views
+                                        <?php echo number_format($post['views'] ?? 0)?> views
                                     </span>
+                                    <?php if (isset($post['author_name'])): ?>
+                                    <span class="flex items-center">
+                                        <i class="fas fa-user text-indigo-400 mr-1"></i>
+                                        <?php echo esc($post['author_name'])?>
+                                    </span>
+                                    <?php endif; ?>
                                     <span class="post-status px-2 py-1 rounded-full text-xs <?php echo $post['status'] === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'?>">
                                         <?php echo ucfirst($post['status'])?>
                                     </span>
@@ -106,23 +122,39 @@
                             </div>
 
                             <div class="flex gap-2">
+                                <?php
+                                // Admin can edit all posts
+                                // Manager can edit their own posts and posts from their editors
+                                // Editor can only edit their own posts
+                                $canEdit = ($userRole === 'admin') ||
+                                           ($userRole === 'manager' && ($post['user_id'] == $userId ||
+                                                                       (isset($post['parent_id']) && $post['parent_id'] == $userId))) ||
+                                           ($post['user_id'] == $userId);
+
+                                if ($canEdit):
+                                ?>
                                 <a href="<?php echo base_url('admin/posts/edit/' . $post['id'])?>"
                                    class="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
                                     <i class="fas fa-edit mr-1"></i>
                                     Edit
                                 </a>
+                                <?php endif; ?>
+
                                 <a href="<?php echo base_url('blog/' . $post['slug'])?>"
                                    target="_blank"
                                    class="px-3 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors inline-flex items-center">
                                     <i class="fas fa-external-link-alt mr-1"></i>
                                     View
                                 </a>
+
+                                <?php if ($canEdit): ?>
                                 <a href="<?php echo base_url('admin/posts/delete/' . $post['id'])?>"
                                    class="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors inline-flex items-center"
                                    onclick="return confirm('Are you sure you want to delete this post?')">
                                     <i class="fas fa-trash mr-1"></i>
                                     Delete
                                 </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

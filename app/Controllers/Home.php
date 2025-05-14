@@ -37,7 +37,7 @@ class Home extends BaseController
     public function search()
     {
         $query = $this->request->getGet('q');
-        
+
         if (empty($query)) {
             return redirect()->to('/');
         }
@@ -100,7 +100,7 @@ class Home extends BaseController
 
         $data = [
             'title' => $post['title'],
-            'description' => substr(strip_tags($post['content']), 0, 160),
+            'description' => !empty($post['description']) ? $post['description'] : substr(strip_tags($post['content']), 0, 160),
             'post' => $post,
             'relatedPosts' => $relatedPosts,
         ];
@@ -149,4 +149,4 @@ class Home extends BaseController
 
         return $this->render('home/contact', $data);
     }
-} 
+}

@@ -18,23 +18,25 @@
                     <article class="bg-white rounded-lg shadow-md overflow-hidden">
                         <?php if ($post['thumbnail']): ?>
                             <a href="<?= base_url('blog/' . $post['slug']) ?>" class="block">
-                                <img src="<?= base_url('files/' . $post['user_id'] . '/' . $post['id'] . '/' . $post['thumbnail']) ?>" 
+                                <img src="<?= base_url('files/' . $post['user_id'] . '/' . $post['id'] . '/' . $post['thumbnail']) ?>"
                                      alt="<?= esc($post['title']) ?>"
                                      class="w-full h-48 object-cover">
                             </a>
                         <?php endif; ?>
-                        
+
                         <div class="p-6">
                             <h2 class="text-xl font-semibold mb-2">
                                 <a href="<?= base_url('blog/' . $post['slug']) ?>" class="text-gray-900 hover:text-primary-600">
                                     <?= esc($post['title']) ?>
                                 </a>
                             </h2>
-                            
+
                             <p class="text-gray-600 mb-4">
-                                <?= character_limiter(strip_tags($post['content']), 150) ?>
+                                <?= !empty($post['description'])
+                                    ? esc($post['description'])
+                                    : character_limiter(strip_tags($post['content']), 150) ?>
                             </p>
-                            
+
                             <div class="flex items-center justify-between text-sm text-gray-500">
                                 <span>
                                     <i class="fas fa-user mr-1"></i>
@@ -56,4 +58,4 @@
             </div>
         <?php endif; ?>
     </div>
-<?= $this->endSection() ?> 
+<?= $this->endSection() ?>

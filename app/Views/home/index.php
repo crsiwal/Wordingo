@@ -18,7 +18,9 @@
                             </a>
                         </h3>
                         <p class="text-gray-600 mb-4">
-                            <?= character_limiter(strip_tags($post['content']), 150) ?>
+                            <?= !empty($post['description'])
+                                ? esc($post['description'])
+                                : character_limiter(strip_tags($post['content']), 150) ?>
                         </p>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="mr-4">
@@ -50,7 +52,9 @@
                             </a>
                         </h3>
                         <p class="text-gray-600 mb-4">
-                            <?= character_limiter(strip_tags($post['content']), 100) ?>
+                            <?= !empty($post['description'])
+                                ? esc($post['description'])
+                                : character_limiter(strip_tags($post['content']), 100) ?>
                         </p>
                         <div class="flex items-center text-sm text-gray-500">
                             <span class="mr-4">
@@ -79,4 +83,4 @@
         </div>
     </section>
 </div>
-<?= $this->endSection() ?> 
+<?= $this->endSection() ?>

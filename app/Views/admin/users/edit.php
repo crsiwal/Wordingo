@@ -57,8 +57,8 @@
                 <?php if (! empty($user['avatar'])): ?>
                     <img src="<?php echo base_url($user['avatar']) ?>" alt="<?php echo $user['name'] ?>" class="w-full h-full object-cover">
                 <?php else: ?>
-<?php echo strtoupper(substr($user['name'] ?? '', 0, 1)) ?>
-<?php endif; ?>
+                    <?php echo strtoupper(substr($user['name'] ?? '', 0, 1)) ?>
+                <?php endif; ?>
             </div>
             <div>
                 <h3 class="text-xl font-semibold text-gray-900"><?php echo $user['name'] ?></h3>
@@ -83,7 +83,7 @@
                             id="name"
                             type="text"
                             name="name"
-                            value="<?php echo $formData['name'] ?? '' ?>"
+                            value="<?php echo old('name', $user['name']) ?>"
                             required>
                     </div>
                     <?php if (session('errors.name')): ?>
@@ -103,7 +103,7 @@
                             id="username"
                             type="text"
                             name="username"
-                            value="<?php echo $formData['username'] ?? '' ?>"
+                            value="<?php echo old('username', $user['username']) ?>"
                             required>
                     </div>
                     <?php if (session('errors.username')): ?>
@@ -131,14 +131,14 @@
                             id="email"
                             type="email"
                             name="email"
-                            value="<?php echo $formData['email'] ?? '' ?>"
+                            value="<?php echo old('email', $user['email']) ?>"
                             required>
                     </div>
                     <?php if (session('errors.email')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?php echo session('errors.email') ?></p>
                     <?php endif; ?>
                     <div class="flex items-center mt-2">
-                        <input type="checkbox" id="email_verified" name="email_verified" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500" <?php echo (isset($formData['email_verified']) && $formData['email_verified']) ? 'checked' : '' ?>>
+                        <input type="checkbox" id="email_verified" name="email_verified" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500" <?php echo old('email_verified', $user['email_verified'] ?? 0) ? 'checked' : '' ?>>
                         <label for="email_verified" class="ml-2 text-sm text-gray-600">Mark email as verified</label>
                     </div>
                 </div>
@@ -155,14 +155,14 @@
                             id="phone"
                             type="text"
                             name="phone"
-                            value="<?php echo $formData['phone'] ?? '' ?>"
+                            value="<?php echo old('phone', $user['phone']) ?>"
                             required>
                     </div>
                     <?php if (session('errors.phone')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?php echo session('errors.phone') ?></p>
                     <?php endif; ?>
                     <div class="flex items-center mt-2">
-                        <input type="checkbox" id="phone_verified" name="phone_verified" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500" <?php echo (isset($formData['phone_verified']) && $formData['phone_verified']) ? 'checked' : '' ?>>
+                        <input type="checkbox" id="phone_verified" name="phone_verified" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500" <?php echo old('phone_verified', $user['phone_verified'] ?? 0) ? 'checked' : '' ?>>
                         <label for="phone_verified" class="ml-2 text-sm text-gray-600">Mark phone as verified</label>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
                             id="address"
                             name="address"
                             rows="3"
-                            required><?php echo $formData['address'] ?? '' ?></textarea>
+                            required><?php echo old('address', $user['address']) ?></textarea>
                     </div>
                     <?php if (session('errors.address')): ?>
                         <p class="text-red-500 text-xs italic mt-1"><?php echo session('errors.address') ?></p>
@@ -220,8 +220,8 @@
                                     name="gender"
                                     required>
                                     <option value="">Select gender</option>
-                                    <option value="male" <?php echo (isset($formData['gender']) && $formData['gender'] === 'male') ? 'selected' : '' ?>>Male</option>
-                                    <option value="female" <?php echo (isset($formData['gender']) && $formData['gender'] === 'female') ? 'selected' : '' ?>>Female</option>
+                                    <option value="male" <?php echo old('gender', $user['gender']) === 'male' ? 'selected' : '' ?>>Male</option>
+                                    <option value="female" <?php echo old('gender', $user['gender']) === 'female' ? 'selected' : '' ?>>Female</option>
                                 </select>
                             </div>
                             <?php if (session('errors.gender')): ?>
@@ -299,18 +299,18 @@
                             <i class="fas fa-user-shield text-gray-400"></i>
                         </div>
                         <?php if ($userRole === 'admin'): ?>
-                        <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo session('errors.role') ? 'border-red-500' : '' ?>"
-                            id="role"
-                            name="role"
-                            required>
-                            <option value="admin" <?php echo (isset($formData['role']) && $formData['role'] === 'admin') ? 'selected' : '' ?>>Admin</option>
-                            <option value="manager" <?php echo (isset($formData['role']) && $formData['role'] === 'manager') ? 'selected' : '' ?>>Manager</option>
-                            <option value="editor" <?php echo (isset($formData['role']) && $formData['role'] === 'editor') ? 'selected' : '' ?>>Editor</option>
-                            <option value="user" <?php echo (isset($formData['role']) && $formData['role'] === 'user') ? 'selected' : '' ?>>User</option>
-                        </select>
+                            <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <?php echo session('errors.role') ? 'border-red-500' : '' ?>"
+                                id="role"
+                                name="role"
+                                required>
+                                <option value="admin" <?php echo old('role', $user['role']) === 'admin' ? 'selected' : '' ?>>Admin</option>
+                                <option value="manager" <?php echo old('role', $user['role']) === 'manager' ? 'selected' : '' ?>>Manager</option>
+                                <option value="editor" <?php echo old('role', $user['role']) === 'editor' ? 'selected' : '' ?>>Editor</option>
+                                <option value="user" <?php echo old('role', $user['role']) === 'user' ? 'selected' : '' ?>>User</option>
+                            </select>
                         <?php else: ?>
-                        <input type="hidden" name="role" value="<?php echo $formData['role'] ?? $user['role'] ?>">
-                        <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5" value="<?php echo ucfirst($formData['role'] ?? $user['role']) ?>" disabled>
+                            <input type="hidden" name="role" value="<?php echo old('role', $user['role']) ?>">
+                            <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5" value="<?php echo ucfirst(old('role', $user['role'])) ?>" disabled>
                         <?php endif; ?>
                     </div>
                     <?php if (session('errors.role')): ?>
@@ -330,9 +330,9 @@
                             id="status"
                             name="status"
                             required>
-                            <option value="active" <?php echo (isset($formData['status']) && $formData['status'] === 'active') ? 'selected' : '' ?>>Active</option>
-                            <option value="inactive" <?php echo (isset($formData['status']) && $formData['status'] === 'inactive') ? 'selected' : '' ?>>Inactive</option>
-                            <option value="banned" <?php echo (isset($formData['status']) && $formData['status'] === 'banned') ? 'selected' : '' ?>>Banned</option>
+                            <option value="active" <?php echo old('status', $user['status']) === 'active' ? 'selected' : '' ?>>Active</option>
+                            <option value="inactive" <?php echo old('status', $user['status']) === 'inactive' ? 'selected' : '' ?>>Inactive</option>
+                            <option value="banned" <?php echo old('status', $user['status']) === 'banned' ? 'selected' : '' ?>>Banned</option>
                         </select>
                     </div>
                     <?php if (session('errors.status')): ?>
@@ -346,7 +346,7 @@
                     </label>
                     <div class="mt-2">
                         <label class="inline-flex items-center">
-                            <input type="checkbox" name="is_verified" value="1" class="form-checkbox h-5 w-5 text-indigo-600" <?php echo (isset($formData['is_verified']) && $formData['is_verified']) ? 'checked' : '' ?>>
+                            <input type="checkbox" name="is_verified" value="1" class="form-checkbox h-5 w-5 text-indigo-600" <?php echo old('is_verified', $user['is_verified'] ?? 0) ? 'checked' : '' ?>>
                             <span class="ml-2 text-gray-700">Mark account as verified</span>
                         </label>
                     </div>
@@ -359,7 +359,7 @@
 
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-4 border-t border-gray-200">
             <div class="text-gray-500 text-sm">
-                <p><i class="fas fa-info-circle mr-1"></i> Last updated:                                                                                                                                                                                                                         <?php echo date('M d, Y \a\t h:i A', strtotime($user['updated_at'] ?? $user['created_at'])) ?></p>
+                <p><i class="fas fa-info-circle mr-1"></i> Last updated: <?php echo date('M d, Y \a\t h:i A', strtotime($user['updated_at'] ?? $user['created_at'])) ?></p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3">
                 <a href="<?php echo base_url('admin/users') ?>" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors inline-flex items-center justify-center">
@@ -389,9 +389,17 @@
     }
 
     @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
     }
 </style>
 

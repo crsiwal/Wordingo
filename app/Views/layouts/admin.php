@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,18 +20,27 @@
     <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
 
     <style>
-        html, body {
+        html,
+        body {
             font-family: 'Geist Mono', monospace;
         }
-        
+
         /* Adjust heading weights for Geist Mono */
-        h1, h2, h3, h4, h5, h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: 'Geist Mono', monospace;
             font-weight: 600;
         }
-        
+
         /* Make sure buttons and inputs use the font */
-        button, input, select, textarea {
+        button,
+        input,
+        select,
+        textarea {
             font-family: 'Geist Mono', monospace;
         }
 
@@ -38,11 +48,11 @@
         .mobile-menu {
             transition: transform 0.3s ease-in-out;
         }
-        
+
         .mobile-menu.open {
             transform: translateX(0);
         }
-        
+
         .mobile-menu.closed {
             transform: translateX(-100%);
         }
@@ -53,6 +63,7 @@
                 font-size: 2.5rem;
                 line-height: 2.75rem;
             }
+
             p.text-\[1\.375rem\] {
                 font-size: 1.125rem;
                 line-height: 1.5rem;
@@ -67,6 +78,7 @@
 
         /* Add spacing to table cells on mobile */
         @media (max-width: 768px) {
+
             .table-responsive table th,
             .table-responsive table td {
                 padding-top: 0.75rem;
@@ -74,9 +86,38 @@
                 white-space: nowrap;
             }
         }
+
+        /* Float animation */
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
     </style>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup Auto-save
+            setupAutoSave();
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdown = document.getElementById('userDropdown');
+                const button = document.getElementById('userDropdownButton');
+                if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+        });
+
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('hidden');
@@ -88,16 +129,49 @@
             menu.classList.toggle('closed');
         }
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('userDropdown');
-            const button = document.getElementById('userDropdownButton');
-            if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
-                dropdown.classList.add('hidden');
+        // Auto-save functionality
+        function setupAutoSave() {
+            const editor = document.querySelector('.ck-editor__editable');
+            if (editor) {
+                let autoSaveTimeout;
+                const autoSaveInterval = 15000; // 15 seconds
+
+                editor.addEventListener('input', () => {
+                    clearTimeout(autoSaveTimeout);
+                    autoSaveTimeout = setTimeout(() => {
+                        // Trigger save
+                        document.querySelector('form').dispatchEvent(new Event('submit'));
+                    }, autoSaveInterval);
+                });
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'n':
+                        e.preventDefault();
+                        window.location.href = '<?php echo base_url('admin/posts/create') ?>';
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        document.querySelector('form').dispatchEvent(new Event('submit'));
+                        break;
+                    case 'p':
+                        e.preventDefault();
+                        const statusInput = document.querySelector('select[name="status"]');
+                        if (statusInput) {
+                            statusInput.value = 'published';
+                            document.querySelector('form').dispatchEvent(new Event('submit'));
+                        }
+                        break;
+                }
             }
         });
     </script>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
     <header class="bg-white border-b border-gray-200">
@@ -110,7 +184,7 @@
                             <span class="text-2xl font-bold text-gray-800">Wordiqo</span>
                         </a>
                     </div>
-                    
+
                     <!-- Mobile menu button -->
                     <div class="ml-4 md:hidden">
                         <button type="button" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:bg-gray-100">
@@ -122,24 +196,26 @@
                 <!-- Navigation Links - Centered (Desktop only) -->
                 <div class="hidden md:flex md:justify-center md:flex-1">
                     <div class="flex space-x-8">
-                        <a href="<?php echo base_url('admin') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
+                        <a href="<?php echo base_url('admin') ?>" class="<?php echo service('uri')->getSegment(1) === 'admin' && !service('uri')->getSegment(2) ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Dashboard
                         </a>
-                        <a href="<?php echo base_url('admin/posts') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
+                        <a href="<?php echo base_url('admin/posts') ?>" class="<?php echo service('uri')->getSegment(2) === 'posts' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Posts
                         </a>
-                        <a href="<?php echo base_url('admin/categories') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
+                        <a href="<?php echo base_url('admin/categories') ?>" class="<?php echo service('uri')->getSegment(2) === 'categories' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Categories
                         </a>
-                        <a href="<?php echo base_url('admin/tags') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
+                        <a href="<?php echo base_url('admin/tags') ?>" class="<?php echo service('uri')->getSegment(2) === 'tags' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Tags
                         </a>
-                        <a href="<?php echo base_url('admin/users') ?>" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium uppercase tracking-wider">
+                        <?php if (in_array(session()->get('user_role'), ['admin', 'manager'])): ?>
+                        <a href="<?php echo base_url('admin/users') ?>" class="<?php echo service('uri')->getSegment(2) === 'users' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Users
                         </a>
+                        <?php endif; ?>
                     </div>
                 </div>
-                
+
                 <!-- User Profile - Right Aligned -->
                 <div class="flex items-center">
                     <?php if (session()->get('logged_in')): ?>
@@ -150,7 +226,7 @@
                                     <?php echo substr(session()->get('user_name'), 0, 20); ?>
                                 </div>
                             </button>
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                                 <div class="py-1" role="menu" aria-orientation="vertical">
                                     <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                                         <div class="font-semibold"><?php echo session()->get('user_name') ?></div>
@@ -191,21 +267,23 @@
                 </button>
             </div>
             <nav class="flex flex-col space-y-3">
-                <a href="<?php echo base_url('admin') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                <a href="<?php echo base_url('admin') ?>" class="<?php echo service('uri')->getSegment(1) === 'admin' && !service('uri')->getSegment(2) ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
                     Dashboard
                 </a>
-                <a href="<?php echo base_url('admin/posts') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                <a href="<?php echo base_url('admin/posts') ?>" class="<?php echo service('uri')->getSegment(2) === 'posts' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
                     Posts
                 </a>
-                <a href="<?php echo base_url('admin/categories') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                <a href="<?php echo base_url('admin/categories') ?>" class="<?php echo service('uri')->getSegment(2) === 'categories' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
                     Categories
                 </a>
-                <a href="<?php echo base_url('admin/tags') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                <a href="<?php echo base_url('admin/tags') ?>" class="<?php echo service('uri')->getSegment(2) === 'tags' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
                     Tags
                 </a>
-                <a href="<?php echo base_url('admin/users') ?>" class="text-gray-600 hover:text-gray-900 py-2 text-base font-medium uppercase tracking-wider">
+                <?php if (in_array(session()->get('user_role'), ['admin', 'manager'])): ?>
+                <a href="<?php echo base_url('admin/users') ?>" class="<?php echo service('uri')->getSegment(2) === 'users' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
                     Users
                 </a>
+                <?php endif; ?>
                 <?php if (session()->get('logged_in')): ?>
                     <div class="border-t border-gray-200 pt-3 mt-3">
                         <a href="<?php echo base_url('admin/profile') ?>" class="flex items-center text-gray-600 hover:text-gray-900 py-2">
@@ -245,54 +323,6 @@
             </p>
         </div>
     </footer>
-
-    <!-- Scripts -->
-    <script>
-        // Auto-save functionality
-        let autoSaveTimeout;
-        const autoSaveInterval = 15000; // 15 seconds
-
-        function setupAutoSave() {
-            const editor = document.querySelector('.ck-editor__editable');
-            if (editor) {
-                editor.addEventListener('input', () => {
-                    clearTimeout(autoSaveTimeout);
-                    autoSaveTimeout = setTimeout(() => {
-                        // Trigger save
-                        document.querySelector('form').dispatchEvent(new Event('submit'));
-                    }, autoSaveInterval);
-                });
-            }
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey) {
-                switch (e.key.toLowerCase()) {
-                    case 'n':
-                        e.preventDefault();
-                        window.location.href = '<?php echo base_url('admin/posts/create') ?>';
-                        break;
-                    case 's':
-                        e.preventDefault();
-                        document.querySelector('form').dispatchEvent(new Event('submit'));
-                        break;
-                    case 'p':
-                        e.preventDefault();
-                        const statusInput = document.querySelector('select[name="status"]');
-                        if (statusInput) {
-                            statusInput.value = 'published';
-                            document.querySelector('form').dispatchEvent(new Event('submit'));
-                        }
-                        break;
-                }
-            }
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            setupAutoSave();
-        });
-    </script>
 </body>
+
 </html>

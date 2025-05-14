@@ -4,8 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class PostModel extends Model
-{
+class PostModel extends Model {
     protected $table            = 'posts';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
@@ -16,6 +15,7 @@ class PostModel extends Model
         'user_id',
         'title',
         'slug',
+        'description',
         'content',
         'thumbnail',
         'category_id',
@@ -37,42 +37,38 @@ class PostModel extends Model
     protected $cleanValidationRules = true;
 
     // Relationships
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo(UserModel::class, 'user_id', 'id');
     }
 
-    public function category()
-    {
+    // Relationships
+    public function category() {
         return $this->belongsTo(CategoryModel::class, 'category_id', 'id');
     }
 
-    public function tags()
-    {
+    public function tags() {
         return $this->belongsToMany(TagModel::class, 'post_tags', 'post_id', 'tag_id');
     }
 
-    public function photos()
-    {
+    public function photos() {
         return $this->hasMany(PostPhotoModel::class, 'post_id', 'id');
     }
 
     // Scopes
-    public function published()
-    {
+    public function published() {
         return $this->where('status', 'published')
-                    ->where('published_at <=', date('Y-m-d H:i:s'));
+            ->where('published_at <=', date('Y-m-d H:i:s'));
     }
 
-    public function draft()
-    {
+    // Scopes
+    public function draft() {
         return $this->where('status', 'draft');
     }
 
-    public function incrementViews($id)
-    {
+    // Increment views
+    public function incrementViews($id) {
         return $this->set('views', 'views + 1', false)
-                    ->where('id', $id)
-                    ->update();
+            ->where('id', $id)
+            ->update();
     }
-} 
+}

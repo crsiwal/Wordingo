@@ -4,10 +4,8 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreatePostsTable extends Migration
-{
-    public function up()
-    {
+class CreatePostsTable extends Migration {
+    public function up() {
         $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
@@ -30,6 +28,10 @@ class CreatePostsTable extends Migration
                 'constraint' => 2048,
                 'null'       => true,
             ],
+            'description' => [
+                'type'       => 'TEXT',
+                'null'       => true,
+            ],
             'content' => [
                 'type' => 'LONGTEXT',
                 'null'       => true,
@@ -46,7 +48,7 @@ class CreatePostsTable extends Migration
             ],
             'status' => [
                 'type'       => 'ENUM',
-                'constraint' => ['draft', 'published'],
+                'constraint' => ['draft', 'revision', 'pending', 'private', 'published', 'archived', 'rejected', 'deleted'],
                 'default'    => 'draft',
             ],
             'views' => [
@@ -72,8 +74,7 @@ class CreatePostsTable extends Migration
         $this->forge->createTable('posts');
     }
 
-    public function down()
-    {
+    public function down() {
         $this->forge->dropTable('posts');
     }
-} 
+}
