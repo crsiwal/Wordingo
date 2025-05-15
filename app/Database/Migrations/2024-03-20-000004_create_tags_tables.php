@@ -1,12 +1,11 @@
 <?php
+
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateTagsTables extends Migration
-{
-    public function up()
-    {
+class CreateTagsTables extends Migration {
+    public function up() {
         // Create tags table
         $this->forge->addField([
             'id'         => [
@@ -68,8 +67,7 @@ class CreateTagsTables extends Migration
         $this->forge->createTable('post_tags');
     }
 
-    public function down()
-    {
+    public function down() {
         $this->forge->dropTable('post_tags');
         $this->forge->dropTable('tags');
     }

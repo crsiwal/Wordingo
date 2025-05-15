@@ -16,9 +16,39 @@ class Tags extends BaseController
 
     public function index()
     {
+        $userRole = session()->get('user_role');
+        $userId = session()->get('user_id');
+
+        $tagsQuery = $this->tagModel
+            ->select('tags.*, COUNT(posts.id) as post_count')
+            ->join('post_tags', 'post_tags.tag_id = tags.id', 'left')
+            ->join('posts', 'posts.id = post_tags.post_id', 'left')
+            ->join('users', 'users.id = posts.user_id', 'left')
+            ->groupBy('tags.id');
+
+        // Permission-based post filter
+        if ($userRole === 'admin') {
+            $tagsQuery = $tagsQuery->where('posts.id IS NULL OR users.status != "banned"');
+        } elseif ($userRole === 'manager') {
+            $userModel = new \App\Models\UserModel();
+            $editorIds = $userModel->where('parent_id', $userId)->findColumn('id') ?? [];
+            $userIds = array_merge([$userId], $editorIds);
+            if (!empty($userIds)) {
+                $in = implode(',', array_map('intval', $userIds));
+                $tagsQuery = $tagsQuery->where("posts.id IS NULL OR (posts.user_id IN ($in) AND users.status != 'banned')");
+            } else {
+                $tagsQuery = $tagsQuery->where('posts.id IS NULL OR (posts.user_id = ' . intval($userId) . ' AND users.status != "banned")');
+            }
+        } else { // editor
+            $tagsQuery = $tagsQuery->where('posts.id IS NULL OR (posts.user_id = ? AND users.status != "banned")', [$userId]);
+        }
+
+        // Only show tags with at least 1 post
+        $tagsQuery = $tagsQuery->having('COUNT(posts.id) >', 0);
+
         $data = [
             'title' => 'Manage Tags',
-            'tags' => $this->tagModel->withPostCount()->findAll(),
+            'tags' => $tagsQuery->findAll(),
         ];
 
         return $this->render('admin/tags/index', $data);
@@ -101,4 +131,4 @@ class Tags extends BaseController
 
         return redirect()->to('/admin/tags');
     }
-} 
+}

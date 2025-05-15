@@ -4,6 +4,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\CategoryModel;
 use App\Models\PostModel;
+use App\Models\UserModel;
 
 class Categories extends BaseController
 {
@@ -20,15 +21,71 @@ class Categories extends BaseController
 
     public function index()
     {
+        $search = $this->request->getGet('q');
+        $sort = $this->request->getGet('sort');
+        $userId = session()->get('user_id');
+        $userRole = $this->userRole;
+
+        $categoryQuery = $this->categoryModel
+            ->select('categories.*, COUNT(posts.id) as post_count')
+            ->join('posts', 'posts.category_id = categories.id', 'left')
+            ->join('users', 'users.id = posts.user_id', 'left')
+            ->groupBy('categories.id');
+
+        // Permission-based post filter
+        if ($userRole === 'admin') {
+            $categoryQuery = $categoryQuery->where('posts.id IS NULL OR users.status != "banned"');
+        } elseif ($userRole === 'manager') {
+            $userModel = new UserModel();
+            $editorIds = $userModel->where('parent_id', $userId)->findColumn('id') ?? [];
+            $userIds = array_merge([$userId], $editorIds);
+            if (!empty($userIds)) {
+                $in = implode(',', array_map('intval', $userIds));
+                $categoryQuery = $categoryQuery->where("posts.id IS NULL OR (posts.user_id IN ($in) AND users.status != 'banned')");
+            } else {
+                // If manager has no editors, only their own posts
+                $categoryQuery = $categoryQuery->where('posts.id IS NULL OR (posts.user_id = ' . intval($userId) . ' AND users.status != "banned")');
+            }
+        } else { // editor
+            $categoryQuery = $categoryQuery->where('posts.id IS NULL OR (posts.user_id = ? AND users.status != "banned")', [$userId]);
+        }
+
+        // Search filter
+        if (!empty($search)) {
+            $categoryQuery = $categoryQuery->like('categories.name', $search);
+        }
+
+        // Sorting
+        switch ($sort) {
+            case 'name_desc':
+                $categoryQuery = $categoryQuery->orderBy('categories.name', 'DESC');
+                break;
+            case 'post_count':
+                $categoryQuery = $categoryQuery->orderBy('post_count', 'DESC');
+                break;
+            case 'created_at':
+                $categoryQuery = $categoryQuery->orderBy('categories.created_at', 'DESC');
+                break;
+            case 'name_asc':
+            default:
+                $categoryQuery = $categoryQuery->orderBy('categories.name', 'ASC');
+                $sort = 'name_asc'; // Set default sort for UI
+                break;
+        }
+
+        $categories = $categoryQuery->paginate(10);
+
         $data = [
-            'title'      => 'Manage Categories',
-            'categories' => $this->categoryModel->select('categories.*, COUNT(posts.id) as post_count')
-                ->join('posts', 'posts.category_id = categories.id', 'left')
-                ->groupBy('categories.id')
-                ->orderBy('categories.created_at', 'DESC')
-                ->paginate(10),
-            'pager'      => $this->categoryModel->pager,
-            'userRole'   => $this->userRole,
+            'title'        => 'Manage Categories',
+            'categories'   => $categories,
+            'pager'        => $this->categoryModel->pager,
+            'userRole'     => $this->userRole,
+            'queryParams'  => $this->request->getGet(),
+            'activeFilters' => [
+                'search' => $search,
+                'sort'   => $sort,
+            ],
+            'sort'         => $sort,
         ];
 
         return $this->render('admin/categories/index', $data);

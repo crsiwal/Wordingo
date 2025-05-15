@@ -39,4 +39,4 @@ class TagModel extends Model
                     ->join('post_tags', 'post_tags.tag_id = tags.id', 'left')
                     ->groupBy('tags.id');
     }
-} 
+}

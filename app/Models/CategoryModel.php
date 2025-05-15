@@ -4,8 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class CategoryModel extends Model
-{
+class CategoryModel extends Model {
     protected $table            = 'categories';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
@@ -27,16 +26,14 @@ class CategoryModel extends Model
     protected $cleanValidationRules = true;
 
     // Relationships
-    public function posts()
-    {
+    public function posts() {
         return $this->hasMany(PostModel::class, 'category_id', 'id');
     }
 
     // Scopes
-    public function withPostCount()
-    {
+    public function withPostCount() {
         return $this->select('categories.*, COUNT(posts.id) as post_count')
-                    ->join('posts', 'posts.category_id = categories.id', 'left')
-                    ->groupBy('categories.id');
+            ->join('posts', 'posts.category_id = categories.id', 'left')
+            ->groupBy('categories.id');
     }
-} 
+}
