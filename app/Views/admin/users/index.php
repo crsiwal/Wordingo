@@ -198,7 +198,9 @@
                                 <?php endif; ?>
 
                                 <span class="px-3 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                                    <?php echo number_format($user['post_count'] ?? 0) ?> Posts
+                                    <a href="<?php echo base_url('admin/posts?u=' . $user['id']) ?>" class="hover:text-green-900">
+                                        <?php echo number_format($user['post_count'] ?? 0) ?> Posts
+                                    </a>
                                 </span>
                             </div>
                         </div>

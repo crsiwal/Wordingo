@@ -30,9 +30,72 @@ class Posts extends BaseController {
 
     public function index() {
         // Build the base query
-        $builder = $this->postModel->select('posts.*, users.name as author_name, users.status as user_status, categories.name as category_name')
+        $builder = $this->postModel
+            ->select('posts.*, users.name as author_name, users.status as user_status, categories.name as category_name, categories.slug as category_slug')
             ->join('users', 'users.id = posts.user_id')
             ->join('categories', 'categories.id = posts.category_id', 'left'); // Left join to categories table
+
+        // Get query parameters for filtering with shorter names
+        $tagSlug = $this->request->getGet('t'); // t for tag
+        $categorySlug = $this->request->getGet('c'); // c for category
+        $statusFilter = $this->request->getGet('s'); // s for status
+        $searchQuery = $this->request->getGet('q'); // q for search query
+        $userId = $this->request->getGet('u'); // u for user ID
+        $sort = $this->request->getGet('sort');
+        $sortOptions = [
+            'name_asc' => ['posts.title', 'ASC'],
+            'name_desc' => ['posts.title', 'DESC'],
+            'created_at' => ['posts.created_at', 'DESC'],
+            'updated_at' => ['posts.updated_at', 'DESC'],
+            'published_at' => ['posts.published_at', 'DESC'],
+        ];
+        $orderBy = $sortOptions[$sort] ?? $sortOptions['created_at'];
+
+        // Apply tag filter if provided
+        if (!empty($tagSlug)) {
+            // Find the tag ID from the slug
+            $tag = $this->tagModel->where('slug', $tagSlug)->first();
+            if ($tag) {
+                // Get all post IDs that have this tag
+                $postIds = $this->postTagModel->where('tag_id', $tag['id'])->findColumn('post_id') ?? [];
+                if (!empty($postIds)) {
+                    $builder->whereIn('posts.id', $postIds);
+                } else {
+                    // If tag exists but no posts have it, return empty result
+                    $builder->where('posts.id', 0); // This will result in no posts found
+                }
+            }
+        }
+
+        // Apply category filter if provided
+        if (!empty($categorySlug)) {
+            // Find the category from the slug
+            $category = $this->categoryModel->where('slug', $categorySlug)->first();
+            if ($category) {
+                $builder->where('posts.category_id', $category['id']);
+            }
+        }
+
+        // Apply status filter if provided
+        if (!empty($statusFilter) && in_array($statusFilter, ['draft', 'published'])) {
+            $builder->where('posts.status', $statusFilter);
+        }
+
+        // Apply user filter if provided
+        if (!empty($userId) && is_numeric($userId)) {
+            $builder->where('posts.user_id', $userId);
+            // Get user information for display in active filters
+            $filterUser = $this->userModel->find($userId);
+        }
+
+        // Apply search query if provided
+        if (!empty($searchQuery)) {
+            $builder->groupStart()
+                ->like('posts.title', $searchQuery)
+                ->orLike('posts.content', $searchQuery)
+                ->orLike('posts.description', $searchQuery)
+                ->groupEnd();
+        }
 
         // Filter posts based on user role
         if ($this->userRole === 'admin') {
@@ -50,12 +113,77 @@ class Posts extends BaseController {
                 ->where('users.status !=', 'banned');
         }
 
+        // Prepare filters for view to show active filters
+        $activeFilters = [];
+        if (!empty($tagSlug) && isset($tag)) {
+            $activeFilters['tag'] = $tag['name'];
+        }
+        if (!empty($categorySlug) && isset($category)) {
+            $activeFilters['category'] = $category['name'];
+        }
+        if (!empty($statusFilter)) {
+            $activeFilters['status'] = ucfirst($statusFilter);
+        }
+        if (!empty($searchQuery)) {
+            $activeFilters['search'] = $searchQuery;
+        }
+        if (!empty($userId) && isset($filterUser)) {
+            $activeFilters['user'] = $filterUser['name'];
+        }
+
+        // Get all categories for filter dropdown
+        $allCategories = $this->categoryModel->findAll();
+
+        // Get posts with pagination
+        $posts = $builder->orderBy($orderBy[0], $orderBy[1])->paginate(10);
+
+        // Fetch tags for all displayed posts - we still need this for showing tags on post cards
+        $postIds = array_column($posts, 'id');
+        $postTagsMap = [];
+
+        if (!empty($postIds)) {
+            // Get all post-tag relationships for these posts
+            $postTags = $this->postTagModel->whereIn('post_id', $postIds)->findAll();
+
+            if (!empty($postTags)) {
+                // Get all tag IDs
+                $tagIds = array_column($postTags, 'tag_id');
+
+                // Fetch all tags data at once
+                $allPostTags = $this->tagModel->whereIn('id', $tagIds)->findAll();
+                $tagsById = array_column($allPostTags, null, 'id'); // Organize by ID for easier lookup
+
+                // Organize tags by post ID
+                foreach ($postTags as $pt) {
+                    if (isset($tagsById[$pt['tag_id']])) {
+                        $postTagsMap[$pt['post_id']][] = $tagsById[$pt['tag_id']];
+                    }
+                }
+            }
+        }
+
+        // Get the current query string to pass to the view
+        $queryString = $this->request->getUri()->getQuery();
+
+        // Get post counts
+        $totalPosts = $this->postModel->countAll();
+        $publishedPosts = $this->postModel->where('status', 'published')->countAllResults();
+        $draftPosts = $this->postModel->where('status', 'draft')->countAllResults();
+
         $data = [
             'title' => 'Manage Posts',
-            'posts' => $builder->orderBy('posts.created_at', 'DESC')->paginate(10),
+            'posts' => $posts,
+            'postTags' => $postTagsMap,
             'pager' => $this->postModel->pager,
             'userRole' => $this->userRole,
-            'userId' => $this->userId
+            'userId' => $this->userId,
+            'activeFilters' => $activeFilters,
+            'allCategories' => $allCategories,
+            'queryString' => $queryString,
+            'sort' => $sort,
+            'totalPosts' => $totalPosts,
+            'publishedPosts' => $publishedPosts,
+            'draftPosts' => $draftPosts,
         ];
 
         return $this->render('admin/posts/index', $data);

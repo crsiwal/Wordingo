@@ -1,12 +1,13 @@
 <?php
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Libraries\EmailService;
 use App\Models\UserModel;
+use App\Models\PostModel;
 
-class Users extends BaseController
-{
+class Users extends BaseController {
     protected $userModel;
     protected $emailService;
     protected $avatarPath = 'uploads/avatars';
@@ -15,8 +16,7 @@ class Users extends BaseController
     protected $userId;
     protected $allowedRoles;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->userModel      = new UserModel();
         $this->emailService   = new EmailService();
         $this->fullAvatarPath = FCPATH . $this->avatarPath;
@@ -25,8 +25,8 @@ class Users extends BaseController
 
         // Determine allowed roles based on current user role
         $this->allowedRoles = ($this->userRole === 'admin')
-        ? ['admin', 'manager', 'editor', 'user']
-        : ['editor'];
+            ? ['admin', 'manager', 'editor', 'user']
+            : ['editor'];
 
         // Create avatar directory if it doesn't exist
         if (! is_dir($this->fullAvatarPath)) {
@@ -40,8 +40,7 @@ class Users extends BaseController
         }
     }
 
-    public function index()
-    {
+    public function index() {
         // Admin can see all users, Manager can only see users they created
         if ($this->userRole === 'admin') {
             $users = $this->userModel->paginate(10);
@@ -50,6 +49,30 @@ class Users extends BaseController
         } else {
             // Should not reach here due to constructor check, but just in case
             return redirect()->to('/admin');
+        }
+
+        // Get post counts for all users in a single query
+        $postModel = new \App\Models\PostModel();
+
+        // Extract all user IDs
+        $userIds = array_column($users, 'id');
+
+        // Get post counts for these users in a single query
+        $postCounts = $postModel
+            ->select('user_id, COUNT(*) as post_count')
+            ->whereIn('user_id', $userIds)
+            ->groupBy('user_id')
+            ->findAll();
+
+        // Convert to associative array for easy lookup
+        $postCountsByUser = [];
+        foreach ($postCounts as $count) {
+            $postCountsByUser[$count['user_id']] = $count['post_count'];
+        }
+
+        // Assign post counts to users
+        foreach ($users as &$user) {
+            $user['post_count'] = $postCountsByUser[$user['id']] ?? 0;
         }
 
         $data = [
@@ -62,8 +85,7 @@ class Users extends BaseController
         return $this->render('admin/users/index', $data);
     }
 
-    public function create()
-    {
+    public function create() {
         if ($this->request->is('post')) {
             $rules = [
                 'name'     => 'required|min_length[3]|max_length[255]',
@@ -88,8 +110,8 @@ class Users extends BaseController
 
                 // Set role based on user type
                 $role = ($this->userRole === 'admin')
-                ? $this->request->getPost('role')
-                : 'editor'; // Manager can only create editors
+                    ? $this->request->getPost('role')
+                    : 'editor'; // Manager can only create editors
 
                 // Process form data
                 $data = [
@@ -183,8 +205,7 @@ class Users extends BaseController
         return $this->render('admin/users/create', $data);
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         // Check if user can edit this user
         $user = $this->userModel->find($id);
 
@@ -225,8 +246,8 @@ class Users extends BaseController
             if ($this->validate($rules)) {
                 // Set role based on user type
                 $role = ($this->userRole === 'admin')
-                ? $this->request->getPost('role')
-                : $user['role']; // Manager cannot change roles
+                    ? $this->request->getPost('role')
+                    : $user['role']; // Manager cannot change roles
 
                 // Start with basic data
                 $data = [
@@ -322,8 +343,7 @@ class Users extends BaseController
         return $this->render('admin/users/edit', $data);
     }
 
-    public function delete($id)
-    {
+    public function delete($id) {
         // Prevent self-deletion
         if ($id == $this->userId) {
             $this->setFlash('error', 'You cannot delete your own account');
@@ -362,8 +382,7 @@ class Users extends BaseController
      * @param object $file The uploaded file object
      * @return array Status and results of the operation
      */
-    private function processAvatar($file)
-    {
+    private function processAvatar($file) {
         try {
             // Generate a unique filename with timestamp to avoid cache issues
             $newName = 'avatar_' . time() . '_' . uniqid() . '.png';
@@ -402,8 +421,7 @@ class Users extends BaseController
      * @param string $avatarPath The avatar path to delete
      * @return boolean Success or failure
      */
-    private function deleteAvatar($avatarPath)
-    {
+    private function deleteAvatar($avatarPath) {
         if (empty($avatarPath)) {
             return false;
         }

@@ -6,8 +6,25 @@
     <div class="absolute inset-0 bg-grid-white/20 bg-grid-8"></div>
     <div class="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
         <div class="text-white">
-            <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-2">
-                <?php echo !empty($post['title']) ? esc($post['title']) : 'Create Post'; ?>
+            <?php
+            $title = !empty($post['title']) ? esc($post['title']) : 'Create Post';
+            $titleLength = strlen($title);
+
+            // Calculate font size based on title length
+            // Set minimum font size to 1.5rem (text-xl)
+            // Start at 5xl for short titles, scale down for longer ones
+            if ($titleLength <= 20) {
+                $titleClass = 'text-4xl md:text-5xl';
+            } else if ($titleLength <= 40) {
+                $titleClass = 'text-3xl md:text-4xl';
+            } else if ($titleLength <= 60) {
+                $titleClass = 'text-2xl md:text-3xl';
+            } else {
+                $titleClass = 'text-xl md:text-2xl';
+            }
+            ?>
+            <h1 class="<?php echo $titleClass ?> font-bold leading-tight mb-2">
+                <?php echo $title ?>
             </h1>
             <p class="text-blue-100 text-xl">
                 <?php if ($post['status'] === 'draft'):
@@ -31,23 +48,23 @@
                 <span class="ml-1">Views</span>
             </div>
 
-            <a href="<?php echo base_url('admin/posts/create') ?>" class="bg-white text-green-600 px-4 py-2 rounded-lg shadow-md hover:bg-green-50 transition-colors flex items-center">
-                <i class="fas fa-plus mr-2"></i>
-                <span>New Post</span>
-            </a>
-
             <?php if (! empty($post['slug']) && $post['status'] === 'published'): ?>
                 <a href="<?php echo base_url('blog/post/' . $post['slug']) ?>" class="bg-white text-purple-600 px-4 py-2 rounded-lg shadow-md hover:bg-purple-50 transition-colors flex items-center" target="_blank">
                     <i class="fas fa-eye mr-2"></i>
-                    <span>View Post</span>
+                    <span>Open</span>
                 </a>
             <?php endif; ?>
+
+            <a href="<?php echo base_url('admin/posts/create') ?>" class="bg-white text-green-600 px-4 py-2 rounded-lg shadow-md hover:bg-green-50 transition-colors flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                <span>New</span>
+            </a>
 
             <a href="<?php echo base_url('admin/posts/delete/' . $post['id']) ?>"
                 class="bg-white text-red-600 px-4 py-2 rounded-lg shadow-md hover:bg-red-50 transition-colors flex items-center"
                 onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.')">
                 <i class="fas fa-trash mr-2"></i>
-                <span>Delete</span>
+                <span>Trash</span>
             </a>
         </div>
     </div>
