@@ -67,6 +67,14 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->post('tags/edit/(:num)', 'Admin\Tags::update/$1');
     $routes->post('tags/delete/(:num)', 'Admin\Tags::delete/$1');
 
+    // Ads
+    $routes->get('ads/slots', 'Admin\Ads\AdSlots::index');
+    $routes->get('ads/slots/create', 'Admin\Ads\AdSlots::create');
+    $routes->post('ads/slots/create', 'Admin\Ads\AdSlots::create');
+    $routes->get('ads/slots/edit/(:num)', 'Admin\Ads\AdSlots::edit/$1');
+    $routes->post('ads/slots/edit/(:num)', 'Admin\Ads\AdSlots::edit/$1');
+    $routes->get('ads/slots/delete/(:num)', 'Admin\Ads\AdSlots::delete/$1');
+
     // Users
     $routes->get('users', 'Admin\Users::index');
     $routes->get('users/create', 'Admin\Users::create');

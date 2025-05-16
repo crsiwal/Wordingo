@@ -205,14 +205,7 @@
                         <a href="<?php echo base_url('admin/categories') ?>" class="<?php echo service('uri')->getSegment(2) === 'categories' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
                             Categories
                         </a>
-                        <a href="<?php echo base_url('admin/tags') ?>" class="<?php echo service('uri')->getSegment(2) === 'tags' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
-                            Tags
-                        </a>
-                        <?php if (in_array(session()->get('user_role'), ['admin', 'manager'])): ?>
-                        <a href="<?php echo base_url('admin/users') ?>" class="<?php echo service('uri')->getSegment(2) === 'users' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">
-                            Users
-                        </a>
-                        <?php endif; ?>
+                                                <a href="<?php echo base_url('admin/tags') ?>" class="<?php echo service('uri')->getSegment(2) === 'tags' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">                            Tags                        </a>                        <?php if (in_array(session()->get('user_role'), ['admin'])): ?>                        <a href="<?php echo base_url('admin/ads/slots') ?>" class="<?php echo service('uri')->getSegment(2) === 'ads' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">                            Ads                        </a>                        <?php endif; ?>                        <?php if (in_array(session()->get('user_role'), ['admin', 'manager'])): ?>                        <a href="<?php echo base_url('admin/users') ?>" class="<?php echo service('uri')->getSegment(2) === 'users' ? 'text-indigo-600 font-semibold' : 'text-gray-500 hover:text-gray-900' ?> px-3 py-2 text-sm font-medium uppercase tracking-wider">                            Users                        </a>                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -276,14 +269,7 @@
                 <a href="<?php echo base_url('admin/categories') ?>" class="<?php echo service('uri')->getSegment(2) === 'categories' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
                     Categories
                 </a>
-                <a href="<?php echo base_url('admin/tags') ?>" class="<?php echo service('uri')->getSegment(2) === 'tags' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
-                    Tags
-                </a>
-                <?php if (in_array(session()->get('user_role'), ['admin', 'manager'])): ?>
-                <a href="<?php echo base_url('admin/users') ?>" class="<?php echo service('uri')->getSegment(2) === 'users' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">
-                    Users
-                </a>
-                <?php endif; ?>
+                                <a href="<?php echo base_url('admin/tags') ?>" class="<?php echo service('uri')->getSegment(2) === 'tags' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">                    Tags                </a>                <?php if (in_array(session()->get('user_role'), ['admin'])): ?>                <a href="<?php echo base_url('admin/ads/slots') ?>" class="<?php echo service('uri')->getSegment(2) === 'ads' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">                    Ads                </a>                <?php endif; ?>                <?php if (in_array(session()->get('user_role'), ['admin', 'manager'])): ?>                <a href="<?php echo base_url('admin/users') ?>" class="<?php echo service('uri')->getSegment(2) === 'users' ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' ?> py-2 text-base font-medium uppercase tracking-wider">                    Users                </a>                <?php endif; ?>
                 <?php if (session()->get('logged_in')): ?>
                     <div class="border-t border-gray-200 pt-3 mt-3">
                         <a href="<?php echo base_url('admin/profile') ?>" class="flex items-center text-gray-600 hover:text-gray-900 py-2">
