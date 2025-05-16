@@ -110,7 +110,7 @@
                                 onclick="return confirm('Are you sure you want to delete this category?')">
                                 <i class="fas fa-trash"></i>
                             </a>
-                            <a href="<?php echo base_url('admin/posts/create?category_id=' . $category['id']) ?>"
+                            <a href="<?php echo base_url('admin/posts/create?cid=' . $category['id']) ?>"
                                 class="p-2 text-gray-500 hover:text-green-500 hover:bg-green-50 rounded-full transition-colors"
                                 title="Add Post to this Category">
                                 <i class="fas fa-plus"></i>

@@ -15,6 +15,7 @@ class Users extends BaseController {
     protected $userRole;
     protected $userId;
     protected $allowedRoles;
+    protected $showRecords = 10;
 
     public function __construct() {
         $this->userModel      = new UserModel();
@@ -41,36 +42,74 @@ class Users extends BaseController {
     }
 
     public function index() {
+        $search = $this->request->getGet('q');
+        $sort = $this->request->getGet('sort');
+        $role = $this->request->getGet('role');
+        $gender = $this->request->getGet('gender');
+        $status = $this->request->getGet('status');
+
+        $userQuery = $this->userModel;
+
         // Admin can see all users, Manager can only see users they created
         if ($this->userRole === 'admin') {
-            $users = $this->userModel->paginate(10);
+            // no additional filter
         } elseif ($this->userRole === 'manager') {
-            $users = $this->userModel->where('parent_id', $this->userId)->paginate(10);
+            $userQuery = $userQuery->where('parent_id', $this->userId);
         } else {
             // Should not reach here due to constructor check, but just in case
             return redirect()->to('/admin');
         }
 
+        // Search filter
+        if (!empty($search)) {
+            $userQuery = $userQuery->groupStart()
+                ->like('name', $search)
+                ->orLike('username', $search)
+                ->orLike('email', $search)
+                ->groupEnd();
+        }
+        // Role filter
+        if (!empty($role)) {
+            $userQuery = $userQuery->where('role', $role);
+        }
+        // Gender filter
+        if (!empty($gender)) {
+            $userQuery = $userQuery->where('gender', $gender);
+        }
+        // Status filter
+        if (!empty($status)) {
+            $userQuery = $userQuery->where('status', $status);
+        }
+
+        // Sorting
+        switch ($sort) {
+            case 'name_desc':
+                $userQuery = $userQuery->orderBy('name', 'DESC');
+                break;
+            case 'name_asc':
+                $userQuery = $userQuery->orderBy('name', 'ASC');
+                break;
+            case 'created_at':
+            default:
+                $userQuery = $userQuery->orderBy('created_at', 'DESC');
+                $sort = 'created_at';
+                break;
+        }
+
+        $users = $userQuery->paginate($this->showRecords);
+
         // Get post counts for all users in a single query
         $postModel = new \App\Models\PostModel();
-
-        // Extract all user IDs
         $userIds = array_column($users, 'id');
-
-        // Get post counts for these users in a single query
         $postCounts = $postModel
             ->select('user_id, COUNT(*) as post_count')
             ->whereIn('user_id', $userIds)
             ->groupBy('user_id')
             ->findAll();
-
-        // Convert to associative array for easy lookup
         $postCountsByUser = [];
         foreach ($postCounts as $count) {
             $postCountsByUser[$count['user_id']] = $count['post_count'];
         }
-
-        // Assign post counts to users
         foreach ($users as &$user) {
             $user['post_count'] = $postCountsByUser[$user['id']] ?? 0;
         }
@@ -80,6 +119,14 @@ class Users extends BaseController {
             'users'    => $users,
             'pager'    => $this->userModel->pager,
             'userRole' => $this->userRole,
+            'queryParams' => $this->request->getGet(),
+            'sort' => $sort,
+            'activeFilters' => [
+                'search' => $search,
+                'role'   => $role,
+                'gender' => $gender,
+                'status' => $status,
+            ],
         ];
 
         return $this->render('admin/users/index', $data);

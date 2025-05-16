@@ -11,6 +11,7 @@ class Categories extends BaseController
     protected $categoryModel;
     protected $postModel;
     protected $userRole;
+    protected $showRecords = 50;
 
     public function __construct()
     {
@@ -73,7 +74,7 @@ class Categories extends BaseController
                 break;
         }
 
-        $categories = $categoryQuery->paginate(10);
+        $categories = $categoryQuery->paginate($this->showRecords);
 
         $data = [
             'title'        => 'Manage Categories',

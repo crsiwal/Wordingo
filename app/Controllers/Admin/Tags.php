@@ -8,6 +8,7 @@ use App\Models\TagModel;
 class Tags extends BaseController
 {
     protected $tagModel;
+    protected $showRecords = 50;
 
     public function __construct()
     {
@@ -16,8 +17,10 @@ class Tags extends BaseController
 
     public function index()
     {
-        $userRole = session()->get('user_role');
+        $search = $this->request->getGet('q');
+        $sort = $this->request->getGet('sort');
         $userId = session()->get('user_id');
+        $userRole = session()->get('user_role');
 
         $tagsQuery = $this->tagModel
             ->select('tags.*, COUNT(posts.id) as post_count')
@@ -43,12 +46,45 @@ class Tags extends BaseController
             $tagsQuery = $tagsQuery->where('posts.id IS NULL OR (posts.user_id = ? AND users.status != "banned")', [$userId]);
         }
 
+        // Search filter
+        if (!empty($search)) {
+            $tagsQuery = $tagsQuery->like('tags.name', $search);
+        }
+
+        // Sorting
+        switch ($sort) {
+            case 'name_desc':
+                $tagsQuery = $tagsQuery->orderBy('tags.name', 'DESC');
+                break;
+            case 'post_count':
+                $tagsQuery = $tagsQuery->orderBy('post_count', 'DESC');
+                break;
+            case 'created_at':
+                $tagsQuery = $tagsQuery->orderBy('tags.created_at', 'DESC');
+                break;
+            case 'name_asc':
+            default:
+                $tagsQuery = $tagsQuery->orderBy('tags.name', 'ASC');
+                $sort = 'name_asc';
+                break;
+        }
+
         // Only show tags with at least 1 post
         $tagsQuery = $tagsQuery->having('COUNT(posts.id) >', 0);
 
+        $tags = $tagsQuery->paginate($this->showRecords);
+
         $data = [
-            'title' => 'Manage Tags',
-            'tags' => $tagsQuery->findAll(),
+            'title'        => 'Manage Tags',
+            'tags'         => $tags,
+            'pager'        => $this->tagModel->pager,
+            'userRole'     => $userRole,
+            'queryParams'  => $this->request->getGet(),
+            'activeFilters' => [
+                'search' => $search,
+                'sort'   => $sort,
+            ],
+            'sort'         => $sort,
         ];
 
         return $this->render('admin/tags/index', $data);

@@ -52,42 +52,152 @@
 
 <!-- Search and Filter Bar -->
 <div class="mb-8 bg-white rounded-xl shadow-md p-4 transition-all duration-300 hover:shadow-lg">
-    <div class="flex flex-col md:flex-row gap-4 justify-between">
-        <div class="relative flex-grow">
+    <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+        <!-- Search form -->
+        <form id="mainFilterForm" action="<?= base_url('admin/users') ?>" method="get" class="relative flex-grow flex items-center gap-2">
+            <?php
+            // Generate hidden fields from query params, except for search and sort
+            if (!empty($queryParams)) {
+                foreach ($queryParams as $key => $value) {
+                    if ($key !== 'q' && $key !== 'sort' && !empty($value)) {
+                        echo '<input type="hidden" name="' . esc($key) . '" value="' . esc($value) . '">';
+                    }
+                }
+            }
+            ?>
+            <input type="hidden" name="sort" id="sortInput" value="<?= esc($sort ?? 'name_asc') ?>">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <i class="fas fa-search text-gray-400"></i>
             </div>
-            <input type="text" id="user-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5" placeholder="Search users..." onkeyup="filterUsers()">
+            <div class="flex flex-grow">
+                <input type="text" name="q" value="<?= esc($queryParams['q'] ?? '') ?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5" placeholder="Search users...">
+                <button type="submit" class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded-lg">Search</button>
+            </div>
+        </form>
+
+        <!-- Sort by Dropdown -->
+        <div class="relative">
+            <button id="sortDropdownBtn" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition-colors duration-200 flex items-center">
+                <i class="fas fa-sort-amount-down mr-2"></i> Sort
+            </button>
+            <div id="sortDropdown" class="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-20 hidden">
+                <button type="button" class="block w-full text-left px-4 py-2 hover:bg-indigo-100 rounded-t-lg sort-option <?= ($sort === 'name_asc') ? 'bg-indigo-100 text-indigo-700 font-semibold' : '' ?>" data-value="name_asc">Name A-Z</button>
+                <button type="button" class="block w-full text-left px-4 py-2 hover:bg-indigo-100 sort-option <?= ($sort === 'name_desc') ? 'bg-indigo-100 text-indigo-700 font-semibold' : '' ?>" data-value="name_desc">Name Z-A</button>
+                <button type="button" class="block w-full text-left px-4 py-2 hover:bg-indigo-100 sort-option <?= ($sort === 'created_at') ? 'bg-indigo-100 text-indigo-700 font-semibold' : '' ?>" data-value="created_at">Recently Created</button>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <?php if (in_array($userRole, ['admin'])): ?>
-                <select id="role-filter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2.5" onchange="filterUsers()">
-                    <option value="">All Roles</option>
-                    <option value="admin">Admin</option>
-                    <option value="manager">Manager</option>
-                    <option value="editor">Editor</option>
-                    <option value="user">User</option>
-                </select>
-            <?php else: ?>
-                <input type="hidden" id="role-filter" value="" />
-            <?php endif; ?>
 
-            <select id="gender-filter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2.5" onchange="filterUsers()">
-                <option value="">All Genders</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-            </select>
+        <!-- Filter Icon Button -->
+        <button id="openFilterModal" class="ml-2 px-4 py-2 bg-gray-100 text-indigo-600 rounded-lg hover:bg-indigo-200 flex items-center gap-2">
+            <i class="fas fa-filter"></i>
+            <span class="hidden md:inline">Filters</span>
+        </button>
+    </div>
+</div>
 
-            <select id="status-filter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2.5" onchange="filterUsers()">
-                <option value="">All Status</option>
-                <option value="active">Active</option>
-                <option value="banned">Banned</option>
-                <option value="suspended">Suspended</option>
-            </select>
+<!-- Filter Modal -->
+<div id="filterModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex overflow-hidden">
+        <!-- Left: Filter List -->
+        <div class="w-1/3 bg-gray-50 border-r p-6 flex flex-col gap-4">
+            <button type="button" class="filter-tab text-left py-2 px-3 rounded-lg hover:bg-indigo-100" data-filter="role">Role</button>
+            <button type="button" class="filter-tab text-left py-2 px-3 rounded-lg hover:bg-indigo-100" data-filter="gender">Gender</button>
+            <button type="button" class="filter-tab text-left py-2 px-3 rounded-lg hover:bg-indigo-100" data-filter="status">Status</button>
+        </div>
+        <!-- Right: Filter Content -->
+        <div class="w-2/3 p-6">
+            <form id="filterForm" action="<?= base_url('admin/users') ?>" method="get" class="h-full flex flex-col justify-between">
+                <div id="filterContent">
+                    <!-- Role Filter -->
+                    <div class="filter-panel" data-filter-panel="role">
+                        <label class="block mb-2 font-medium">Role</label>
+                        <select name="role" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5">
+                            <option value="">All Roles</option>
+                            <?php if (in_array($userRole, ['admin'])): ?>
+                                <option value="admin" <?= (isset($queryParams['role']) && $queryParams['role'] === 'admin') ? 'selected' : '' ?>>Admin</option>
+                                <option value="manager" <?= (isset($queryParams['role']) && $queryParams['role'] === 'manager') ? 'selected' : '' ?>>Manager</option>
+                                <option value="editor" <?= (isset($queryParams['role']) && $queryParams['role'] === 'editor') ? 'selected' : '' ?>>Editor</option>
+                                <option value="user" <?= (isset($queryParams['role']) && $queryParams['role'] === 'user') ? 'selected' : '' ?>>User</option>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <!-- Gender Filter -->
+                    <div class="filter-panel hidden" data-filter-panel="gender">
+                        <label class="block mb-2 font-medium">Gender</label>
+                        <select name="gender" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5">
+                            <option value="">All Genders</option>
+                            <option value="male" <?= (isset($queryParams['gender']) && $queryParams['gender'] === 'male') ? 'selected' : '' ?>>Male</option>
+                            <option value="female" <?= (isset($queryParams['gender']) && $queryParams['gender'] === 'female') ? 'selected' : '' ?>>Female</option>
+                            <option value="other" <?= (isset($queryParams['gender']) && $queryParams['gender'] === 'other') ? 'selected' : '' ?>>Other</option>
+                        </select>
+                    </div>
+                    <!-- Status Filter -->
+                    <div class="filter-panel hidden" data-filter-panel="status">
+                        <label class="block mb-2 font-medium">Status</label>
+                        <select name="status" class="w-full bg-gray-50 border border-gray-300 rounded-lg p-2.5">
+                            <option value="">All Status</option>
+                            <option value="active" <?= (isset($queryParams['status']) && $queryParams['status'] === 'active') ? 'selected' : '' ?>>Active</option>
+                            <option value="inactive" <?= (isset($queryParams['status']) && $queryParams['status'] === 'inactive') ? 'selected' : '' ?>>Inactive</option>
+                            <option value="banned" <?= (isset($queryParams['status']) && $queryParams['status'] === 'banned') ? 'selected' : '' ?>>Banned</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" id="closeFilterModal" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Apply</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<!-- Active Filters Display -->
+<?php if (!empty($activeFilters['search']) || !empty($activeFilters['role']) || !empty($activeFilters['gender']) || !empty($activeFilters['status'])): ?>
+    <div class="mb-6 bg-indigo-50 rounded-xl p-4 flex items-center justify-between">
+        <div class="flex items-center flex-wrap gap-2">
+            <span class="text-gray-700 font-medium">Active filters:</span>
+            <?php if (!empty($activeFilters['search'])): ?>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                    <i class="fas fa-search mr-1"></i>
+                    Search: <?= esc($activeFilters['search']) ?>
+                    <a href="<?= base_url('admin/users') ?>" class="ml-2 text-yellow-600 hover:text-yellow-800">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </span>
+            <?php endif; ?>
+            <?php if (!empty($activeFilters['role'])): ?>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <i class="fas fa-user-shield mr-1"></i>
+                    Role: <?= esc(ucfirst($activeFilters['role'])) ?>
+                    <a href="<?= base_url('admin/users?' . http_build_query(array_diff_key($queryParams, ['role' => '']))) ?>" class="ml-2 text-blue-600 hover:text-blue-800">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </span>
+            <?php endif; ?>
+            <?php if (!empty($activeFilters['gender'])): ?>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                    <i class="fas fa-venus-mars mr-1"></i>
+                    Gender: <?= esc(ucfirst($activeFilters['gender'])) ?>
+                    <a href="<?= base_url('admin/users?' . http_build_query(array_diff_key($queryParams, ['gender' => '']))) ?>" class="ml-2 text-indigo-600 hover:text-indigo-800">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </span>
+            <?php endif; ?>
+            <?php if (!empty($activeFilters['status'])): ?>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                    <i class="fas fa-user-check mr-1"></i>
+                    Status: <?= esc(ucfirst($activeFilters['status'])) ?>
+                    <a href="<?= base_url('admin/users?' . http_build_query(array_diff_key($queryParams, ['status' => '']))) ?>" class="ml-2 text-green-600 hover:text-green-800">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </span>
+            <?php endif; ?>
+        </div>
+        <a href="<?= base_url('admin/users') ?>" class="text-gray-600 hover:text-gray-800 flex items-center">
+            <i class="fas fa-times mr-1"></i> Clear filters
+        </a>
+    </div>
+<?php endif; ?>
 
 <!-- Users Grid - Optimized loop with cached variables -->
 <div class="grid grid-cols-1 gap-6">
@@ -232,18 +342,6 @@
     <?php endforeach; ?>
 </div>
 
-<!-- Empty State (shown when no users match filter) -->
-<div id="empty-state" class="hidden text-center py-12 bg-white rounded-xl shadow-sm mt-6">
-    <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-        <i class="fas fa-users text-3xl text-gray-400"></i>
-    </div>
-    <h3 class="text-xl font-medium text-gray-900 mb-2">No users found</h3>
-    <p class="text-gray-500 mb-6">Try adjusting your search or filter to find what you're looking for.</p>
-    <button onclick="resetSearch()" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors">
-        <i class="fas fa-redo mr-2"></i> Reset Search
-    </button>
-</div>
-
 <!-- Pagination -->
 <?php if (isset($pager)): ?>
     <div class="mt-8 flex justify-center">
@@ -279,46 +377,62 @@
 </style>
 
 <script>
-    function filterUsers() {
-        const searchTerm = document.getElementById('user-search').value.toLowerCase();
-        const roleFilter = document.getElementById('role-filter').value.toLowerCase();
-        const statusFilter = document.getElementById('status-filter').value.toLowerCase();
-        const genderFilter = document.getElementById('gender-filter').value.toLowerCase();
-        const userCards = document.querySelectorAll('.user-card');
-        let visibleCount = 0;
+    // Modal open/close
+    const openBtn = document.getElementById('openFilterModal');
+    const modal = document.getElementById('filterModal');
+    const closeBtn = document.getElementById('closeFilterModal');
+    openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
+    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.add('hidden');
+    });
 
-        // Optimize loop by caching selectors and avoiding repeated DOM lookups
-        userCards.forEach(card => {
-            // Cache all DOM elements we need
-            const name = card.querySelector('.user-name').textContent.toLowerCase();
-            const role = card.querySelector('.user-role').textContent.toLowerCase();
-            const statusEl = card.querySelector('.user-status');
-            const genderEl = card.querySelector('.user-gender');
-
-            const status = statusEl ? statusEl.textContent.trim().toLowerCase() : '';
-            const gender = genderEl ? genderEl.textContent.trim().toLowerCase() : '';
-
-            // Fast checks using cached values
-            if ((searchTerm === '' || name.includes(searchTerm)) &&
-                (roleFilter === '' || role.includes(roleFilter)) &&
-                (statusFilter === '' || status.includes(statusFilter)) &&
-                (genderFilter === '' || gender.includes(genderFilter))) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
+    // Filter tab switching
+    const tabs = document.querySelectorAll('.filter-tab');
+    const panels = document.querySelectorAll('.filter-panel');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('bg-indigo-100', 'font-bold'));
+            tab.classList.add('bg-indigo-100', 'font-bold');
+            panels.forEach(panel => {
+                if (panel.dataset.filterPanel === tab.dataset.filter) {
+                    panel.classList.remove('hidden');
+                } else {
+                    panel.classList.add('hidden');
+                }
+            });
         });
+    });
+    // Default: show first tab
+    if (tabs.length) tabs[0].click();
 
-        // Show/hide empty state based on count
-        document.getElementById('empty-state').classList.toggle('hidden', visibleCount > 0);
-    }
+    // Sort dropdown logic
+    const sortBtn = document.getElementById('sortDropdownBtn');
+    const sortDropdown = document.getElementById('sortDropdown');
+    sortBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sortDropdown.classList.toggle('hidden');
+    });
+    document.addEventListener('click', function(e) {
+        if (!sortDropdown.classList.contains('hidden')) {
+            sortDropdown.classList.add('hidden');
+        }
+    });
+    const sortOptions = document.querySelectorAll('.sort-option');
+    const sortInput = document.getElementById('sortInput');
+    sortOptions.forEach(option => {
+        option.addEventListener('click', function(e) {
+            // Get current URL and params
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
 
-    function resetSearch() {
-        ['user-search', 'role-filter', 'status-filter', 'gender-filter'].forEach(id => {
-            document.getElementById(id).value = '';
+            // Update or add sort parameter
+            params.set('sort', option.dataset.value);
+
+            // Update URL with new params
+            url.search = params.toString();
+            window.location.href = url.toString();
         });
-        filterUsers();
-    }
+    });
 </script>
 <?php echo $this->endSection() ?>

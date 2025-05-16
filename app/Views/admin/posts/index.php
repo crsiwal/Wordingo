@@ -251,91 +251,29 @@ if (!empty($queryString)) {
         </div>
     <?php else: ?>
         <?php foreach ($posts as $post): ?>
-            <div class="post-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
-                <div class="flex flex-col md:flex-row items-stretch">
-                    <div class="w-full md:w-48 h-48 flex items-center justify-center overflow-hidden bg-gray-100 flex-shrink-0 rounded-r-xl">
-                        <?php if ($post['thumbnail']): ?>
+            <div class="post-card bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row items-stretch">
+                <!-- Image on the left (md+), top on mobile -->
+                <div class="flex items-center justify-center">
+                    <?php if ($post['thumbnail']): ?>
+                        <div class="w-full md:w-24 h-24 overflow-hidden bg-gray-100 flex-shrink-0 md:rounded-r-xl md:rounded-r-none">
                             <img src="<?php echo $post['thumbnail'] ?>" alt="<?php echo esc($post['title']) ?>" class="w-full h-full object-cover">
-                        <?php else: ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="w-full md:w-24 h-24 flex items-center justify-center overflow-hidden bg-gray-400 md:rounded-r-xl md:rounded-r-none">
                             <i class="fas fa-image text-gray-300 text-4xl"></i>
-                        <?php endif; ?>
-                    </div>
-                    <div class="p-4 md:p-6 flex-grow flex flex-col justify-between">
-                        <div class="flex flex-col gap-2 md:gap-4">
-
-                            <h3 class="post-title text-lg md:text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors mb-1 md:mb-2 truncate">
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="flex flex-col flex-1 justify-center p-4 md:p-6">
+                    <div class="flex flex-col gap-2 md:gap-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1">
+                            <h3 class="post-title text-lg md:text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate flex items-center gap-2">
                                 <a href="<?php echo base_url('admin/posts/edit/' . $post['id']) ?>">
                                     <?php echo esc($post['title']) ?>
                                 </a>
                             </h3>
-
-                            <!-- Add the description section right after the title -->
-                            <p class="post-description text-gray-600 mb-2 md:mb-4 text-sm md:text-base line-clamp-2 md:line-clamp-3">
-                                <?php
-                                echo !empty($post['description'])
-                                    ? esc($post['description'])
-                                    : character_limiter(strip_tags($post['content'] ?? ''), 160);
-                                ?>
-                            </p>
-                            <!-- Add the category, date, views, and author sections -->
-                            <div class="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-2 sm:gap-3 text-xs md:text-sm text-gray-500 mb-2 md:mb-4">
-                                <span class="flex items-center">
-                                    <i class="fas fa-folder text-blue-400 mr-1"></i>
-                                    <a href="<?php
-                                                $params = $queryParams;
-                                                $params['c'] = $post['category_slug'] ?? '';
-                                                echo base_url('admin/posts?' . http_build_query($params));
-                                                ?>" class="hover:text-blue-600 transition-colors truncate">
-                                        <?php echo esc($post['category_name'] ?? 'Uncategorized') ?>
-                                    </a>
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-calendar text-purple-400 mr-1"></i>
-                                    <?php echo date('M d, Y', strtotime($post['created_at'])) ?>
-                                </span>
-                                <span class="flex items-center">
-                                    <i class="fas fa-eye text-green-400 mr-1"></i>
-                                    <?php echo number_format($post['views'] ?? 0) ?> views
-                                </span>
-                                <?php if (isset($post['author_name'])): ?>
-                                    <span class="flex items-center">
-                                        <i class="fas fa-user text-indigo-400 mr-1"></i>
-                                        <a href="<?php
-                                                    $params = $queryParams;
-                                                    $params['u'] = $post['user_id'];
-                                                    echo base_url('admin/posts?' . http_build_query($params));
-                                                    ?>" class="hover:text-indigo-600 transition-colors truncate">
-                                            <?php echo esc($post['author_name']) ?>
-                                        </a>
-                                    </span>
-                                <?php endif; ?>
-                                <a href="<?php
-                                            $params = $queryParams;
-                                            $params['s'] = $post['status'];
-                                            echo base_url('admin/posts?' . http_build_query($params));
-                                            ?>" class="post-status px-2 py-1 rounded-full text-xs <?php echo $post['status'] === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' ?>">
-                                    <?php echo ucfirst($post['status']) ?>
-                                </a>
-                                <?php if (isset($postTags[$post['id']])): ?>
-                                    <div class="flex flex-wrap gap-1 mt-1 w-full">
-                                        <?php foreach ($postTags[$post['id']] as $tag): ?>
-                                            <a href="<?php
-                                                        $params = $queryParams;
-                                                        $params['t'] = $tag['slug'];
-                                                        echo base_url('admin/posts?' . http_build_query($params));
-                                                        ?>"
-                                                class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full hover:bg-gray-200 transition-colors truncate">
-                                                <i class="fas fa-tag text-gray-500 mr-1"></i>
-                                                <?php echo esc($tag['name']) ?>
-                                            </a>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-
-
-                            <!-- Post Actions -->
-                            <div class="flex flex-col sm:flex-row gap-2 mt-2">
+                            <!-- Actions: inline on desktop, below image on mobile -->
+                            <div class="flex flex-row gap-2 mt-2 sm:mt-0 flex-wrap order-2 sm:order-none">
                                 <?php
                                 $canEdit = ($userRole === 'admin') ||
                                     ($userRole === 'manager' && ($post['user_id'] == $userId ||
@@ -364,6 +302,70 @@ if (!empty($queryString)) {
                                     </a>
                                 <?php endif; ?>
                             </div>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="post-description text-gray-600 text-sm md:text-base line-clamp-2 md:line-clamp-3">
+                            <?php
+                            echo !empty($post['description'])
+                                ? esc($post['description'])
+                                : character_limiter(strip_tags($post['content'] ?? ''), 160);
+                            ?>
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-2 sm:gap-3 text-xs md:text-sm text-gray-500 mb-2 md:mb-4">
+                            <span class="flex items-center">
+                                <i class="fas fa-folder text-blue-400 mr-1"></i>
+                                <a href="<?php
+                                            $params = $queryParams;
+                                            $params['c'] = $post['category_slug'] ?? '';
+                                            echo base_url('admin/posts?' . http_build_query($params));
+                                            ?>" class="hover:text-blue-600 transition-colors truncate">
+                                    <?php echo esc($post['category_name'] ?? 'Uncategorized') ?>
+                                </a>
+                            </span>
+                            <span class="flex items-center">
+                                <i class="fas fa-calendar text-purple-400 mr-1"></i>
+                                <?php echo date('M d, Y', strtotime($post['created_at'])) ?>
+                            </span>
+                            <span class="flex items-center">
+                                <i class="fas fa-eye text-green-400 mr-1"></i>
+                                <?php echo number_format($post['views'] ?? 0) ?> views
+                            </span>
+                            <?php if (isset($post['author_name'])): ?>
+                                <span class="flex items-center">
+                                    <i class="fas fa-user text-indigo-400 mr-1"></i>
+                                    <a href="<?php
+                                                $params = $queryParams;
+                                                $params['u'] = $post['user_id'];
+                                                echo base_url('admin/posts?' . http_build_query($params));
+                                                ?>" class="hover:text-indigo-600 transition-colors truncate">
+                                        <?php echo esc($post['author_name']) ?>
+                                    </a>
+                                </span>
+                            <?php endif; ?>
+                            <a href="<?php
+                                        $params = $queryParams;
+                                        $params['s'] = $post['status'];
+                                        echo base_url('admin/posts?' . http_build_query($params));
+                                        ?>" class="post-status px-2 py-1 rounded-full text-xs <?php echo $post['status'] === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' ?>">
+                                <?php echo ucfirst($post['status']) ?>
+                            </a>
+                            <?php if (isset($postTags[$post['id']])): ?>
+                                <div class="flex flex-wrap gap-1 mt-1 w-full">
+                                    <?php foreach ($postTags[$post['id']] as $tag): ?>
+                                        <a href="<?php
+                                                    $params = $queryParams;
+                                                    $params['t'] = $tag['slug'];
+                                                    echo base_url('admin/posts?' . http_build_query($params));
+                                                    ?>"
+                                            class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full hover:bg-gray-200 transition-colors truncate">
+                                            <i class="fas fa-tag text-gray-500 mr-1"></i>
+                                            <?php echo esc($tag['name']) ?>
+                                        </a>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

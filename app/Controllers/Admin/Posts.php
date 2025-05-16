@@ -17,6 +17,7 @@ class Posts extends BaseController {
     protected $userModel;
     protected $userRole;
     protected $userId;
+    protected $showRecords = 50;
 
     public function __construct() {
         $this->postModel     = new PostModel();
@@ -135,7 +136,7 @@ class Posts extends BaseController {
         $allCategories = $this->categoryModel->findAll();
 
         // Get posts with pagination
-        $posts = $builder->orderBy($orderBy[0], $orderBy[1])->paginate(10);
+        $posts = $builder->orderBy($orderBy[0], $orderBy[1])->paginate($this->showRecords);
 
         // Fetch tags for all displayed posts - we still need this for showing tags on post cards
         $postIds = array_column($posts, 'id');
@@ -190,12 +191,19 @@ class Posts extends BaseController {
     }
 
     public function create() {
-        // Create a blank draft post and redirect to edit
+        // Accept category id from query string
+        $categoryId = $this->request->getGet('cid');
         $data = [
             'user_id' => $this->userId,
             'status'  => 'draft',
         ];
+
+        if ($categoryId && $this->categoryModel->find($categoryId)) {
+            $data['category_id'] = $categoryId;
+        }
+
         $postId = $this->postModel->skipValidation(true)->insert($data, true);
+
         if ($postId) {
             return redirect()->to('/admin/posts/edit/' . $postId);
         }
