@@ -31,6 +31,6 @@ class Dashboard extends BaseController
             'recentPosts'     => $this->postModel->orderBy('created_at', 'DESC')->limit(5)->find(),
         ];
 
-        return $this->render('admin/dashboard', $data, 'admin');
+        return $this->render('admin/dashboard', $data);
     }
 }

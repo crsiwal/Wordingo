@@ -1,4 +1,5 @@
 <?php
+
 namespace Config;
 
 use CodeIgniter\Router\RouteCollection;
@@ -67,7 +68,16 @@ $routes->group('admin', ['filter' => 'auth'], function ($routes) {
     $routes->post('tags/edit/(:num)', 'Admin\Tags::update/$1');
     $routes->post('tags/delete/(:num)', 'Admin\Tags::delete/$1');
 
-    // Ads
+    // Advertisements - Ads
+    $routes->get('ads', 'Admin\Ads\Ads::index');
+    $routes->get('ads/create', 'Admin\Ads\Ads::create');
+    $routes->post('ads/create', 'Admin\Ads\Ads::create');
+    $routes->get('ads/edit/(:num)', 'Admin\Ads\Ads::edit/$1');
+    $routes->post('ads/edit/(:num)', 'Admin\Ads\Ads::edit/$1');
+    $routes->get('ads/delete/(:num)', 'Admin\Ads\Ads::delete/$1');
+    $routes->get('ads/resetStats/(:num)', 'Admin\Ads\Ads::resetStats/$1');
+
+    // Advertisements - Ads Slots
     $routes->get('ads/slots', 'Admin\Ads\AdSlots::index');
     $routes->get('ads/slots/create', 'Admin\Ads\AdSlots::create');
     $routes->post('ads/slots/create', 'Admin\Ads\AdSlots::create');
