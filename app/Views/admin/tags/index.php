@@ -118,9 +118,12 @@
 </div>
 
 <!-- Pagination -->
-<?php if (isset($pager)): ?>
+<?php if (isset($pager) && !empty($tags)): ?>
     <div class="mt-8 flex justify-center">
-        <?php echo $pager->links() ?>
+        <?php
+        // Use our custom pager that handles query parameters automatically
+        echo $pager->links('default', 'admin_pager');
+        ?>
     </div>
 <?php endif; ?>
 
