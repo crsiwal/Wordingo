@@ -37,7 +37,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100"><?php echo session()->get('user_name') ?></h3>
                         <p class="text-gray-600 dark:text-gray-400 mb-4">@<?php echo session()->get('user_username') ?></p>
-                        
+
                         <a href="<?php echo base_url('users/profile') ?>" class="w-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 px-4 py-2 rounded-lg text-center hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors">
                             View Profile
                         </a>
@@ -76,7 +76,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg mb-6">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Recent Posts</h3>
-                    
+
                     <?php if (!empty($recentPosts)): ?>
                         <div class="space-y-4">
                             <?php foreach ($recentPosts as $post): ?>
@@ -115,7 +115,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Explore Categories</h3>
-                    
+
                     <?php if (!empty($categories)): ?>
                         <div class="flex flex-wrap gap-2">
                             <?php foreach ($categories as $category): ?>
@@ -134,4 +134,4 @@
         </div>
     </div>
 </div>
-<?php echo $this->endSection()?> 
+<?php echo $this->endSection()?>

@@ -1,6 +1,6 @@
-# 📝 Wordiqo
+# 📝 Wordingo
 
-**Wordiqo** is a powerful, open-source blogging platform built with **PHP (CodeIgniter 4)** and **Tailwind CSS**. It features a clean, modern frontend and a fully-featured admin panel to manage posts, categories, tags, SEO, caching, AMP pages, and more.
+**Wordingo** is a powerful, open-source blogging platform built with **PHP (CodeIgniter 4)** and **Tailwind CSS**. It features a clean, modern frontend and a fully-featured admin panel to manage posts, categories, tags, SEO, caching, AMP pages, and more.
 
 > _Write. Publish. Scale. — The modern blogging solution for developers and creators._
 
@@ -28,8 +28,8 @@
 > Make sure you have PHP 8+, Composer, and MySQL installed.
 
 ```bash
-git clone https://github.com/crsiwal/wordiqo.git
-cd wordiqo
+git clone https://github.com/crsiwal/wordingo.git
+cd Wordingo
 composer install
 cp .env.example .env
 php spark key:generate
@@ -39,7 +39,7 @@ Then, configure your `.env` file with database details:
 
 ```
 database.default.hostname = localhost
-database.default.database = wordiqo
+database.default.database = Wordingo
 database.default.username = root
 database.default.password = yourpassword
 ```
@@ -114,7 +114,7 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 - 🌍 [Live Demo Coming Soon](#)
 - 📘 [Documentation](docs/)
-- 💬 [Community Discussions](https://github.com/crsiwal/wordiqo/discussions)
+- 💬 [Community Discussions](https://github.com/crsiwal/Wordingo/discussions)
 
 ---
 

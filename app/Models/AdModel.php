@@ -21,6 +21,7 @@ class AdModel extends Model {
         'views',
         'clicks',
         'max_views',
+        'max_clicks',
         'start_time',
         'end_time',
         'is_active'

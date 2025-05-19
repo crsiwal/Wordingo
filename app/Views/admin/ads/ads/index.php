@@ -261,11 +261,11 @@
                         <i class="fas fa-ad text-xl"></i>
                     </div>
 
-                    <span class="text-green-600 font-medium text-sm <?= $ad['is_active'] ? '' : 'text-gray-500' ?>">
+                    <span class="font-medium text-sm <?= $ad['is_active'] ? '' : 'text-gray-500' ?>">
                         <?php if ($ad['is_active']): ?>
-                            <i class="fas fa-check-circle text-green-500 mr-1"></i> Active
+                            <i class="fas fa-check-circle text-green-500 mr-1"></i> <span class="text-green-500">Active</span>
                         <?php else: ?>
-                            <i class="fas fa-ban text-gray-500 mr-1"></i> Inactive
+                            <i class="fas fa-ban text-gray-500 mr-1"></i> <span class="text-gray-500">Inactive</span>
                         <?php endif; ?>
                     </span>
                 </div>
@@ -308,17 +308,36 @@
                         <div>
                             <div class="text-gray-500 text-xs mb-1">CTR</div>
                             <div class="font-bold text-<?= $ad['views'] > 0 && ($ad['clicks'] / $ad['views']) * 100 > 0 ? 'green-600' : 'gray-800' ?>">
-                                <?= $ad['views'] > 0 ? number_format(($ad['clicks'] / $ad['views']) * 100, 1) : '0' ?>%
+                                <?= $ad['views'] > 0 ? number_format(($ad['clicks'] / $ad['views']) * 100, 2) : '0.00' ?>%
                             </div>
                         </div>
                     </div>
 
-                    <!-- Max Views if set -->
-                    <?php if (!empty($ad['max_views'])): ?>
-                        <div class="text-gray-600 text-sm mb-4">
-                            <i class="fas fa-eye text-gray-400 mr-1"></i> Max: <?= number_format($ad['max_views']) ?> views
-                        </div>
-                    <?php endif; ?>
+
+
+                    <div class="flex flex-row gap-2 justify-between">
+                        <!-- Max Views if set -->
+                        <?php if (!empty($ad['max_views'])): ?>
+                            <div title="Max views" class="text-gray-600 text-sm mb-4">
+                                <i class="fas fa-eye text-gray-400 mr-1"></i> Max: <?= number_format($ad['max_views']) ?>
+                            </div>
+                        <?php else: ?>
+                            <div title="Max views" class="text-gray-600 text-sm mb-4">
+                                <i class="fas fa-eye text-gray-400 mr-1"></i> Unlimited
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Max Clicks if set -->
+                        <?php if (!empty($ad['max_clicks'])): ?>
+                            <div title="Max clicks" class="text-gray-600 text-sm mb-4">
+                                <i class="fas fa-mouse-pointer text-gray-400 mr-1"></i> Max: <?= number_format($ad['max_clicks']) ?>
+                            </div>
+                        <?php else: ?>
+                            <div title="Max clicks" class="text-gray-600 text-sm mb-4">
+                                <i class="fas fa-mouse-pointer text-gray-400 mr-1"></i> Unlimited
+                            </div>
+                        <?php endif; ?>
+                    </div>
 
                     <!-- Action Buttons -->
                     <?php if ($userRole === 'admin'): ?>

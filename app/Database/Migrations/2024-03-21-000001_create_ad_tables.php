@@ -102,6 +102,13 @@ class CreateAdTables extends Migration {
             'max_views' => [
                 'type'       => 'INT',
                 'constraint' => 11,
+                'unsigned'   => true,
+                'null'       => true,
+            ],
+            'max_clicks' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
                 'null'       => true,
             ],
             'start_time' => [

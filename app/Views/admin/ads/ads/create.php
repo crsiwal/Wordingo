@@ -234,6 +234,32 @@
                         </div>
 
                         <div class="relative">
+                            <label class="block text-sm font-medium text-gray-700 mb-2" for="max_clicks">
+                                Max Clicks
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-mouse-pointer text-gray-400"></i>
+                                </div>
+                                <input class="w-full pl-10 pr-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 <?php echo session('errors.max_clicks') ? 'border-red-500' : 'border-gray-300' ?>"
+                                    id="max_clicks"
+                                    type="number"
+                                    name="max_clicks"
+                                    value="<?php echo old('max_clicks') ?>"
+                                    min="0"
+                                    placeholder="Leave empty for unlimited">
+                            </div>
+                            <?php if (session('errors.max_clicks')): ?>
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                    <?php echo session('errors.max_clicks') ?>
+                                </p>
+                            <?php else: ?>
+                                <p class="mt-2 text-sm text-gray-500">Maximum number of clicks allowed for this ad</p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="relative">
                             <div class="flex items-center">
                                 <input class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all"
                                     id="is_active"
