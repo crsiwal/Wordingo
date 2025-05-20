@@ -15,10 +15,20 @@ $routes->set404Override();
 
 // Frontend Routes
 $routes->get('/', 'Home::index');
-$routes->get('post/(:segment)', 'Home::post/$1');
-$routes->get('category/(:segment)', 'Home::category/$1');
+$routes->get('post/(:segment)', 'Home::post/$1'); // post/slug
+$routes->get('post/(:segment)/(:segment)/(:segment)', 'Home::post/$3'); // post/category/slug/id
+$routes->get('post/(:segment)/(:segment)', 'Home::post/$2'); // post/category/slug
+
+// Category Routes
+$routes->get('category/(:segment)', 'Home::category/$1'); // category/slug
+
+// Tag Routes
 $routes->get('tag/(:segment)', 'Home::tag/$1');
+
+// Search Routes
 $routes->get('search', 'Home::search');
+
+// About Routes
 $routes->get('about', 'Home::about');
 $routes->get('contact', 'Home::contact');
 

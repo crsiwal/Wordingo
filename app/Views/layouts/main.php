@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -72,12 +73,19 @@
         }
 
         /* Use monospace for code-related content */
-        code, pre, .monospace {
+        code,
+        pre,
+        .monospace {
             font-family: 'Geist Mono', monospace;
         }
 
         /* Adjust heading styles */
-        h1, h2, h3, h4, h5, h6 {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
             font-family: 'Inter', sans-serif;
             font-weight: 600;
         }
@@ -112,9 +120,11 @@
             0% {
                 background-position: 0% 50%;
             }
+
             50% {
                 background-position: 100% 50%;
             }
+
             100% {
                 background-position: 0% 50%;
             }
@@ -131,9 +141,17 @@
 
         /* Float animation */
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
         }
 
         /* Slide-up animation */
@@ -142,8 +160,15 @@
         }
 
         @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         /* Dark mode transitions */
@@ -152,133 +177,45 @@
         }
     </style>
 </head>
+
 <body class="dark-transition bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="dark-transition relative bg-white dark:bg-gray-800 shadow-sm">
-        <!-- Top accent bar -->
-        <div class="h-1 w-full animated-gradient"></div>
-
-        <nav class="container mx-auto px-4 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    <a href="<?php echo base_url() ?>" class="flex items-center space-x-2">
-                        <div class="w-10 h-10 rounded-full animated-gradient flex items-center justify-center">
-                            <span class="text-white font-bold text-xl">B</span>
-                        </div>
-                        <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-                            Wordiqo
-                        </span>
-                    </a>
-                </div>
-
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="<?php echo base_url() ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
-                        Home
-                    </a>
-                    <a href="<?php echo base_url('blogs') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
-                        Blogs
-                    </a>
-                    <a href="<?php echo base_url('about') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
-                        About
-                    </a>
-                    <a href="<?php echo base_url('contact') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
-                        Contact
-                    </a>
-                </div>
-
-                <div class="flex items-center space-x-4">
-                    <!-- Theme Toggle -->
-                    <button onclick="toggleTheme()" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i id="themeIcon" class="fas                                                                                                                                                             <?php echo isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark' ? 'fa-sun' : 'fa-moon' ?>"></i>
-                    </button>
-
-                    <!-- Search Button (Trigger Modal) -->
-                    <button onclick="document.getElementById('searchModal').classList.remove('hidden')" class="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i class="fas fa-search"></i>
-                    </button>
-
-                    <?php if (session()->get('logged_in')): ?>
-                        <div class="relative">
-                            <button id="userDropdownButton" onclick="toggleDropdown('userDropdown')" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none">
-                                <div class="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                                    <span><?php echo substr(session()->get('user_name'), 0, 1) ?></span>
-                                </div>
-                                <span class="hidden sm:inline"><?php echo session()->get('user_name') ?></span>
-                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 z-50">
-                                <div class="py-1" role="menu" aria-orientation="vertical">
-                                    <a href="<?php echo base_url('users') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
-                                        Dashboard
-                                    </a>
-                                    <a href="<?php echo base_url('users/profile') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
-                                        My Profile
-                                    </a>
-                                    <a href="<?php echo base_url('users/posts/bookmarks') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
-                                        Saved Posts
-                                    </a>
-                                    <?php if (in_array(session()->get('user_role'), ['admin', 'editor'])): ?>
-                                        <a href="<?php echo base_url('admin') ?>" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
-                                            Admin Dashboard
-                                        </a>
-                                    <?php endif; ?>
-                                    <div class="border-t border-gray-100 dark:border-gray-700"></div>
-                                    <a href="<?php echo base_url('logout') ?>" class="block px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">
-                                        Logout
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <div class="hidden sm:flex items-center space-x-3">
-                            <a href="<?php echo base_url('login') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
-                                Login
-                            </a>
-                            <a href="<?php echo base_url('register') ?>" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
-                                Register
-                            </a>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Mobile menu button -->
-                    <button id="mobileMenuButton" onclick="toggleDropdown('mobileMenu')" class="md:hidden p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                </div>
+    <!-- Modern Sticky Header -->
+    <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+        <div class="flex items-center justify-between px-4 sm:px-6 py-2 sm:py-3 max-w-screen-2xl mx-auto">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="<?php echo base_url() ?>" class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-blue-700">
+                    <span class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">B</span>
+                    Wordingo
+                </a>
             </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="hidden md:hidden mt-4">
-                <div class="flex flex-col space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <a href="<?php echo base_url() ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
-                        Home
-                    </a>
-                    <a href="<?php echo base_url('blogs') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
-                        Blogs
-                    </a>
-                    <a href="<?php echo base_url('about') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
-                        About
-                    </a>
-                    <a href="<?php echo base_url('contact') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
-                        Contact
-                    </a>
-
-                    <?php if (! session()->get('logged_in')): ?>
-                        <div class="flex flex-col space-y-2 sm:hidden pt-2 border-t border-gray-200 dark:border-gray-700">
-                            <a href="<?php echo base_url('login') ?>" class="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-medium py-2">
-                                Login
-                            </a>
-                            <a href="<?php echo base_url('register') ?>" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-center">
-                                Register
-                            </a>
-                        </div>
-                    <?php endif; ?>
-                </div>
+            <nav class="hidden md:flex gap-4 sm:gap-6 text-base font-medium">
+                <a href="<?php echo base_url() ?>" class="hover:text-blue-600 transition">Home</a>
+                <a href="<?php echo base_url('blogs') ?>" class="hover:text-blue-600 transition">Blogs</a>
+                <a href="<?php echo base_url('about') ?>" class="hover:text-blue-600 transition">About</a>
+                <a href="<?php echo base_url('contact') ?>" class="hover:text-blue-600 transition">Contact</a>
+            </nav>
+            <div class="flex items-center gap-1 sm:gap-2">
+                <button class="p-2 rounded-full hover:bg-gray-100 transition md:hidden" onclick="toggleDropdown('mobileMenu')" aria-label="Open menu">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <button class="p-2 rounded-full hover:bg-gray-100 transition" onclick="document.getElementById('searchModal').classList.remove('hidden')" aria-label="Search">
+                    <i class="fas fa-search text-xl"></i>
+                </button>
+                <a href="/login" class="hidden sm:inline-block px-3 py-2 rounded-lg font-semibold text-blue-600 hover:bg-blue-50 transition text-sm sm:text-base">Login</a>
+                <a href="/register" class="hidden sm:inline-block px-3 py-2 rounded-lg font-semibold bg-blue-600 text-white shadow hover:bg-blue-700 transition text-sm sm:text-base">Register</a>
             </div>
-        </nav>
+        </div>
+        <!-- Mobile Nav Dropdown -->
+        <div id="mobileMenu" class="md:hidden hidden absolute left-0 right-0 bg-white shadow-lg border-b border-gray-100 px-4 py-4 z-40">
+            <nav class="flex flex-col gap-3 text-base font-medium">
+                <a href="<?php echo base_url() ?>" class="hover:text-blue-600 transition">Home</a>
+                <a href="<?php echo base_url('blogs') ?>" class="hover:text-blue-600 transition">Blogs</a>
+                <a href="<?php echo base_url('about') ?>" class="hover:text-blue-600 transition">About</a>
+                <a href="<?php echo base_url('contact') ?>" class="hover:text-blue-600 transition">Contact</a>
+                <a href="/login" class="px-3 py-2 rounded-lg font-semibold text-blue-600 hover:bg-blue-50 transition">Login</a>
+                <a href="/register" class="px-3 py-2 rounded-lg font-semibold bg-blue-600 text-white shadow hover:bg-blue-700 transition">Register</a>
+            </nav>
+        </div>
     </header>
 
     <!-- Search Modal -->
@@ -313,8 +250,8 @@
     <?php if ($flash = session()->getFlashdata('flash')): ?>
         <div class="container mx-auto px-4 mt-4 slide-up">
             <div class="p-4 rounded-lg shadow-md border-l-4                                                                                                                                                                                  <?php echo $flash['type'] === 'success'
-                                                                                                                                                                                  ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-500'
-                                                                                                                                                                                  : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-500' ?>">
+                                                                                                                                                                                                                                                    ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-500'
+                                                                                                                                                                                                                                                    : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-500' ?>">
                 <div class="flex items-center">
                     <i class="<?php echo $flash['type'] === 'success' ? 'fas fa-check-circle text-green-500' : 'fas fa-exclamation-circle text-red-500' ?> mr-3 text-lg"></i>
                     <p><?php echo $flash['message'] ?></p>
@@ -324,89 +261,57 @@
     <?php endif; ?>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 flex-grow">
+    <main>
         <?php echo $this->renderSection('content') ?>
     </main>
 
-    <!-- Footer -->
-    <footer class="dark-transition bg-white dark:bg-gray-800 border-t dark:border-gray-700 mt-8">
-        <div class="container mx-auto px-4 py-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">About Wordiqo</h3>
-                    <p class="text-gray-600 dark:text-gray-400">
-                        A modern blogging platform built with CodeIgniter 4 and Tailwind CSS, focusing on a clean design and great user experience.
-                    </p>
-                    <div class="mt-4 flex space-x-3">
-                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors">
-                            <i class="fab fa-github"></i>
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="<?php echo base_url() ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
-                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Home
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?php echo base_url('blogs') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
-                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Blogs
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?php echo base_url('about') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
-                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> About
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?php echo base_url('contact') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
-                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Contact
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?php echo base_url('privacy') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
-                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Privacy Policy
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?php echo base_url('terms') ?>" class="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex items-center">
-                                <i class="fas fa-chevron-right text-xs mr-2 text-indigo-500 dark:text-indigo-400"></i> Terms of Service
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="text-lg font-semibold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">Newsletter</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4">Subscribe to our newsletter for the latest updates and articles.</p>
-                    <form action="<?php echo base_url('newsletter/subscribe') ?>" method="post" class="space-y-2">
-                        <div class="relative">
-                            <input type="email" name="email" placeholder="Enter your email" required
-                                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400">
-                            <button type="submit" class="absolute right-1 top-1 bg-indigo-600 dark:bg-indigo-500 text-white px-3 py-1 rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">We respect your privacy. Unsubscribe at any time.</p>
-                    </form>
+    <!-- Modern Footer (Multi-Column) -->
+    <footer class="bg-white border-t border-gray-100 pt-10 pb-4 mt-12">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-12 mb-8">
+            <div>
+                <h3 class="text-lg sm:text-xl font-bold mb-3 text-blue-700">About Wordingo</h3>
+                <p class="text-gray-600 mb-4 text-sm sm:text-base">A modern blogging platform built with CodeIgniter 4 and Tailwind CSS, focusing on a clean design and great user experience.</p>
+                <div class="flex gap-3 text-xl text-blue-600">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
                 </div>
             </div>
-            <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700 text-center text-gray-600 dark:text-gray-400">
-                <p>&copy;                                                                            <?php echo date('Y') ?> Wordiqo. All rights reserved.</p>
+            <div>
+                <h3 class="text-lg sm:text-xl font-bold mb-3">Quick Links</h3>
+                <ul class="space-y-2 text-sm sm:text-base">
+                    <li><a href="/" class="hover:text-blue-600 transition">Home</a></li>
+                    <li><a href="/blogs" class="hover:text-blue-600 transition">Blogs</a></li>
+                    <li><a href="/about" class="hover:text-blue-600 transition">About</a></li>
+                    <li><a href="/contact" class="hover:text-blue-600 transition">Contact</a></li>
+                    <li><a href="/privacy-policy" class="hover:text-blue-600 transition">Privacy Policy</a></li>
+                    <li><a href="/terms-of-service" class="hover:text-blue-600 transition">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg sm:text-xl font-bold mb-3">Newsletter</h3>
+                <p class="text-gray-600 mb-3 text-sm sm:text-base">Subscribe to our newsletter for the latest updates and articles.</p>
+                <form class="flex flex-col sm:flex-row gap-2">
+                    <input type="email" placeholder="Enter your email" class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm sm:text-base">
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition text-sm sm:text-base">Subscribe</button>
+                </form>
+                <p class="text-xs text-gray-400 mt-2">We respect your privacy. Unsubscribe at any time.</p>
+            </div>
+            <div>
+                <h3 class="text-lg sm:text-xl font-bold mb-3">Contact</h3>
+                <p class="text-gray-600 mb-2 text-sm sm:text-base">Want to discuss with us?</p>
+                <a href="mailto:contact@website.com" class="text-blue-600 hover:underline">contact@website.com</a>
+                <div class="mt-4">
+                    <a href="#" class="text-sm text-gray-500 hover:underline">Unsubscribe from this email</a>
+                </div>
             </div>
         </div>
+        <div class="border-t border-gray-100 pt-4 sm:pt-6 text-center text-gray-400 text-xs sm:text-sm">
+            &copy; <?= date('Y') ?> Wordingo. All rights reserved.
+        </div>
     </footer>
+
 
     <!-- Scripts -->
     <script>
@@ -465,10 +370,13 @@
 
             // Update theme icon on load
             const isDarkMode = document.documentElement.classList.contains('dark');
-            document.getElementById('themeIcon').classList.replace(
-                isDarkMode ? 'fa-moon' : 'fa-sun',
-                isDarkMode ? 'fa-sun' : 'fa-moon'
-            );
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.classList.replace(
+                    isDarkMode ? 'fa-moon' : 'fa-sun',
+                    isDarkMode ? 'fa-sun' : 'fa-moon'
+                );
+            }
 
             // Close search modal with escape key
             document.addEventListener('keydown', (e) => {
@@ -479,4 +387,5 @@
         });
     </script>
 </body>
+
 </html>

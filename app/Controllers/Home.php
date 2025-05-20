@@ -5,37 +5,46 @@ namespace App\Controllers;
 use App\Models\PostModel;
 use App\Models\CategoryModel;
 
-class Home extends BaseController
-{
+class Home extends BaseController {
     protected $postModel;
     protected $categoryModel;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->postModel = new PostModel();
         $this->categoryModel = new CategoryModel();
     }
 
-    public function index()
-    {
+    public function index() {
+        // Fetch featured posts with all required fields for the card
+        $featuredPosts = $this->postModel
+            ->select('posts.*, categories.name as category_name, users.name as author_name, users.avatar as author_avatar, users.role as author_role')
+            ->join('categories', 'categories.id = posts.category_id', 'left')
+            ->join('users', 'users.id = posts.user_id', 'left')
+            ->where('posts.is_featured', 1)
+            ->orderBy('posts.published_at', 'DESC')
+            ->findAll(8);
+
+        // Fetch latest posts with all required fields for the card
+        $latestPosts = $this->postModel
+            ->select('posts.*, categories.name as category_name, users.name as author_name, users.avatar as author_avatar, users.role as author_role')
+            ->join('categories', 'categories.id = posts.category_id', 'left')
+            ->join('users', 'users.id = posts.user_id', 'left')
+            ->orderBy('posts.published_at', 'DESC')
+            ->findAll(6);
+
+        $categories = $this->categoryModel->withPostCount()->findAll();
+
         $data = [
             'title' => 'Home',
-            'featuredPosts' => $this->postModel->published()
-                ->orderBy('views', 'DESC')
-                ->limit(3)
-                ->find(),
-            'latestPosts' => $this->postModel->published()
-                ->orderBy('published_at', 'DESC')
-                ->limit(6)
-                ->find(),
-            'categories' => $this->categoryModel->withPostCount()->findAll(),
+            'featuredPosts' => $featuredPosts,
+            'latestPosts' => $latestPosts,
+            'categories' => $categories,
         ];
 
-        return $this->render('home/index', $data);
+        return $this->render('visitor/index', $data);
     }
 
-    public function search()
-    {
+    public function search() {
         $query = $this->request->getGet('q');
 
         if (empty($query)) {
@@ -53,11 +62,10 @@ class Home extends BaseController
             'pager' => $this->postModel->pager,
         ];
 
-        return $this->render('home/search', $data);
+        return $this->render('visitor/search', $data);
     }
 
-    public function category($slug)
-    {
+    public function category($slug) {
         $category = $this->categoryModel->where('slug', $slug)->first();
 
         if (!$category) {
@@ -74,11 +82,10 @@ class Home extends BaseController
             'pager' => $this->postModel->pager,
         ];
 
-        return $this->render('home/category', $data);
+        return $this->render('visitor/category', $data);
     }
 
-    public function post($slug)
-    {
+    public function post($slug) {
         $post = $this->postModel->published()
             ->where('slug', $slug)
             ->first();
@@ -105,21 +112,19 @@ class Home extends BaseController
             'relatedPosts' => $relatedPosts,
         ];
 
-        return $this->render('home/post', $data);
+        return $this->render('visitor/post', $data);
     }
 
-    public function about()
-    {
+    public function about() {
         $data = [
             'title' => 'About Us',
             'description' => 'Learn more about our blog and mission',
         ];
 
-        return $this->render('home/about', $data);
+        return $this->render('visitor/about', $data);
     }
 
-    public function contact()
-    {
+    public function contact() {
         if ($this->request->is('post')) {
             $rules = [
                 'name' => 'required|min_length[3]|max_length[255]',
@@ -147,6 +152,6 @@ class Home extends BaseController
             'validation' => $this->validator,
         ];
 
-        return $this->render('home/contact', $data);
+        return $this->render('visitor/contact', $data);
     }
 }
