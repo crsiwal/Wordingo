@@ -14,7 +14,25 @@ class Pages extends BaseController {
             'description' => 'Learn more about our blog and mission',
         ];
 
-        return $this->render('visitor/about', $data);
+        return $this->render('visitor/pages/about', $data);
+    }
+
+    public function terms() {
+        $data = [
+            'title' => 'Terms of Service',
+            'description' => 'Read our terms of service',
+        ];
+
+        return $this->render('visitor/pages/terms', $data);
+    }
+
+    public function privacy() {
+        $data = [
+            'title' => 'Privacy Policy',
+            'description' => 'Read our privacy policy',
+        ];
+
+        return $this->render('visitor/pages/privacy', $data);
     }
 
     public function contact() {
@@ -45,6 +63,6 @@ class Pages extends BaseController {
             'validation' => $this->validator,
         ];
 
-        return $this->render('visitor/contact', $data);
+        return $this->render('visitor/pages/contact', $data);
     }
 }

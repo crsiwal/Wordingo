@@ -19,6 +19,9 @@ $routes->get('post/(:segment)', 'Home::post/$1'); // post/slug
 $routes->get('post/(:segment)/(:segment)/(:segment)', 'Home::post/$3'); // post/category/created_at/slug
 $routes->get('post/(:segment)/(:segment)', 'Home::post/$2'); // post/category/slug
 
+// Recent Posts
+$routes->get('recent', 'Home::recentPosts');
+
 // Category Routes
 $routes->get('category/(:segment)', 'Home::category/$1'); // category/slug
 
@@ -28,9 +31,11 @@ $routes->get('tag/(:segment)', 'Home::tag/$1');
 // Search Routes
 $routes->get('search', 'Home::search');
 
-// About Routes
-$routes->get('about', 'Home::about');
-$routes->get('contact', 'Home::contact');
+// Website Pages Routes
+$routes->get('about', 'Pages::about');
+$routes->get('contact', 'Pages::contact');
+$routes->get('terms', 'Pages::terms');
+$routes->get('privacy', 'Pages::privacy');
 
 // Auth Routes
 $routes->get('login', 'Auth::login');
@@ -40,8 +45,8 @@ $routes->post('register', 'Auth::attemptRegister');
 $routes->get('logout', 'Auth::logout');
 $routes->get('forgot-password', 'Auth::forgotPassword');
 $routes->post('forgot-password', 'Auth::attemptForgotPassword');
-$routes->get('reset-password/(:segment)', 'Auth::resetPassword/$1');
-$routes->post('reset-password/(:segment)', 'Auth::attemptResetPassword/$1');
+$routes->get('reset/(:segment)', 'Auth::resetPassword/$1');
+$routes->post('reset/(:segment)', 'Auth::attemptResetPassword/$1');
 
 // User Routes
 $routes->group('users', ['filter' => 'auth'], function ($routes) {

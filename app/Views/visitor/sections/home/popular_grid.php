@@ -44,7 +44,7 @@
             </div>
         </div>
         <!-- Sidebar (Desktop Only) -->
-        <aside class="hidden md:block w-full md:w-64 flex-shrink-0">
+        <aside class="hidden md:block w-full md:w-64 flex-shrink-0 mt-12">
             <div class="bg-white rounded-xl shadow-md p-6 mb-8">
                 <h3 class="text-lg font-bold mb-4 leading-relaxed">All Categories</h3>
                 <ul class="space-y-2">

@@ -83,7 +83,7 @@ class Auth extends BaseController
 
                     session()->set($sessionData);
                     $this->setFlash('success', 'Welcome back, ' . $user['name']);
-                    
+
                     // Redirect based on role
                     switch ($user['role']) {
                         case 'admin':
@@ -170,15 +170,15 @@ class Auth extends BaseController
                 // Send welcome email to the user
                 try {
                     $this->emailService->sendWelcomeEmail($data);
-                    
+
                     // Send notification to admin
                     $this->emailService->sendAdminNotification($data);
-                    
+
                     log_message('info', 'Registration emails sent successfully to user and admin');
                 } catch (\Exception $e) {
                     log_message('error', 'Failed to send registration emails: ' . $e->getMessage());
                 }
-                
+
                 $this->setFlash('success', 'Registration successful. Please check your email for welcome information and login.');
                 return redirect()->to('/login');
             }
@@ -239,7 +239,7 @@ class Auth extends BaseController
 
                 // Update user data with reset token
                 $user['reset_token'] = $token;
-                
+
                 // Send reset email using EmailService
                 $this->emailService->sendPasswordResetEmail($user);
 

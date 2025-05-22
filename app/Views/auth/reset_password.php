@@ -1,151 +1,211 @@
-<?php echo $this->extend('layouts/main')?>
+<?= $this->extend('layouts/main') ?>
 
-<?php echo $this->section('content')?>
-<!-- Header Section with Animated Background -->
-<div class="relative mb-10 overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 p-8">
-    <div class="absolute inset-0 bg-grid-white/20 bg-grid-8"></div>
-    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div class="text-white">
-            <h1 class="text-5xl font-bold leading-tight mb-2">Reset Password</h1>
-            <p class="text-indigo-100 text-xl">Create a new secure password</p>
-        </div>
-        <a href="<?php echo base_url('login')?>" class="group relative px-8 py-3 bg-white text-indigo-600 rounded-full font-medium shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
-            <span class="relative z-10 flex items-center">
-                <span class="w-7 h-7 flex items-center justify-center bg-indigo-100 rounded-full mr-2 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-                    <i class="fas fa-sign-in-alt"></i>
-                </span>
-                Back to Login
-            </span>
-            <span class="absolute inset-0 w-0 bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-            <span class="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-20 bg-grid-white/20 bg-grid-8 transition-opacity duration-300"></span>
-        </a>
-    </div>
-
-    <!-- Animated bubbles background effect -->
-    <div class="absolute top-0 left-0 w-full h-full overflow-hidden opacity-30 pointer-events-none">
-        <?php for ($i = 0; $i < 6; $i++): ?>
-            <div class="absolute rounded-full bg-white/30"
-                style="<?php echo 'width: ' . (rand(30, 80)) . 'px; height: ' . (rand(30, 80)) . 'px; left: ' . (rand(0, 100)) . '%; top: ' . (rand(0, 100)) . '%; animation: float ' . (rand(5, 12)) . 's ease-in-out infinite;'?>"></div>
-        <?php endfor; ?>
-    </div>
-</div>
-
-<?php if (session()->getFlashdata('error')): ?>
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg shadow-md max-w-md mx-auto">
-        <div class="flex items-center">
-            <i class="fas fa-exclamation-circle text-red-500 mr-3 text-lg"></i>
-            <p><?php echo session()->getFlashdata('error')?></p>
-        </div>
-    </div>
-<?php endif; ?>
-
-<?php if (session()->getFlashdata('success')): ?>
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg shadow-md max-w-md mx-auto">
-        <div class="flex items-center">
-            <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
-            <p><?php echo session()->getFlashdata('success')?></p>
-        </div>
-    </div>
-<?php endif; ?>
-
-<div class="bg-white rounded-xl shadow-md transition-all duration-300 hover:shadow-lg mb-10 max-w-md mx-auto">
-    <form action="<?php echo base_url('reset-password/' . $token)?>" method="post" class="p-6">
-        <?php echo csrf_field()?>
-
-        <div class="flex items-center gap-4 mb-6">
-            <div class="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl">
-                <i class="fas fa-lock"></i>
+<?= $this->section('content') ?>
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div class="container mx-auto px-4 py-12">
+        <div class="max-w-6xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-indigo-900 mb-4">Reset Password</h1>
+                <p class="text-gray-600">Create a new secure password</p>
             </div>
-            <div>
-                <h3 class="text-xl font-semibold text-gray-900">Create New Password</h3>
-                <p class="text-gray-500">Choose a strong, secure password</p>
-            </div>
-        </div>
 
-        <!-- Password Information -->
-        <div class="mb-6">
-            <h4 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">Password Requirements</h4>
-            
-            <div class="space-y-4">
-                <!-- New Password -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password">
-                        New Password <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <i class="fas fa-lock text-gray-400"></i>
-                        </div>
-                        <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 <?php echo session('errors.password') ? 'border-red-500' : ''?>"
-                            id="password"
-                            type="password"
-                            name="password"
-                            placeholder="Enter your new password"
-                            required>
+            <!-- Main Content -->
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div class="grid lg:grid-cols-2">
+                    <!-- Left: Form Section -->
+                    <div class="p-8 lg:p-12">
+                        <?php if (session()->getFlashdata('error')): ?>
+                            <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg animate-fade-in">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-circle text-red-500 mr-3 text-lg"></i>
+                                    <p><?= session()->getFlashdata('error') ?></p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (session()->getFlashdata('success')): ?>
+                            <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg animate-fade-in">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+                                    <p><?= session()->getFlashdata('success') ?></p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <form action="<?= base_url('reset-password/' . $token) ?>" method="post" class="space-y-6">
+                            <?= csrf_field() ?>
+
+                            <div class="flex items-center gap-4 mb-8">
+                                <div class="h-16 w-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">Create New Password</h3>
+                                    <p class="text-gray-500">Choose a strong, secure password</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2" for="password">
+                                    New Password <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" id="password" name="password"
+                                        class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.password') ? 'border-red-500' : '' ?>"
+                                        placeholder="Enter your new password" required>
+                                </div>
+                                <?php if (session('errors.password')): ?>
+                                    <p class="mt-1 text-sm text-red-600 animate-shake"><?= session('errors.password') ?></p>
+                                <?php endif; ?>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2" for="password_confirm">
+                                    Confirm Password <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" id="password_confirm" name="password_confirm"
+                                        class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.password_confirm') ? 'border-red-500' : '' ?>"
+                                        placeholder="Confirm your new password" required>
+                                </div>
+                                <?php if (session('errors.password_confirm')): ?>
+                                    <p class="mt-1 text-sm text-red-600 animate-shake"><?= session('errors.password_confirm') ?></p>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-100">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-info-circle text-indigo-500 mt-1"></i>
+                                    <div class="text-sm text-indigo-700">
+                                        <p class="font-medium">Password Requirements</p>
+                                        <ul class="mt-2 space-y-1 list-disc list-inside">
+                                            <li>Password should be at least 8 characters long</li>
+                                            <li>Use a mix of letters, numbers, and symbols for maximum security</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                                <a href="<?= base_url('login') ?>"
+                                    class="px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-2">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Back to Login
+                                </a>
+                                <button type="submit" id="submitBtn"
+                                    class="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center gap-2">
+                                    <span id="submitText">Set New Password</span>
+                                    <span id="spinner" class="hidden animate-spin"><i class="fas fa-spinner"></i></span>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <?php if (session('errors.password')): ?>
-                        <p class="text-red-500 text-xs italic mt-1"><?php echo session('errors.password')?></p>
-                    <?php endif; ?>
-                </div>
 
-                <!-- Confirm Password -->
-                <div>
-                    <label class="block text-gray-700 text-sm font-medium mb-2" for="password_confirm">
-                        Confirm Password <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <i class="fas fa-lock text-gray-400"></i>
+                    <!-- Right: Info Section -->
+                    <div class="hidden lg:block bg-gradient-to-br from-indigo-600 to-purple-600 p-12 text-white">
+                        <div class="max-w-md mx-auto">
+                            <h2 class="text-3xl font-bold mb-8">Password Tips</h2>
+                            <div class="space-y-8">
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                        <i class="fas fa-shield-alt text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-2">Stay Secure</h3>
+                                        <p class="text-white/80">Use a unique password for your Wordingo account.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                        <i class="fas fa-key text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-2">Strong Passwords</h3>
+                                        <p class="text-white/80">Combine uppercase, lowercase, numbers, and symbols.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+                                        <i class="fas fa-user-lock text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold mb-2">Keep it Private</h3>
+                                        <p class="text-white/80">Never share your password with anyone.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-12 pt-8 border-t border-white/20">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex -space-x-2">
+                                        <img src="https://ui-avatars.com/api/?name=John+Doe&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
+                                        <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
+                                        <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
+                                    </div>
+                                    <p class="text-sm text-white/80">Join thousands of writers already on Wordingo</p>
+                                </div>
+                            </div>
                         </div>
-                        <input class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2.5 <?php echo session('errors.password_confirm') ? 'border-red-500' : ''?>"
-                            id="password_confirm"
-                            type="password"
-                            name="password_confirm"
-                            placeholder="Confirm your new password"
-                            required>
                     </div>
-                    <?php if (session('errors.password_confirm')): ?>
-                        <p class="text-red-500 text-xs italic mt-1"><?php echo session('errors.password_confirm')?></p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                    <p class="flex items-center"><i class="fas fa-info-circle text-indigo-500 mr-2"></i> Password should be at least 8 characters long.</p>
-                    <p class="mt-1">For maximum security, use a mix of letters, numbers, and symbols.</p>
                 </div>
             </div>
         </div>
-
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-4 border-t border-gray-200">
-            <div class="text-gray-500 text-sm">
-                <p>Remember your password? <a href="<?php echo base_url('login')?>" class="text-indigo-600 hover:text-indigo-700">Sign in</a></p>
-            </div>
-            <button type="submit" class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors inline-flex items-center justify-center">
-                <i class="fas fa-save mr-2"></i> Set New Password
-            </button>
-        </div>
-    </form>
-    
-    <!-- Gradient bar at bottom -->
-    <div class="h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+    </div>
 </div>
 
 <style>
-    .bg-grid-white\/20 {
-        mask-image: linear-gradient(to bottom, transparent, black);
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
-    .bg-grid-8 {
-        background-size: 40px 40px;
-        background-image:
-            linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    .animate-fade-in {
+        animation: fade-in 0.5s ease-out;
     }
 
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
+    @keyframes shake {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-5px);
+        }
+
+        75% {
+            transform: translateX(5px);
+        }
+    }
+
+    .animate-shake {
+        animation: shake 0.3s ease-in-out;
     }
 </style>
-<?php echo $this->endSection()?> 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const spinner = document.getElementById('spinner');
+        form.addEventListener('submit', function(e) {
+            submitText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+        });
+    });
+</script>
+<?= $this->endSection() ?>

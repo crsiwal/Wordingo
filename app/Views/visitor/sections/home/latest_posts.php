@@ -47,14 +47,13 @@
             </article>
         <?php endforeach; ?>
     </div>
-    <!-- Modern Pagination -->
-    <div class="flex justify-center mt-8">
-        <nav class="inline-flex rounded-md shadow-sm" aria-label="Pagination">
-            <a href="#" class="px-3 py-1 rounded-l-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 leading-relaxed">&laquo;</a>
-            <a href="#" class="px-3 py-1 border-t border-b border-gray-300 bg-white text-blue-600 font-semibold leading-relaxed">1</a>
-            <a href="#" class="px-3 py-1 border-t border-b border-gray-300 bg-white text-gray-500 hover:bg-gray-50 leading-relaxed">2</a>
-            <a href="#" class="px-3 py-1 border-t border-b border-gray-300 bg-white text-gray-500 hover:bg-gray-50 leading-relaxed">3</a>
-            <a href="#" class="px-3 py-1 rounded-r-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 leading-relaxed">&raquo;</a>
-        </nav>
-    </div>
+    <!-- Pagination -->
+    <?php if (isset($pager)): ?>
+        <div class="mt-8 flex justify-center">
+            <?php
+            // Use our custom pager that handles query parameters automatically
+            echo str_replace(base_url(), base_url('recent'), $pager->links('default', 'visitor_pager'));
+            ?>
+        </div>
+    <?php endif; ?>
 </div>

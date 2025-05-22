@@ -15,38 +15,57 @@ class Home extends BaseController {
     }
 
     public function index() {
-        $featuredPosts = $this->postModel->featured()->posts(9);
-        $latestPosts = $this->postModel->published()->posts(6);
-        $categories = $this->categoryModel->withPostCount()->findAll();
-
         $categoryPostsData = [
             'before_category_tabs' => [
                 'title' => 'Top stories',
                 'layout' => 'TwoColumnGrid',
-                'posts' => $featuredPosts,
+                'posts' => $this->postModel->featured()->posts(8),
             ],
             'after_category_tabs' => [
                 'title' => 'Latest Posts',
                 'layout' => 'CarouselCompact',
-                'posts' => $latestPosts,
+                'posts' => $this->postModel->published()->paginate(18),
             ],
             'before_featured_carousel' => [
                 'title' => 'Featured Posts',
                 'layout' => 'CarouselGrid',
-                'posts' => $featuredPosts,
+                'posts' => $this->postModel->featured()->posts(8),
             ],
         ];
 
         $data = [
             'title' => 'Home',
-            'featuredPosts' => $featuredPosts,
-            'latestPosts' => $latestPosts,
-            'categories' => $categories,
+            'featuredPosts' => $this->postModel->featured()->posts(8),
+            'latestPosts' => $this->postModel->featured()->posts(8),
+            'categories' => $this->categoryModel->withPostCount()->findAll(),
             'categoryPostsData' => $categoryPostsData,
+            'pager' => $this->postModel->pager,
         ];
 
         return $this->render('visitor/index', $data);
     }
+
+    /* Recent Posts */
+    public function recentPosts() {
+        // Get latest posts with pagination with 18 posts per page with 'recent' segment
+        $recentPosts = $this->postModel->published()->paginate(18);
+
+        $posts = [
+            "latest" => [
+                'posts' => $recentPosts,
+                'layout' => 'StandardGrid',
+            ],
+        ];
+
+        $data = [
+            'title' => 'Recent Posts',
+            'posts' => $posts,
+            'pager' => $this->postModel->pager,
+        ];
+
+        return $this->render('visitor/recentPosts', $data);
+    }
+
 
     public function search() {
         $query = $this->request->getGet('q');

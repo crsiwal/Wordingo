@@ -10,7 +10,9 @@ $carouselId = null;
 
 <div class="container mx-auto px-4 my-16">
     <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold leading-relaxed"><?= esc($title ?? $category['name'] ?? 'Category') ?></h2>
+        <?php if ($title): ?>
+            <h2 class="text-2xl font-bold leading-relaxed"><?= esc($title) ?></h2>
+        <?php endif; ?>
         <?php
         if (in_array($layout, ['CarouselCompact', 'CarouselGrid'])):
             $carouselId = $layout_id ?? uniqid();

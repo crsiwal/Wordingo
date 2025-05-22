@@ -26,9 +26,18 @@ if (!function_exists('postUrl')) {
 // ];
 
 if (!function_exists('layout_posts')) {
-    function layout_posts($categoryPostsData, $key) {
-        if (isset($categoryPostsData[$key]) && count($categoryPostsData[$key]['posts']) > 0):
-            return view('visitor/sections/layouts/layout_posts', array_merge($categoryPostsData[$key], ['layout_id' => $key]));
-        endif;
+    function layout_posts($layoutsData, $key) {
+        if (!isset($layoutsData[$key])) {
+            return null; // or return ''; or handle it as needed
+        }
+
+        $layoutData = $layoutsData[$key];
+
+        if (isset($layoutData['posts']) && is_array($layoutData['posts']) && count($layoutData['posts']) > 0) {
+            $layoutData["title"] = $layoutData["title"] ?? "";
+            return view('visitor/sections/layouts/layout_posts', array_merge($layoutData, ['layout_id' => $key]));
+        }
+
+        return null;
     }
 }

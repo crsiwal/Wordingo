@@ -4,8 +4,7 @@ namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
 
-class Pager extends BaseConfig
-{
+class Pager extends BaseConfig {
     /**
      * --------------------------------------------------------------------------
      * Templates
@@ -25,6 +24,7 @@ class Pager extends BaseConfig
         'default_simple' => 'CodeIgniter\Pager\Views\default_simple',
         'default_head'   => 'CodeIgniter\Pager\Views\default_head',
         'admin_pager'    => 'App\Views\Pagers\admin_pager', // Custom pager for admin pages
+        'visitor_pager'    => 'App\Views\Pagers\visitor_pager', // Custom pager for visitor pages
     ];
 
     /**
