@@ -266,7 +266,7 @@
     </main>
 
     <!-- Modern Footer (Multi-Column) -->
-    <footer class="bg-white border-t border-gray-100 pt-10 pb-4 mt-12">
+    <footer class="bg-white border-t border-gray-100 pb-4 py-12">
         <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-12 mb-8">
             <div>
                 <h3 class="text-lg sm:text-xl font-bold mb-3 text-blue-700">About Wordingo</h3>
@@ -311,81 +311,8 @@
             &copy; <?= date('Y') ?> Wordingo. All rights reserved.
         </div>
     </footer>
-
-
-    <!-- Scripts -->
-    <script>
-        // Auto-save functionality
-        let autoSaveTimeout;
-        const autoSaveInterval = 15000; // 15 seconds
-
-        function setupAutoSave() {
-            const editor = document.querySelector('.ck-editor__editable');
-            if (editor) {
-                editor.addEventListener('input', () => {
-                    clearTimeout(autoSaveTimeout);
-                    autoSaveTimeout = setTimeout(() => {
-                        // Trigger save
-                        document.querySelector('form').dispatchEvent(new Event('submit'));
-                    }, autoSaveInterval);
-                });
-            }
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey) {
-                switch (e.key.toLowerCase()) {
-                    case 'n':
-                        e.preventDefault();
-                        window.location.href = '<?php echo base_url('admin/posts/create') ?>';
-                        break;
-                    case 's':
-                        e.preventDefault();
-                        const form = document.querySelector('form');
-                        if (form) form.dispatchEvent(new Event('submit'));
-                        break;
-                    case 'p':
-                        e.preventDefault();
-                        const statusInput = document.querySelector('select[name="status"]');
-                        if (statusInput) {
-                            statusInput.value = 'published';
-                            document.querySelector('form').dispatchEvent(new Event('submit'));
-                        }
-                        break;
-                    case '/':
-                        e.preventDefault();
-                        document.getElementById('searchModal').classList.remove('hidden');
-                        setTimeout(() => {
-                            document.querySelector('#searchModal input').focus();
-                        }, 100);
-                        break;
-                }
-            }
-        });
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            setupAutoSave();
-
-            // Update theme icon on load
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const themeIcon = document.getElementById('themeIcon');
-            if (themeIcon) {
-                themeIcon.classList.replace(
-                    isDarkMode ? 'fa-moon' : 'fa-sun',
-                    isDarkMode ? 'fa-sun' : 'fa-moon'
-                );
-            }
-
-            // Close search modal with escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    document.getElementById('searchModal').classList.add('hidden');
-                }
-            });
-        });
-    </script>
+    <!-- Carousel Script -->
+    <script src="<?php echo base_url('js/script.js') ?>"></script>
 </body>
 
 </html>

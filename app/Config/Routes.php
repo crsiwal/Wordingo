@@ -16,7 +16,7 @@ $routes->set404Override();
 // Frontend Routes
 $routes->get('/', 'Home::index');
 $routes->get('post/(:segment)', 'Home::post/$1'); // post/slug
-$routes->get('post/(:segment)/(:segment)/(:segment)', 'Home::post/$3'); // post/category/slug/id
+$routes->get('post/(:segment)/(:segment)/(:segment)', 'Home::post/$3'); // post/category/created_at/slug
 $routes->get('post/(:segment)/(:segment)', 'Home::post/$2'); // post/category/slug
 
 // Category Routes

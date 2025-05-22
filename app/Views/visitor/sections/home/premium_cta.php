@@ -17,3 +17,17 @@
         </div>
     </div>
 </div>
+
+<!-- Premium CTA Section -->
+<div class="bg-gradient-to-r from-pink-500 to-blue-500 py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-relaxed">Join Our Premium Membership</h2>
+            <p class="text-white/90 text-lg mb-8 leading-relaxed">Get access to exclusive content, early access to new features, and more!</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#" class="px-8 py-3 bg-white text-pink-600 rounded-lg font-semibold shadow-lg hover:bg-gray-100 transition leading-relaxed">Get Started</a>
+                <a href="#" class="px-8 py-3 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition leading-relaxed">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -15,30 +15,34 @@ class Home extends BaseController {
     }
 
     public function index() {
-        // Fetch featured posts with all required fields for the card
-        $featuredPosts = $this->postModel
-            ->select('posts.*, categories.name as category_name, users.name as author_name, users.avatar as author_avatar, users.role as author_role')
-            ->join('categories', 'categories.id = posts.category_id', 'left')
-            ->join('users', 'users.id = posts.user_id', 'left')
-            ->where('posts.is_featured', 1)
-            ->orderBy('posts.published_at', 'DESC')
-            ->findAll(8);
-
-        // Fetch latest posts with all required fields for the card
-        $latestPosts = $this->postModel
-            ->select('posts.*, categories.name as category_name, users.name as author_name, users.avatar as author_avatar, users.role as author_role')
-            ->join('categories', 'categories.id = posts.category_id', 'left')
-            ->join('users', 'users.id = posts.user_id', 'left')
-            ->orderBy('posts.published_at', 'DESC')
-            ->findAll(6);
-
+        $featuredPosts = $this->postModel->featured()->posts(9);
+        $latestPosts = $this->postModel->published()->posts(6);
         $categories = $this->categoryModel->withPostCount()->findAll();
+
+        $categoryPostsData = [
+            'before_category_tabs' => [
+                'title' => 'Top stories',
+                'layout' => 'TwoColumnGrid',
+                'posts' => $featuredPosts,
+            ],
+            'after_category_tabs' => [
+                'title' => 'Latest Posts',
+                'layout' => 'CarouselCompact',
+                'posts' => $latestPosts,
+            ],
+            'before_featured_carousel' => [
+                'title' => 'Featured Posts',
+                'layout' => 'CarouselGrid',
+                'posts' => $featuredPosts,
+            ],
+        ];
 
         $data = [
             'title' => 'Home',
             'featuredPosts' => $featuredPosts,
             'latestPosts' => $latestPosts,
             'categories' => $categories,
+            'categoryPostsData' => $categoryPostsData,
         ];
 
         return $this->render('visitor/index', $data);
@@ -51,14 +55,21 @@ class Home extends BaseController {
             return redirect()->to('/');
         }
 
+        $searchedPosts = $this->postModel->published()
+            ->like('posts.title', $query)
+            ->orLike('posts.content', $query)
+            ->posts(9);
+
         $data = [
             'title' => "Search: {$query}",
             'query' => $query,
-            'posts' => $this->postModel->published()
-                ->like('title', $query)
-                ->orLike('content', $query)
-                ->orderBy('published_at', 'DESC')
-                ->paginate(10),
+            'posts' => [
+                "search" => [
+                    'posts' => $searchedPosts,
+                    'layout' => 'LeftToRightGrid',
+                    'title' => 'Search Results: ' . $query,
+                ]
+            ],
             'pager' => $this->postModel->pager,
         ];
 
@@ -72,13 +83,30 @@ class Home extends BaseController {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
+        // Get top posts
+        $mostViewedPosts = $this->postModel->categoryPosts($slug)->viewed(true)->posts(1);
+        $excludedIds = array_column($mostViewedPosts, 'id');
+
+        // Get latest posts
+        $latestPosts = $this->postModel->categoryPosts($slug)->exclude($excludedIds)->posts(10);
+
+        $posts = [
+            "mostViewed" => [
+                'posts' => $mostViewedPosts,
+                'layout' => 'LeftToRightGrid',
+                'title' => 'Top stories',
+            ],
+            "latest" => [
+                'posts' => $latestPosts,
+                'layout' => 'StandardGrid',
+                'title' => 'Recently Posted',
+            ],
+        ];
+
         $data = [
             'title' => $category['name'],
             'category' => $category,
-            'posts' => $this->postModel->published()
-                ->where('category_id', $category['id'])
-                ->orderBy('published_at', 'DESC')
-                ->paginate(10),
+            'posts' => $posts,
             'pager' => $this->postModel->pager,
         ];
 
@@ -87,7 +115,7 @@ class Home extends BaseController {
 
     public function post($slug) {
         $post = $this->postModel->published()
-            ->where('slug', $slug)
+            ->where('posts.slug', $slug)
             ->first();
 
         if (!$post) {
@@ -98,12 +126,7 @@ class Home extends BaseController {
         $this->postModel->incrementViews($post['id']);
 
         // Get related posts
-        $relatedPosts = $this->postModel->published()
-            ->where('category_id', $post['category_id'])
-            ->where('id !=', $post['id'])
-            ->orderBy('published_at', 'DESC')
-            ->limit(3)
-            ->find();
+        $relatedPosts = $this->postModel->related($post['category_id'], $post['id'])->posts(3);
 
         $data = [
             'title' => $post['title'],
@@ -113,45 +136,5 @@ class Home extends BaseController {
         ];
 
         return $this->render('visitor/post', $data);
-    }
-
-    public function about() {
-        $data = [
-            'title' => 'About Us',
-            'description' => 'Learn more about our blog and mission',
-        ];
-
-        return $this->render('visitor/about', $data);
-    }
-
-    public function contact() {
-        if ($this->request->is('post')) {
-            $rules = [
-                'name' => 'required|min_length[3]|max_length[255]',
-                'email' => 'required|valid_email',
-                'message' => 'required|min_length[10]',
-            ];
-
-            if ($this->validate($rules)) {
-                // Send email
-                $email = \Config\Services::email();
-                $email->setTo(getenv('admin_email'));
-                $email->setFrom($this->request->getPost('email'), $this->request->getPost('name'));
-                $email->setSubject('Contact Form Submission');
-                $email->setMessage($this->request->getPost('message'));
-                $email->send();
-
-                $this->setFlash('success', 'Your message has been sent. We will get back to you soon.');
-                return redirect()->to('/contact');
-            }
-        }
-
-        $data = [
-            'title' => 'Contact Us',
-            'description' => 'Get in touch with us',
-            'validation' => $this->validator,
-        ];
-
-        return $this->render('visitor/contact', $data);
     }
 }

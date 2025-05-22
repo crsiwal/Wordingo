@@ -10,16 +10,16 @@
     <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-16">
         <!-- Left: Text Content -->
         <div class="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-            <span class="inline-block bg-pink-200 text-pink-800 text-xs font-semibold px-3 py-1 rounded-full mb-4 shadow">Becoming a new program online</span>
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 leading-tight bg-gradient-to-r from-blue-600 via-pink-500 to-purple-600 bg-clip-text text-transparent drop-shadow-lg">
+            <span class="inline-block bg-pink-200 text-pink-800 text-xs font-semibold px-3 py-1 rounded-full mb-4 shadow leading-relaxed">Becoming a new program online</span>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 leading-[1.4] bg-gradient-to-r from-blue-600 via-pink-500 to-purple-600 bg-clip-text text-transparent drop-shadow-lg">
                 Collection of articles <br class="hidden md:block">about the <span class="text-blue-700">world of work</span>
             </h1>
-            <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-6 sm:mb-8 max-w-2xl">The right source of knowledge can be powerful professional growth, don't quit right there. Find the best advice, tips, and stories for your journey.</p>
+            <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-6 sm:mb-8 max-w-2xl leading-relaxed">The right source of knowledge can be powerful professional growth, don't quit right there. Find the best advice, tips, and stories for your journey.</p>
 
             <!-- Search Bar -->
             <form action="<?= base_url('search') ?>" method="get" class="flex flex-col sm:flex-row w-full max-w-xl mx-auto md:mx-0 mb-6 sm:mb-8 shadow-lg rounded-lg overflow-hidden bg-white">
-                <input type="text" name="q" class="flex-1 px-4 sm:px-6 py-4 sm:py-5 text-base sm:text-lg border-0 focus:ring-0 focus:outline-none" placeholder="Search articles, topics, or authors...">
-                <button type="submit" class="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-pink-500 to-blue-500 text-white font-bold text-base sm:text-lg transition hover:from-blue-500 hover:to-pink-500">Search</button>
+                <input type="text" name="q" class="flex-1 px-4 sm:px-6 py-4 sm:py-5 text-base sm:text-lg border-0 focus:ring-0 focus:outline-none leading-relaxed" placeholder="Search articles, topics, or authors...">
+                <button type="submit" class="w-full sm:w-auto px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-pink-500 to-blue-500 text-white font-bold text-base sm:text-lg transition hover:from-blue-500 hover:to-pink-500 leading-relaxed">Search</button>
             </form>
         </div>
 
