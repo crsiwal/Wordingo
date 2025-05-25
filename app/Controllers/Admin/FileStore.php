@@ -1,25 +1,29 @@
 <?php
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\PostPhotoModel;
 
-class FileStore extends BaseController
-{
+class FileStore extends BaseController {
     protected $photoModel;
     protected $sizes;
     protected $basePath;
     protected $uploadPath;
 
     protected $allowedFields = [
-        'user_id', 'post_id', 'file_title', 'file_path', 'created_at', 'updated_at',
+        'user_id',
+        'post_id',
+        'file_title',
+        'file_path',
+        'created_at',
+        'updated_at',
     ];
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->photoModel = new PostPhotoModel();
         $this->basePath   = 'files/' . session()->get('user_id') . '/images/';
-        $this->uploadPath = FCPATH . $this->basePath;
+        $this->uploadPath = WRITEPATH . "uploads/" . $this->basePath;
 
         // Define sizes: key => [width, height, keepRatio]
         $this->sizes = [
@@ -31,8 +35,7 @@ class FileStore extends BaseController
     }
 
     // Handle image upload
-    public function upload()
-    {
+    public function upload() {
         $userId = session()->get('user_id');
         if (! $userId) {
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Unauthorized']);
@@ -112,8 +115,7 @@ class FileStore extends BaseController
     }
 
     // List/search user images (API)
-    public function list()
-    {
+    public function list() {
         $userId = session()->get('user_id');
         if (! $userId) {
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Unauthorized']);
@@ -146,8 +148,7 @@ class FileStore extends BaseController
         return $this->response->setJSON($formattedPhotos);
     }
 
-    public function delete()
-    {
+    public function delete() {
         $userId = session()->get('user_id');
         if (! $userId) {
             return $this->response->setStatusCode(401)->setJSON(['error' => 'Unauthorized']);
@@ -183,7 +184,7 @@ class FileStore extends BaseController
         }
 
         // Delete the original file
-        $filePath = FCPATH . $photo['file_path'];
+        $filePath = WRITEPATH . $photo['file_path'];
         if (file_exists($filePath)) {
             @unlink($filePath);
         }

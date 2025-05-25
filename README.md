@@ -56,6 +56,12 @@ php spark migrate
 php spark db:seed DummySeeder
 ```
 
+Create symbolic link for file uploads (Windows):
+
+```bash
+mklink /D public\files ..\writable\uploads\files
+```
+
 Serve the app:
 
 ```bash

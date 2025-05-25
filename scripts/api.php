@@ -1,6 +1,6 @@
 <?php
 
-define('OPENAI_API_KEY', '');
+define('OPENAI_API_KEY', 'for Run get this from the .env file');
 // define('MODEL', 'gpt-4'); // or 'gpt-3.5-turbo'
 define('MODEL', 'gpt-3.5-turbo');
 

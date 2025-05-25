@@ -10,7 +10,7 @@ use App\Models\PostModel;
 class Users extends BaseController {
     protected $userModel;
     protected $emailService;
-    protected $avatarPath = 'uploads/avatars';
+    protected $avatarPath = '';
     protected $fullAvatarPath;
     protected $userRole;
     protected $userId;
@@ -19,10 +19,11 @@ class Users extends BaseController {
 
     public function __construct() {
         $this->userModel      = new UserModel();
-        $this->emailService   = new EmailService();
-        $this->fullAvatarPath = FCPATH . $this->avatarPath;
         $this->userRole       = session()->get('user_role');
         $this->userId         = session()->get('user_id');
+        $this->emailService   = new EmailService();
+        $this->avatarPath     = "files/" . $this->userId . "/avatars";
+        $this->fullAvatarPath = WRITEPATH . "uploads/" . $this->avatarPath;
 
         // Determine allowed roles based on current user role
         $this->allowedRoles = ($this->userRole === 'admin')

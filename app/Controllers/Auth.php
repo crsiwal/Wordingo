@@ -1,22 +1,23 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Libraries\EmailService;
 
-class Auth extends BaseController
-{
+class Auth extends BaseController {
     protected $userModel;
     protected $emailService;
-    protected $avatarPath = 'uploads/avatars';
+    protected $avatarPath = "files/avatars";
     protected $fullAvatarPath;
     protected $tempAvatarPath = null; // Variable to store temporary avatar path
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->userModel      = new UserModel();
         $this->emailService   = new EmailService();
-        $this->fullAvatarPath = FCPATH . $this->avatarPath;
+
+        // Set the full path to the avatar directory
+        $this->fullAvatarPath = WRITEPATH . "uploads/" . $this->avatarPath;
 
         // Create avatar directory if it doesn't exist
         if (! is_dir($this->fullAvatarPath)) {
@@ -24,8 +25,7 @@ class Auth extends BaseController
         }
     }
 
-    public function login()
-    {
+    public function login() {
         if (session()->get('logged_in')) {
             return redirect()->to('/admin');
         }
@@ -36,8 +36,7 @@ class Auth extends BaseController
         ]);
     }
 
-    public function attemptLogin()
-    {
+    public function attemptLogin() {
         $rules = [
             'email'    => 'required',
             'password' => 'required',
@@ -105,8 +104,7 @@ class Auth extends BaseController
         return redirect()->back()->withInput();
     }
 
-    public function register()
-    {
+    public function register() {
         if (session()->get('logged_in')) {
             return redirect()->to('/admin');
         }
@@ -117,8 +115,7 @@ class Auth extends BaseController
         ]);
     }
 
-    public function attemptRegister()
-    {
+    public function attemptRegister() {
         $rules = [
             'name'     => 'required|min_length[3]|max_length[255]',
             'username' => 'required|min_length[3]|max_length[32]|is_unique[users.username]|alpha_numeric',
@@ -201,15 +198,13 @@ class Auth extends BaseController
         return redirect()->back()->withInput();
     }
 
-    public function logout()
-    {
+    public function logout() {
         session()->destroy();
         $this->setFlash('success', 'You have been logged out');
         return redirect()->to('/login');
     }
 
-    public function forgotPassword()
-    {
+    public function forgotPassword() {
         if (session()->get('logged_in')) {
             return redirect()->to('/admin');
         }
@@ -220,8 +215,7 @@ class Auth extends BaseController
         ]);
     }
 
-    public function attemptForgotPassword()
-    {
+    public function attemptForgotPassword() {
         $rules = [
             'email' => 'required|valid_email',
         ];
@@ -253,8 +247,7 @@ class Auth extends BaseController
         return redirect()->back()->withInput();
     }
 
-    public function resetPassword($token)
-    {
+    public function resetPassword($token) {
         if (session()->get('logged_in')) {
             return redirect()->to('/admin');
         }
@@ -272,8 +265,7 @@ class Auth extends BaseController
         ]);
     }
 
-    public function attemptResetPassword($token)
-    {
+    public function attemptResetPassword($token) {
         $user = $this->userModel->where('reset_token', $token)->first();
 
         if (! $user) {
@@ -312,8 +304,7 @@ class Auth extends BaseController
      * @param object $file The uploaded file object
      * @return array Status and results of the operation
      */
-    private function processAvatar($file)
-    {
+    private function processAvatar($file) {
         try {
             // Generate a unique filename with timestamp to avoid cache issues
             $newName = 'avatar_' . time() . '_' . uniqid() . '.png';
