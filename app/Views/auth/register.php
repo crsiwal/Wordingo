@@ -1,8 +1,8 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-    <div class="container mx-auto px-4 py-12">
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-x-hidden">
+    <div class="container mx-auto px-2 sm:px-4 py-12">
         <div class="max-w-6xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-12">
@@ -12,7 +12,7 @@
 
             <!-- Main Content -->
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
-                <div class="grid lg:grid-cols-2">
+                <div class="grid grid-cols-1 lg:grid-cols-2 w-full">
                     <!-- Left: Form Section -->
                     <div class="p-8 lg:p-12">
                         <?php if (session()->getFlashdata('error')): ?>
@@ -103,27 +103,28 @@
 
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
-                                        <div class="grid grid-cols-3 gap-4">
-                                            <select name="birth_day" class="px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_day') ? 'border-red-500' : '' ?>" required>
+                                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                            <select name="birth_day" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_day') ? 'border-red-500' : '' ?>" required>
                                                 <option value="" disabled <?= !old('birth_day') ? 'selected' : '' ?>>Day</option>
                                                 <?php for ($i = 1; $i <= 31; $i++): ?>
                                                     <option value="<?= $i ?>" <?= old('birth_day') == $i ? 'selected' : '' ?>><?= $i ?></option>
                                                 <?php endfor; ?>
                                             </select>
-                                            <select name="birth_month" class="px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_month') ? 'border-red-500' : '' ?>" required>
+                                            <select name="birth_month" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_month') ? 'border-red-500' : '' ?>" required>
                                                 <option value="" disabled <?= !old('birth_month') ? 'selected' : '' ?>>Month</option>
                                                 <?php $months = [1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April', 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'];
                                                 foreach ($months as $num => $name): ?>
                                                     <option value="<?= $num ?>" <?= old('birth_month') == $num ? 'selected' : '' ?>><?= $name ?></option>
                                                 <?php endforeach; ?>
                                             </select>
-                                            <select name="birth_year" class="px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_year') ? 'border-red-500' : '' ?>" required>
+                                            <select name="birth_year" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_year') ? 'border-red-500' : '' ?>" required>
                                                 <option value="" disabled <?= !old('birth_year') ? 'selected' : '' ?>>Year</option>
                                                 <?php for ($i = date('Y') - 13; $i >= date('Y') - 100; $i--): ?>
                                                     <option value="<?= $i ?>" <?= old('birth_year') == $i ? 'selected' : '' ?>><?= $i ?></option>
                                                 <?php endfor; ?>
                                             </select>
                                         </div>
+                                        <div id="dob-error-container"></div>
                                         <p class="mt-2 text-sm text-gray-500">You must be at least 13 years old to register</p>
                                     </div>
                                 </div>
@@ -385,19 +386,13 @@
     let currentStep = 1;
 
     function showStep(step) {
-        // Hide all steps
         document.querySelectorAll('.step-block').forEach(block => {
             block.classList.add('hidden');
         });
-
-        // Show current step
         document.getElementById('step-' + step).classList.remove('hidden');
-
-        // Update step indicators
         for (let i = 1; i <= 4; i++) {
             const indicator = document.getElementById('step-indicator-' + i);
             const line = document.getElementById('step-line-' + i);
-
             if (i < step) {
                 indicator.classList.add('bg-indigo-600', 'text-white');
                 indicator.classList.remove('bg-gray-200', 'text-gray-600');
@@ -411,12 +406,136 @@
                 if (line) line.classList.remove('bg-indigo-600');
             }
         }
-
         currentStep = step;
     }
 
+    function validateStep(step) {
+        let valid = true;
+        let firstInvalid = null;
+        // Clear previous error highlights
+        document.querySelectorAll('#step-' + step + ' input, #step-' + step + ' select, #step-' + step + ' textarea').forEach(el => {
+            el.classList.remove('border-red-500');
+        });
+        // Remove previous error messages
+        document.querySelectorAll('#step-' + step + ' .js-error').forEach(el => el.remove());
+
+        if (step === 1) {
+            // Name
+            const name = document.getElementById('name');
+            if (!name.value.trim()) {
+                valid = false;
+                name.classList.add('border-red-500');
+                showError(name, 'Full name is required');
+                firstInvalid = firstInvalid || name;
+            }
+            // Username
+            const username = document.getElementById('username');
+            if (!username.value.trim()) {
+                valid = false;
+                username.classList.add('border-red-500');
+                showError(username, 'Username is required');
+                firstInvalid = firstInvalid || username;
+            }
+            // Date of Birth
+            const day = document.querySelector('select[name="birth_day"]');
+            const month = document.querySelector('select[name="birth_month"]');
+            const year = document.querySelector('select[name="birth_year"]');
+            const dobErrorContainer = document.getElementById('dob-error-container');
+            dobErrorContainer.innerHTML = '';
+            if (!day.value || !month.value || !year.value) {
+                valid = false;
+                day.classList.add('border-red-500');
+                month.classList.add('border-red-500');
+                year.classList.add('border-red-500');
+                // Show error below all selects, full width
+                let error = document.createElement('p');
+                error.className = 'mt-2 text-sm text-red-600 animate-shake js-error';
+                error.innerText = 'Complete date of birth is required';
+                dobErrorContainer.appendChild(error);
+                firstInvalid = firstInvalid || day;
+            }
+        } else if (step === 2) {
+            // Email
+            const email = document.getElementById('email');
+            if (!email.value.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.value)) {
+                valid = false;
+                email.classList.add('border-red-500');
+                showError(email, 'Valid email is required');
+                firstInvalid = firstInvalid || email;
+            }
+            // Phone
+            const phone = document.getElementById('phone');
+            if (!phone.value.trim()) {
+                valid = false;
+                phone.classList.add('border-red-500');
+                showError(phone, 'Phone number is required');
+                firstInvalid = firstInvalid || phone;
+            }
+            // Country
+            const country = document.getElementById('country');
+            if (!country.value) {
+                valid = false;
+                country.classList.add('border-red-500');
+                showError(country, 'Country is required');
+                firstInvalid = firstInvalid || country;
+            }
+            // Address
+            const address = document.getElementById('address');
+            if (!address.value.trim()) {
+                valid = false;
+                address.classList.add('border-red-500');
+                showError(address, 'Full address is required');
+                firstInvalid = firstInvalid || address;
+            }
+        } else if (step === 3) {
+            // Password
+            const password = document.getElementById('password');
+            if (!password.value.trim() || password.value.length < 8) {
+                valid = false;
+                password.classList.add('border-red-500');
+                showError(password, 'Password must be at least 8 characters');
+                firstInvalid = firstInvalid || password;
+            }
+            // Confirm Password
+            const passwordConfirm = document.getElementById('password_confirm');
+            if (!passwordConfirm.value.trim() || passwordConfirm.value !== password.value) {
+                valid = false;
+                passwordConfirm.classList.add('border-red-500');
+                showError(passwordConfirm, 'Passwords do not match');
+                firstInvalid = firstInvalid || passwordConfirm;
+            }
+        } else if (step === 4) {
+            // Terms
+            const terms = document.querySelector('input[name="terms"]');
+            if (!terms.checked) {
+                valid = false;
+                showError(terms.parentElement, 'You must agree to the terms');
+                firstInvalid = firstInvalid || terms;
+            }
+        }
+        if (firstInvalid) {
+            if (firstInvalid.focus) firstInvalid.focus();
+        }
+        return valid;
+    }
+
+    function showError(element, message) {
+        let error = document.createElement('p');
+        error.className = 'mt-1 text-sm text-red-600 animate-shake js-error';
+        error.innerText = message;
+        if (element.parentElement.classList.contains('relative')) {
+            element.parentElement.appendChild(error);
+        } else if (element.tagName === 'SELECT' || element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
+            element.parentElement.appendChild(error);
+        } else {
+            element.appendChild(error);
+        }
+    }
+
     function nextStep(step) {
-        showStep(step);
+        if (validateStep(currentStep)) {
+            showStep(step);
+        }
     }
 
     function prevStep(step) {
@@ -426,7 +545,6 @@
     function togglePassword() {
         const passwordInput = document.getElementById('password');
         const eyeIcon = document.getElementById('eye-icon');
-
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';
             eyeIcon.classList.remove('fa-eye');
@@ -451,11 +569,8 @@
         }
     }
 
-    // Initialize form
     document.addEventListener('DOMContentLoaded', function() {
         showStep(1);
-
-        // Handle form submission
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             document.getElementById('submitText').classList.add('hidden');
             document.getElementById('spinner').classList.remove('hidden');

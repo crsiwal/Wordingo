@@ -240,7 +240,8 @@ class Posts extends BaseController {
         if ($this->request->is('post')) {
             $rules = [
                 'title'       => 'required|min_length[3]|max_length[256]',
-                'description' => 'permit_empty|max_length[160]', // Add validation for description field
+                'in_short'    => 'permit_empty|max_length[2000]',
+                'description' => 'permit_empty|max_length[256]',
                 'content'     => 'required',
                 'category_id' => 'required|numeric',
                 'status'      => 'required|in_list[draft,published]',
@@ -262,8 +263,9 @@ class Posts extends BaseController {
             if ($this->validate($rules)) {
                 $content = [
                     'title'        => $this->request->getPost('title'),
-                    'description'  => $this->request->getPost('description') ?? '', // Add description field
+                    'description'  => $this->request->getPost('description') ?? '',
                     'content'      => $this->request->getPost('content'),
+                    'in_short'     => $this->request->getPost('in_short'),
                     'thumbnail'    => $this->request->getPost('featured_image_url') ?? null,
                     'category_id'  => $this->request->getPost('category_id'),
                     'status'       => $this->request->getPost('status'),
@@ -305,8 +307,9 @@ class Posts extends BaseController {
             $data['post'] = array_merge($data['post'], [
                 'title'        => $this->request->getPost('title'),
                 'slug'         => $newSlug,
-                'description'  => $this->request->getPost('description'), // Add description field
+                'in_short'     => $this->request->getPost('in_short'),
                 'content'      => $this->request->getPost('content'),
+                'description'  => $this->request->getPost('description'),
                 'thumbnail'    => $this->request->getPost('featured_image'),
                 'category_id'  => $this->request->getPost('category_id'),
                 'status'       => $this->request->getPost('status'),

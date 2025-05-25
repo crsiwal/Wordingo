@@ -36,6 +36,10 @@ class CreatePostsTable extends Migration {
                 'type' => 'LONGTEXT',
                 'null'       => true,
             ],
+            'in_short' => [
+                'type' => 'TEXT',
+                'null'       => true,
+            ],
             'thumbnail' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 2048,

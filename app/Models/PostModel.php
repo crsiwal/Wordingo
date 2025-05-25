@@ -17,6 +17,7 @@ class PostModel extends Model {
         'slug',
         'description',
         'content',
+        'in_short',
         'thumbnail',
         'category_id',
         'status',

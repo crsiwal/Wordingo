@@ -188,6 +188,39 @@
                             <p class="mt-1 text-sm text-red-600"><?php echo session('errors.content') ?></p>
                         <?php endif; ?>
                     </div>
+
+                    <!-- In Short -->
+                    <?php
+                    $hasInShort = trim(old('in_short', $post['in_short'] ?? ''));
+                    ?>
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-700">In Short (Optional)</h3>
+                                <p class="text-xs text-gray-500 mt-2">Attach a brief summary of your post</p>
+                            </div>
+                            <button type="button" id="in-short-toggle" class="flex items-center text-primary-600 hover:text-primary-800 text-sm focus:outline-none">
+                                <i class="fas <?php echo $hasInShort ? 'fa-eye-slash' : 'fa-eye'; ?> mr-1"></i>
+                                <?php echo $hasInShort ? 'Hide In Short Editor' : 'Show In Short Editor'; ?>
+                            </button>
+                        </div>
+
+                        <div id="in-short-block" class="relative" style="display: <?php echo $hasInShort ? 'block' : 'none'; ?>;">
+                            <textarea class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 <?php echo session('errors.in_short') ? 'border-red-500' : 'border-gray-300' ?>"
+                                id="in_short"
+                                name="in_short"
+                                rows="4"
+                                placeholder="Write a short summary of the post (50-200 words)" required>
+                                <?php echo old('in_short', $post['in_short'] ?? '') ?>
+                            </textarea>
+                            <?php if (session('errors.in_short')): ?>
+                                <p class="mt-1 text-sm text-red-600"><?php echo session('errors.in_short') ?></p>
+                            <?php else: ?>
+                                <p class="mt-1 text-sm text-gray-500">A short summary of the post (50-200 words). Required.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Sidebar Column -->
@@ -248,7 +281,6 @@
                                 <p class="mt-1 text-sm text-gray-500">Select the status of the post. Draft posts are not visible to the visitors.</p>
                             </div>
 
-
                             <!-- Published At -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2" for="published_at">
@@ -266,7 +298,6 @@
                                 <input type="datetime-local" name="published_at" id="published_at" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 border-gray-300" value="<?php echo $publishedAt ?>">
                                 <p class="mt-1 text-sm text-gray-500">Set a future date/time to schedule the post. The post will be visible only after this time.</p>
                             </div>
-
 
                             <!-- Post Category -->
                             <div>
@@ -745,9 +776,83 @@
                 descriptionCounter.textContent = this.value.length;
             });
         }
+
+        // Initialize minimal Froala Editor for In Short
+        const inShortEditor = new FroalaEditor('#in_short', {
+            height: 200,
+            placeholderText: 'Write a short summary of the post (50-200 words)',
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'underline', 'fontSize', 'lineHeight'],
+                    'buttonsVisible': 4
+                },
+                'moreRich': {
+                    'buttons': ['insertLink'],
+                    'buttonsVisible': 1
+                }
+            },
+            // Disable all other plugins
+            pluginsDisable: [
+                'fileUploadToS3',
+                'imageUploadToS3',
+                'videoUploadToS3',
+                'videoUpload',
+                'fileManager',
+                'imageManager',
+                'imageUpload',
+                'imageByURL',
+                'imageManager',
+                'videoInsertButtons',
+                'emoticons',
+                'specialCharacters',
+                'insertTable',
+                'insertImage',
+                'insertVideo',
+                'fullscreen',
+                'html',
+                'undo',
+                'redo',
+                'getPDF',
+                'spellChecker',
+                'help'
+            ],
+            // Disable quick insert
+            quickInsertEnabled: false,
+            // Events
+            events: {
+                'contentChanged': function() {
+                    // Update the textarea value when content changes
+                    this.el.value = this.html.get();
+                }
+            }
+        });
+
+        // In Short show/hide logic
+        const inShortBlock = document.getElementById('in-short-block');
+        const inShortToggle = document.getElementById('in-short-toggle');
+        const inShortTextarea = document.getElementById('in_short');
+
+        if (inShortToggle) {
+            inShortToggle.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                const isVisible = inShortBlock.style.display !== 'none';
+
+                if (isVisible) {
+                    inShortBlock.style.display = 'none';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                    this.innerHTML = '<i class="fas fa-eye mr-1"></i> Show In Short Editor';
+                } else {
+                    inShortBlock.style.display = 'block';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                    this.innerHTML = '<i class="fas fa-eye-slash mr-1"></i> Hide In Short Editor';
+                    inShortEditor.events.focus();
+                }
+            });
+        }
     });
 </script>
-
 <style>
     .bg-grid-white\/20 {
         mask-image: linear-gradient(to bottom, transparent, black);

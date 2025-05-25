@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
@@ -6,22 +7,19 @@ use App\Models\CategoryModel;
 use App\Models\PostModel;
 use App\Models\UserModel;
 
-class Categories extends BaseController
-{
+class Categories extends BaseController {
     protected $categoryModel;
     protected $postModel;
     protected $userRole;
     protected $showRecords = 50;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->categoryModel = new CategoryModel();
         $this->postModel = new PostModel();
         $this->userRole = session()->get('user_role');
     }
 
-    public function index()
-    {
+    public function index() {
         $search = $this->request->getGet('q');
         $sort = $this->request->getGet('sort');
         $userId = session()->get('user_id');
@@ -92,8 +90,7 @@ class Categories extends BaseController
         return $this->render('admin/categories/index', $data);
     }
 
-    public function create()
-    {
+    public function create() {
         // Check if user is admin
         if ($this->userRole !== 'admin') {
             $this->setFlash('error', 'Only administrators can create categories');
@@ -120,7 +117,7 @@ class Categories extends BaseController
                 }
 
                 $this->setFlash('error', 'Failed to create category');
-            }else{
+            } else {
                 $this->setFlash('error', $this->validator->listErrors());
             }
         }
@@ -133,8 +130,7 @@ class Categories extends BaseController
         return $this->render('admin/categories/create', $data);
     }
 
-    public function edit($id)
-    {
+    public function edit($id) {
         // Check if user is admin
         if ($this->userRole !== 'admin') {
             $this->setFlash('error', 'Only administrators can edit categories');
@@ -168,6 +164,8 @@ class Categories extends BaseController
 
                 $errorMessage = (array_values($this->categoryModel->errors()))[0];
                 $this->setFlash('error', 'Failed to update category: ' . $errorMessage);
+            } else {
+                $this->setFlash('error', $this->validator->listErrors());
             }
         }
 
@@ -180,8 +178,7 @@ class Categories extends BaseController
         return $this->render('admin/categories/edit', $data);
     }
 
-    public function delete($id)
-    {
+    public function delete($id) {
         // Check if user is admin
         if ($this->userRole !== 'admin') {
             $this->setFlash('error', 'Only administrators can delete categories');
@@ -201,8 +198,8 @@ class Categories extends BaseController
         if ($affectedPosts > 0) {
             // Update posts to remove the category reference
             $this->postModel->set('category_id', null)
-                     ->where('category_id', $id)
-                     ->update();
+                ->where('category_id', $id)
+                ->update();
 
             $this->setFlash('info', "$affectedPosts posts were updated to have no category");
         }
