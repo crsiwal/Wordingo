@@ -1,6 +1,6 @@
 <?php
 
-define('OPENAI_API_KEY', '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');
+define('OPENAI_API_KEY', '');
 // define('MODEL', 'gpt-4'); // or 'gpt-3.5-turbo'
 define('MODEL', 'gpt-3.5-turbo');
 
