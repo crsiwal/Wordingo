@@ -58,11 +58,9 @@ if (!function_exists('layout_posts')) {
             $layoutData = $key != null && isset($layoutsData[$key]) ? $layoutsData[$key] : $layoutsData;
             $key = $key ?? uniqid(5);
             if (isset($layoutData['posts']) && is_array($layoutData['posts']) && count($layoutData['posts']) > 0) {
-                $layoutData["title"] = $layoutData["title"] ?? "";
+                $layoutData["label"] = $layoutData["label"] ?? "";
                 return view('visitor/sections/layouts/layout_posts', array_merge($layoutData, ['layout_id' => $key]));
             }
         }
-
-        return null;
     }
 }

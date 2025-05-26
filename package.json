@@ -1,5 +1,5 @@
 {
-    "name": "wordiqo-blogging-platform",
+    "name": "Wordingo",
     "version": "1.0.0",
     "description": "Frontend assets for the blogging platform",
     "scripts": {
@@ -12,4 +12,4 @@
         "postcss": "^8.4.24",
         "tailwindcss": "^3.3.2"
     }
-} 
+}
