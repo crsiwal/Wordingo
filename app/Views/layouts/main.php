@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $title ?? 'Blog' ?></title>
-    <meta name="description" content="<?= $description ?? 'A modern blogging platform' ?>">
+    <title><?php echo $title ?? 'Blog' ?></title>
+    <meta name="description" content="<?php echo $description ?? 'A modern blogging platform' ?>">
 
     <!-- Inter Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
@@ -187,12 +187,30 @@
                 <span class="tracking-tight">Wordingo</span>
             </a>
             <nav class="hidden md:flex gap-6 text-base font-medium">
-                <a href="<?= base_url() ?>" class="hover:text-indigo-600 transition">Home</a>
-                <a href="<?= base_url('recent') ?>" class="hover:text-indigo-600 transition">Blogs</a>
-                <a href="<?= base_url('about') ?>" class="hover:text-indigo-600 transition">About</a>
-                <a href="<?= base_url('contact') ?>" class="hover:text-indigo-600 transition">Contact</a>
-                <a href="<?= base_url('privacy') ?>" class="hover:text-indigo-600 transition">Privacy Policy</a>
-                <a href="<?= base_url('terms') ?>" class="hover:text-indigo-600 transition">Terms of Use</a>
+                <a href="<?= base_url() ?>"
+                    class="<?= uri_string() === '' || uri_string() === 'home' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Home
+                </a>
+                <a href="<?= base_url('posts') ?>"
+                    class="<?= uri_string() === 'posts' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Posts
+                </a>
+                <a href="<?= base_url('about') ?>"
+                    class="<?= uri_string() === 'about' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    About
+                </a>
+                <a href="<?= base_url('contact') ?>"
+                    class="<?= uri_string() === 'contact' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Contact
+                </a>
+                <a href="<?= base_url('privacy') ?>"
+                    class="<?= uri_string() === 'privacy' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Privacy Policy
+                </a>
+                <a href="<?= base_url('terms') ?>"
+                    class="<?= uri_string() === 'terms' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Terms of Use
+                </a>
             </nav>
             <div class="flex items-center gap-2">
                 <a href="<?= base_url('login') ?>" class="hidden sm:inline-block px-4 py-2 rounded-lg font-semibold text-indigo-600 hover:bg-indigo-50 transition text-base">Login</a>
@@ -205,12 +223,30 @@
         <!-- Mobile Nav Dropdown -->
         <div id="mobileMenu" class="md:hidden hidden absolute left-0 right-0 bg-white shadow-lg border-b border-gray-100 px-4 py-4 z-40">
             <nav class="flex flex-col gap-3 text-base font-medium">
-                <a href="<?= base_url() ?>" class="hover:text-indigo-600 transition">Home</a>
-                <a href="<?= base_url('recent') ?>" class="hover:text-indigo-600 transition">Blogs</a>
-                <a href="<?= base_url('about') ?>" class="hover:text-indigo-600 transition">About</a>
-                <a href="<?= base_url('contact') ?>" class="hover:text-indigo-600 transition">Contact</a>
-                <a href="<?= base_url('privacy') ?>" class="hover:text-indigo-600 transition">Privacy Policy</a>
-                <a href="<?= base_url('terms') ?>" class="hover:text-indigo-600 transition">Terms of Use</a>
+                <a href="<?= base_url() ?>"
+                    class="<?= uri_string() === '' || uri_string() === 'home' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Home
+                </a>
+                <a href="<?= base_url('posts') ?>"
+                    class="<?= uri_string() === 'posts' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Posts
+                </a>
+                <a href="<?= base_url('about') ?>"
+                    class="<?= uri_string() === 'about' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    About
+                </a>
+                <a href="<?= base_url('contact') ?>"
+                    class="<?= uri_string() === 'contact' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Contact
+                </a>
+                <a href="<?= base_url('privacy') ?>"
+                    class="<?= uri_string() === 'privacy' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Privacy Policy
+                </a>
+                <a href="<?= base_url('terms') ?>"
+                    class="<?= uri_string() === 'terms' ? 'text-indigo-600 font-medium' : 'text-gray-600 hover:text-indigo-600' ?> transition">
+                    Terms of Use
+                </a>
                 <a href="<?= base_url('login') ?>" class="px-3 py-2 rounded-lg font-semibold text-indigo-600 hover:bg-indigo-50 transition">Login</a>
                 <a href="<?= base_url('register') ?>" class="px-3 py-2 rounded-lg font-semibold bg-indigo-600 text-white shadow hover:bg-indigo-700 transition">Register</a>
             </nav>
@@ -279,7 +315,7 @@
                 <h3 class="text-lg sm:text-xl font-bold mb-3">Quick Links</h3>
                 <ul class="space-y-2 text-sm sm:text-base">
                     <li><a href="/" class="hover:text-indigo-600 transition">Home</a></li>
-                    <li><a href="/recent" class="hover:text-indigo-600 transition">Blogs</a></li>
+                    <li><a href="/posts" class="hover:text-indigo-600 transition">Posts</a></li>
                     <li><a href="/about" class="hover:text-indigo-600 transition">About</a></li>
                     <li><a href="/contact" class="hover:text-indigo-600 transition">Contact</a></li>
                     <li><a href="/privacy" class="hover:text-indigo-600 transition">Privacy Policy</a></li>

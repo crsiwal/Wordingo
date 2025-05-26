@@ -8,7 +8,7 @@
 //            'TwoColumnGrid'
 //            'CarouselCompact'
 //            'CarouselGrid'
-// $title: optional section title
+// $label: optional section label
 // $carouselId: optional unique id for carousel (auto-generated from slug if not set)
 
 $carouselId = null;
@@ -16,8 +16,8 @@ $carouselId = null;
 
 <div class="container mx-auto px-4 my-16">
     <div class="flex items-center justify-between mb-4">
-        <?php if ($title): ?>
-            <h2 class="text-2xl font-bold leading-relaxed"><?= esc($title) ?></h2>
+        <?php if (isset($label)): ?>
+            <h2 class="text-2xl font-bold leading-relaxed"><?= esc($label) ?></h2>
         <?php endif; ?>
         <?php
         if (in_array($layout, ['CarouselCompact', 'CarouselGrid'])):

@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Visitor;
+
+use App\Controllers\BaseController;
 
 class Pages extends BaseController {
 
     public function index() {
-        return view('pages/index');
+        return redirect()->to('/');
     }
 
     public function about() {

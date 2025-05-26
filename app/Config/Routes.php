@@ -14,38 +14,38 @@ $routes->setTranslateURIDashes(false);
 $routes->set404Override();
 
 // Frontend Routes
-$routes->get('/', 'Home::index');
-$routes->get('post/(:segment)', 'Home::post/$1'); // post/slug
-$routes->get('post/(:segment)/(:segment)/(:segment)', 'Home::post/$3'); // post/category/created_at/slug
-$routes->get('post/(:segment)/(:segment)', 'Home::post/$2'); // post/category/slug
+$routes->get('/', 'Visitor\Home::index');
+$routes->get('post/(:segment)', 'Visitor\SinglePost::index/$1'); // post/slug
+$routes->get('post/(:segment)/(:segment)/(:segment)', 'Visitor\SinglePost::index/$3'); // post/category/created_at/slug
+$routes->get('post/(:segment)/(:segment)', 'Visitor\SinglePost::index/$2'); // post/category/slug
 
 // Recent Posts
-$routes->get('recent', 'Home::recentPosts');
+$routes->get('posts', 'Visitor\RecentPosts::index');
 
 // Category Routes
-$routes->get('category/(:segment)', 'Home::category/$1'); // category/slug
+$routes->get('category/(:segment)', 'Visitor\Category::index/$1'); // category/slug
 
 // Tag Routes
-$routes->get('tag/(:segment)', 'Home::tag/$1');
+$routes->get('tag/(:segment)', 'Visitor\Tag::index/$1');
 
 // Author Routes
-$routes->get('author/(:segment)', 'Home::author/$1');
+$routes->get('author/(:segment)', 'Visitor\Author::index/$1');
 
 // Search Routes
-$routes->get('search', 'Home::search');
+$routes->get('search', 'Visitor\Search::index');
 
 // About Us Page
-$routes->get('about', 'Pages::about');
+$routes->get('about', 'Visitor\Pages::about');
 
 // Contact Us Page
-$routes->get('contact', 'Pages::contact');
-$routes->post('contact', 'Pages::contact');
+$routes->get('contact', 'Visitor\Pages::contact');
+$routes->post('contact', 'Visitor\Pages::contact');
 
 // Terms and Conditions Page Route
-$routes->get('terms', 'Pages::terms');
+$routes->get('terms', 'Visitor\Pages::terms');
 
 // Privacy Policy Page Route
-$routes->get('privacy', 'Pages::privacy');
+$routes->get('privacy', 'Visitor\Pages::privacy');
 
 // Auth Routes
 $routes->get('login', 'Auth::login');

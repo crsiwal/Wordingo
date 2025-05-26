@@ -144,7 +144,7 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
     <!-- Related Posts - Full Width -->
     <div class="mt-12">
         <?= layout_posts([
-            'title' => 'Related Posts',
+            'label' => 'Related Posts',
             'layout' => 'StandardGrid',
             'posts' => $relatedPosts,
         ]); ?>
