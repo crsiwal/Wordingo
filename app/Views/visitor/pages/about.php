@@ -96,7 +96,7 @@
                                 <p class="text-gray-600 text-sm mt-1">Perfect reading experience across all devices</p>
                             </div>
                         </li>
-                    </ul>
+                </ul>
                 </div>
 
                 <!-- New Section: Our Values -->
@@ -191,8 +191,8 @@
                     </div>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <a href="<?= base_url('register') ?>" class="inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-primary-600 hover:bg-primary-700 transition-colors transform hover:scale-[1.02] duration-200">
-                            Get Started
-                        </a>
+                        Get Started
+                    </a>
                         <a href="<?= base_url('contact') ?>" class="inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors transform hover:scale-[1.02] duration-200">
                             Contact Us
                         </a>
@@ -270,8 +270,8 @@
                     <div class="text-4xl font-bold text-primary-600 mb-2">50K+</div>
                     <div class="text-gray-600">Monthly Readers</div>
                 </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 <?= $this->endSection() ?>

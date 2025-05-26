@@ -8,38 +8,38 @@
             <div class="text-center mb-12">
                 <h1 class="text-4xl font-bold text-indigo-900 mb-4">Join Wordingo</h1>
                 <p class="text-gray-600">Start your writing journey today</p>
-            </div>
+    </div>
 
             <!-- Main Content -->
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2 w-full">
                     <!-- Left: Form Section -->
                     <div class="p-8 lg:p-12">
-                        <?php if (session()->getFlashdata('error')): ?>
+<?php if (session()->getFlashdata('error')): ?>
                             <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-lg animate-fade-in">
-                                <div class="flex items-center">
-                                    <i class="fas fa-exclamation-circle text-red-500 mr-3 text-lg"></i>
-                                    <p><?= session()->getFlashdata('error') ?></p>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle text-red-500 mr-3 text-lg"></i>
+            <p><?= session()->getFlashdata('error') ?></p>
+        </div>
+    </div>
+<?php endif; ?>
 
-                        <?php if (session()->getFlashdata('success')): ?>
+<?php if (session()->getFlashdata('success')): ?>
                             <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg animate-fade-in">
-                                <div class="flex items-center">
-                                    <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
-                                    <p><?= session()->getFlashdata('success') ?></p>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+        <div class="flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+            <p><?= session()->getFlashdata('success') ?></p>
+        </div>
+    </div>
+<?php endif; ?>
 
                         <!-- Social Signup -->
                         <div class="mb-8">
-                            <div class="flex items-center gap-4 mb-6">
+        <div class="flex items-center gap-4 mb-6">
                                 <div class="flex-1 h-px bg-gray-200"></div>
                                 <span class="text-sm text-gray-500">Sign up with</span>
                                 <div class="flex-1 h-px bg-gray-200"></div>
-                            </div>
+            </div>
                             <div class="grid grid-cols-3 gap-4">
                                 <button class="flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-gray-200 hover:border-indigo-200 hover:bg-indigo-50 transition-all duration-200">
                                     <i class="fab fa-google text-red-500"></i>
@@ -53,8 +53,8 @@
                                     <i class="fab fa-facebook-f text-blue-600"></i>
                                     <span class="text-sm font-medium">Facebook</span>
                                 </button>
-                            </div>
-                        </div>
+            </div>
+        </div>
 
                         <!-- Registration Form -->
                         <form id="registerForm" action="<?= base_url('register') ?>" method="post" enctype="multipart/form-data" class="space-y-6">
@@ -67,62 +67,62 @@
                                         <div class="flex items-center">
                                             <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300" id="step-indicator-<?= $i ?>">
                                                 <?= $i ?>
-                                            </div>
+                        </div>
                                             <?php if ($i < 4): ?>
                                                 <div class="w-16 h-1 bg-gray-200 mx-2" id="step-line-<?= $i ?>"></div>
-                                            <?php endif; ?>
-                                        </div>
+                    <?php endif; ?>
+                </div>
                                     <?php endfor; ?>
-                                </div>
-                            </div>
+                    </div>
+                </div>
 
                             <!-- Step 1: Basic Info -->
                             <div class="step-block animate-fade-in" id="step-1">
                                 <h2 class="text-2xl font-bold text-gray-900 mb-6">Basic Information</h2>
 
                                 <div class="space-y-6">
-                                    <div>
+                <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2" for="name">Full Name</label>
                                         <input type="text" id="name" name="name" value="<?= old('name') ?>"
                                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.name') ? 'border-red-500' : '' ?>"
                                             placeholder="Enter your full name" required>
                                         <?php if (session('errors.name')): ?>
                                             <p class="mt-1 text-sm text-red-600 animate-shake"><?= session('errors.name') ?></p>
-                                        <?php endif; ?>
-                                    </div>
+                    <?php endif; ?>
+                </div>
 
-                                    <div>
+                <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2" for="username">Username</label>
                                         <input type="text" id="username" name="username" value="<?= old('username') ?>"
                                             class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.username') ? 'border-red-500' : '' ?>"
                                             placeholder="Choose a username" required>
                                         <?php if (session('errors.username')): ?>
                                             <p class="mt-1 text-sm text-red-600 animate-shake"><?= session('errors.username') ?></p>
-                                        <?php endif; ?>
-                                    </div>
+                    <?php endif; ?>
+                </div>
 
-                                    <div>
+                        <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
                                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                             <select name="birth_day" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_day') ? 'border-red-500' : '' ?>" required>
-                                                <option value="" disabled <?= !old('birth_day') ? 'selected' : '' ?>>Day</option>
-                                                <?php for ($i = 1; $i <= 31; $i++): ?>
-                                                    <option value="<?= $i ?>" <?= old('birth_day') == $i ? 'selected' : '' ?>><?= $i ?></option>
-                                                <?php endfor; ?>
-                                            </select>
+                                <option value="" disabled <?= !old('birth_day') ? 'selected' : '' ?>>Day</option>
+                                <?php for ($i = 1; $i <= 31; $i++): ?>
+                                    <option value="<?= $i ?>" <?= old('birth_day') == $i ? 'selected' : '' ?>><?= $i ?></option>
+                                <?php endfor; ?>
+                            </select>
                                             <select name="birth_month" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_month') ? 'border-red-500' : '' ?>" required>
-                                                <option value="" disabled <?= !old('birth_month') ? 'selected' : '' ?>>Month</option>
+                                <option value="" disabled <?= !old('birth_month') ? 'selected' : '' ?>>Month</option>
                                                 <?php $months = [1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April', 5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August', 9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'];
-                                                foreach ($months as $num => $name): ?>
-                                                    <option value="<?= $num ?>" <?= old('birth_month') == $num ? 'selected' : '' ?>><?= $name ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
+                                foreach ($months as $num => $name): ?>
+                                    <option value="<?= $num ?>" <?= old('birth_month') == $num ? 'selected' : '' ?>><?= $name ?></option>
+                                <?php endforeach; ?>
+                            </select>
                                             <select name="birth_year" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.birth_year') ? 'border-red-500' : '' ?>" required>
-                                                <option value="" disabled <?= !old('birth_year') ? 'selected' : '' ?>>Year</option>
-                                                <?php for ($i = date('Y') - 13; $i >= date('Y') - 100; $i--): ?>
-                                                    <option value="<?= $i ?>" <?= old('birth_year') == $i ? 'selected' : '' ?>><?= $i ?></option>
-                                                <?php endfor; ?>
-                                            </select>
+                                <option value="" disabled <?= !old('birth_year') ? 'selected' : '' ?>>Year</option>
+                                <?php for ($i = date('Y') - 13; $i >= date('Y') - 100; $i--): ?>
+                                    <option value="<?= $i ?>" <?= old('birth_year') == $i ? 'selected' : '' ?>><?= $i ?></option>
+                                <?php endfor; ?>
+                            </select>
                                         </div>
                                         <div id="dob-error-container"></div>
                                         <p class="mt-2 text-sm text-gray-500">You must be at least 13 years old to register</p>
@@ -184,9 +184,9 @@
                                             placeholder="Enter your full address" required><?= old('address') ?></textarea>
                                         <?php if (session('errors.address')): ?>
                                             <p class="mt-1 text-sm text-red-600 animate-shake"><?= session('errors.address') ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
 
                                 <div class="mt-8 flex justify-between">
                                     <button type="button" onclick="prevStep(1)"
@@ -198,7 +198,7 @@
                                         Continue
                                     </button>
                                 </div>
-                            </div>
+                </div>
 
                             <!-- Step 3: Security -->
                             <div class="step-block hidden animate-fade-in" id="step-3">
@@ -207,7 +207,7 @@
                                 <div class="space-y-6">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2" for="password">Password</label>
-                                        <div class="relative">
+                    <div class="relative">
                                             <input type="password" id="password" name="password"
                                                 class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 <?= session('errors.password') ? 'border-red-500' : '' ?>"
                                                 placeholder="Create a strong password" required>
@@ -215,12 +215,12 @@
                                                 class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-600">
                                                 <i id="eye-icon" class="fas fa-eye"></i>
                                             </button>
-                                        </div>
+                        </div>
                                         <p class="mt-2 text-sm text-gray-500">Password must be at least 8 characters long and include numbers and special characters</p>
                                         <?php if (session('errors.password')): ?>
                                             <p class="mt-1 text-sm text-red-600 animate-shake"><?= session('errors.password') ?></p>
-                                        <?php endif; ?>
-                                    </div>
+                    <?php endif; ?>
+                </div>
 
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2" for="password_confirm">Confirm Password</label>
@@ -253,16 +253,16 @@
                                     <div class="flex flex-col items-center">
                                         <div class="w-24 h-24 rounded-full bg-indigo-50 border-2 border-indigo-200 flex items-center justify-center overflow-hidden mb-4" id="avatar-preview">
                                             <i class="fas fa-user text-indigo-300 text-4xl" id="avatar-icon"></i>
-                                        </div>
+                        </div>
                                         <label class="inline-flex items-center justify-center px-6 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 cursor-pointer">
-                                            <i class="fas fa-cloud-upload-alt mr-2"></i>
+                                <i class="fas fa-cloud-upload-alt mr-2"></i>
                                             Upload Profile Picture
-                                            <input type="file" name="avatar" id="avatar" class="hidden" accept="image/*" onchange="previewImage(this)">
-                                        </label>
-                                        <?php if (session('errors.avatar')): ?>
+                                <input type="file" name="avatar" id="avatar" class="hidden" accept="image/*" onchange="previewImage(this)">
+                            </label>
+                    <?php if (session('errors.avatar')): ?>
                                             <p class="mt-2 text-sm text-red-600 animate-shake"><?= session('errors.avatar') ?></p>
-                                        <?php endif; ?>
-                                    </div>
+                    <?php endif; ?>
+                </div>
 
                                     <div class="bg-gray-50 rounded-xl p-6">
                                         <label class="flex items-start gap-3">
@@ -270,7 +270,7 @@
                                             <span class="text-sm text-gray-600">
                                                 I agree to the <a href="<?= base_url('terms') ?>" class="text-indigo-600 hover:underline">Terms of Service</a> and <a href="<?= base_url('privacy') ?>" class="text-indigo-600 hover:underline">Privacy Policy</a>
                                             </span>
-                                        </label>
+                    </label>
                                     </div>
                                 </div>
 
@@ -313,13 +313,13 @@
                                         <h3 class="text-lg font-semibold mb-2">Connect & Collaborate</h3>
                                         <p class="text-white/80">Join a vibrant community of writers, readers, and creative minds.</p>
                                     </div>
-                                </div>
+                </div>
 
                                 <div class="flex items-start gap-4">
                                     <div class="flex-shrink-0 w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
                                         <i class="fas fa-chart-line text-xl"></i>
                                     </div>
-                                    <div>
+                <div>
                                         <h3 class="text-lg font-semibold mb-2">Grow Your Audience</h3>
                                         <p class="text-white/80">Build your following and get feedback from readers worldwide.</p>
                                     </div>
@@ -341,7 +341,7 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 </div>
 
 <style>

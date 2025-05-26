@@ -188,7 +188,7 @@
             </a>
             <nav class="hidden md:flex gap-6 text-base font-medium">
                 <a href="<?= base_url() ?>" class="hover:text-indigo-600 transition">Home</a>
-                <a href="<?= base_url('blogs') ?>" class="hover:text-indigo-600 transition">Blogs</a>
+                <a href="<?= base_url('recent') ?>" class="hover:text-indigo-600 transition">Blogs</a>
                 <a href="<?= base_url('about') ?>" class="hover:text-indigo-600 transition">About</a>
                 <a href="<?= base_url('contact') ?>" class="hover:text-indigo-600 transition">Contact</a>
                 <a href="<?= base_url('privacy') ?>" class="hover:text-indigo-600 transition">Privacy Policy</a>
@@ -206,7 +206,7 @@
         <div id="mobileMenu" class="md:hidden hidden absolute left-0 right-0 bg-white shadow-lg border-b border-gray-100 px-4 py-4 z-40">
             <nav class="flex flex-col gap-3 text-base font-medium">
                 <a href="<?= base_url() ?>" class="hover:text-indigo-600 transition">Home</a>
-                <a href="<?= base_url('blogs') ?>" class="hover:text-indigo-600 transition">Blogs</a>
+                <a href="<?= base_url('recent') ?>" class="hover:text-indigo-600 transition">Blogs</a>
                 <a href="<?= base_url('about') ?>" class="hover:text-indigo-600 transition">About</a>
                 <a href="<?= base_url('contact') ?>" class="hover:text-indigo-600 transition">Contact</a>
                 <a href="<?= base_url('privacy') ?>" class="hover:text-indigo-600 transition">Privacy Policy</a>
@@ -279,7 +279,7 @@
                 <h3 class="text-lg sm:text-xl font-bold mb-3">Quick Links</h3>
                 <ul class="space-y-2 text-sm sm:text-base">
                     <li><a href="/" class="hover:text-indigo-600 transition">Home</a></li>
-                    <li><a href="/blogs" class="hover:text-indigo-600 transition">Blogs</a></li>
+                    <li><a href="/recent" class="hover:text-indigo-600 transition">Blogs</a></li>
                     <li><a href="/about" class="hover:text-indigo-600 transition">About</a></li>
                     <li><a href="/contact" class="hover:text-indigo-600 transition">Contact</a></li>
                     <li><a href="/privacy" class="hover:text-indigo-600 transition">Privacy Policy</a></li>

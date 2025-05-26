@@ -4,17 +4,19 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="mb-8 text-center">
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Search Results</h1>
-        <p class="text-lg text-gray-600">Showing results for "<?= esc($query) ?>"</p>
+        <h1 class="text-4xl font-bold text-gray-900 mb-2"><?= esc($tag['name']) ?></h1>
+        <p class="text-lg text-gray-600">Browse all posts in this tag</p>
     </div>
 
-    <?php if (count($posts["search"]["posts"]) == 0): ?>
+    <?php if (count($posts["mostViewed"] ?? []) == 0 && count($posts["latest"] ?? []) == 0): ?>
         <div class="bg-white rounded-lg shadow-md p-8 text-center">
-            <h2 class="text-xl font-semibold mb-2">No results found</h2>
-            <p class="text-gray-600">Try different keywords or browse our categories</p>
+            <h2 class="text-xl font-semibold mb-2">No posts found</h2>
+            <p class="text-gray-600">Check back later for new content</p>
         </div>
     <?php else: ?>
-        <?= layout_posts($posts, 'search'); ?>
+        <?= layout_posts($posts, 'mostViewed'); ?>
+
+        <?= layout_posts($posts, 'latest'); ?>
 
         <!-- Pagination -->
         <?php if (isset($pager)): ?>

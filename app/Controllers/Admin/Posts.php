@@ -283,7 +283,14 @@ class Posts extends BaseController {
                         $this->postTagModel->where('post_id', $id)->delete();
                         // Add new tags
                         if ($tagsString) {
-                            $this->handleTags($id, $tagsString);
+                            $postTagSlugs = $this->handleTags($id, $tagsString);
+                            if ($postTagSlugs) {
+                                $tagsData = [
+                                    'tags' => json_encode($postTagSlugs),
+                                ];
+                                // Update the post with the new tags
+                                $this->postModel->update($id, $tagsData);
+                            }
                         }
                         $this->setFlash('success', 'Post updated successfully');
                         return redirect()->to('/admin/posts/edit/' . $id);
@@ -438,6 +445,7 @@ class Posts extends BaseController {
         // Find new tags
         $newTagNames = array_diff($tagsArr, $existingTagNames);
 
+        $allTags = [];
         // Insert new tags
         if (! empty($newTagNames)) {
             $newTagData = array_map(function ($name) {
@@ -470,7 +478,17 @@ class Posts extends BaseController {
         if (is_array($postTagData) && count($postTagData) > 0) {
             $inserted = $this->postTagModel->insertBatch($postTagData);
             if ($inserted) {
-                return true;
+                if (count($allTags) > 0) {
+                    $postTags = [];
+                    foreach ($allTags as $tag) {
+                        $postTags[] = [
+                            "name" => $tag['name'],
+                            "slug" => $tag['slug'],
+                        ];
+                    }
+                    return $postTags;
+                }
+                return [];
             }
         }
         return false;

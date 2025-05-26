@@ -50,6 +50,10 @@ class CreatePostsTable extends Migration {
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
+            'tags' => [
+                'type' => 'TEXT',
+                'null'       => true,
+            ],
             'status' => [
                 'type'       => 'ENUM',
                 'constraint' => ['draft', 'revision', 'pending', 'private', 'published', 'archived', 'rejected', 'deleted'],

@@ -1,7 +1,13 @@
 <?php
 // $posts: array of posts
 // $category: category info (name, slug, etc.)
-// $layout: 'StandardGrid', 'VerticalList', 'LeftToRightGrid', 'TwoColumnGrid', 'CarouselCompact', 'CarouselGrid', etc.
+// $layout:
+//            'StandardGrid'
+//            'VerticalList'
+//            'LeftToRightGrid'
+//            'TwoColumnGrid'
+//            'CarouselCompact'
+//            'CarouselGrid'
 // $title: optional section title
 // $carouselId: optional unique id for carousel (auto-generated from slug if not set)
 

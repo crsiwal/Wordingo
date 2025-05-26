@@ -7,19 +7,23 @@
         <?php foreach (array_slice($posts, 0, 1) as $post): ?>
             <!-- Featured Card -->
             <article class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-full">
-                <?php if (!empty($post['thumbnail'])): ?>
-                    <img src="<?= $post['thumbnail']; ?>" alt="<?= esc($post['title']) ?>" class="w-full h-60 object-cover">
-                <?php else: ?>
-                    <div class="w-full h-60 bg-gray-200 rounded-t-xl flex items-center justify-center">
-                        <i class="fas fa-image text-gray-500 text-2xl"></i>
-                    </div>
-                <?php endif; ?>
+                <a href="<?= postUrl($post) ?>">
+                    <?php if (!empty($post['thumbnail'])): ?>
+                        <img src="<?= $post['thumbnail']; ?>" alt="<?= esc($post['title']) ?>" class="w-full h-60 object-cover">
+                    <?php else: ?>
+                        <div class="w-full h-60 bg-gray-200 rounded-t-xl flex items-center justify-center">
+                            <i class="fas fa-image text-gray-500 text-2xl"></i>
+                        </div>
+                    <?php endif; ?>
+                </a>
                 <div class="p-6 flex-1 flex flex-col justify-between">
-                    <span class="inline-block bg-green-100 text-green-600 text-xs font-semibold px-3 py-1 rounded-full mb-2 leading-relaxed">
-                        <a href="<?= base_url('category/' . $post['category_name'] ?? $category['name'] ?? '') ?>" class="text-gray-900 hover:text-green-600">
-                            <?= esc($post['category_name'] ?? $category['name'] ?? '') ?>
-                        </a>
-                    </span>
+                    <div class="flex items-center justify-between">
+                        <span class="bg-green-100 text-green-600 text-xs font-semibold px-3 py-1 rounded-full mb-2 leading-relaxed">
+                            <a href="<?= base_url('category/' . $post['category_slug']) ?>" class="text-gray-900 hover:text-green-600">
+                                <?= esc($post['category_name'] ?? $category['name'] ?? '') ?>
+                            </a>
+                        </span>
+                    </div>
                     <h3 class="text-2xl font-bold mb-2 leading-snug">
                         <a href="<?= postUrl($post) ?>" class="text-gray-900 hover:text-green-600">
                             <?= esc($post['title']) ?>

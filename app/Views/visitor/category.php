@@ -8,7 +8,7 @@
         <p class="text-lg text-gray-600">Browse all posts in this category</p>
     </div>
 
-    <?php if (empty($posts["mostViewed"]) || count($posts["mostViewed"]) == 0): ?>
+    <?php if (count($posts["mostViewed"] ?? []) == 0 && count($posts["latest"] ?? []) == 0): ?>
         <div class="bg-white rounded-lg shadow-md p-8 text-center">
             <h2 class="text-xl font-semibold mb-2">No posts found</h2>
             <p class="text-gray-600">Check back later for new content</p>
@@ -19,9 +19,12 @@
         <?= layout_posts($posts, 'latest'); ?>
 
         <!-- Pagination -->
-        <?php if ($pager): ?>
+        <?php if (isset($pager)): ?>
             <div class="mt-8 flex justify-center">
-                <?= $pager->links() ?>
+                <?php
+                // Use our custom pager that handles query parameters automatically
+                echo $pager->links('default', 'visitor_pager');
+                ?>
             </div>
         <?php endif; ?>
     <?php endif; ?>

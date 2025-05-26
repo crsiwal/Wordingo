@@ -210,7 +210,7 @@
                                 id="in_short"
                                 name="in_short"
                                 rows="4"
-                                placeholder="Write a short summary of the post (50-200 words)" required>
+                                placeholder="Write a short summary of the post (50-200 words)">
                                 <?php echo old('in_short', $post['in_short'] ?? '') ?>
                             </textarea>
                             <?php if (session('errors.in_short')): ?>

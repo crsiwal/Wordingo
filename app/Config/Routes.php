@@ -28,23 +28,41 @@ $routes->get('category/(:segment)', 'Home::category/$1'); // category/slug
 // Tag Routes
 $routes->get('tag/(:segment)', 'Home::tag/$1');
 
+// Author Routes
+$routes->get('author/(:segment)', 'Home::author/$1');
+
 // Search Routes
 $routes->get('search', 'Home::search');
 
-// Website Pages Routes
+// About Us Page
 $routes->get('about', 'Pages::about');
+
+// Contact Us Page
 $routes->get('contact', 'Pages::contact');
+$routes->post('contact', 'Pages::contact');
+
+// Terms and Conditions Page Route
 $routes->get('terms', 'Pages::terms');
+
+// Privacy Policy Page Route
 $routes->get('privacy', 'Pages::privacy');
 
 // Auth Routes
 $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::attemptLogin');
+
+// Register Routes
 $routes->get('register', 'Auth::register');
 $routes->post('register', 'Auth::attemptRegister');
+
+// Logout Routes
 $routes->get('logout', 'Auth::logout');
+
+// Forgot Password Routes
 $routes->get('forgot-password', 'Auth::forgotPassword');
 $routes->post('forgot-password', 'Auth::attemptForgotPassword');
+
+// Reset Password Routes
 $routes->get('reset/(:segment)', 'Auth::resetPassword/$1');
 $routes->post('reset/(:segment)', 'Auth::attemptResetPassword/$1');
 

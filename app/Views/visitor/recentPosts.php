@@ -8,12 +8,15 @@
         <p class="text-lg text-gray-600">Browse all posts in this category</p>
     </div>
 
-    <?php if (empty($posts["latest"]["posts"]) || count($posts["latest"]["posts"]) == 0): ?>
+    <?php if (count($posts["mostViewed"]["posts"] ?? []) == 0 && count($posts["latest"]["posts"] ?? []) == 0): ?>
         <div class="bg-white rounded-lg shadow-md p-8 text-center">
             <h2 class="text-xl font-semibold mb-2">No posts found</h2>
             <p class="text-gray-600">Check back later for new content</p>
         </div>
     <?php else: ?>
+
+        <?= layout_posts($posts, 'mostViewed'); ?>
+
         <?= layout_posts($posts, 'latest'); ?>
 
         <!-- Pagination -->
