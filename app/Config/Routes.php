@@ -15,9 +15,13 @@ $routes->set404Override();
 
 // Frontend Routes
 $routes->get('/', 'Visitor\Home::index');
-$routes->get('post/(:segment)', 'Visitor\SinglePost::index/$1'); // post/slug
-$routes->get('post/(:segment)/(:segment)/(:segment)', 'Visitor\SinglePost::index/$3'); // post/category/created_at/slug
-$routes->get('post/(:segment)/(:segment)', 'Visitor\SinglePost::index/$2'); // post/category/slug
+
+// Frontend Post Routes
+$routes->group('post', function ($routes) {
+    $routes->get('(:segment)', 'Visitor\SinglePost::index/$1'); // post/slug
+    $routes->get('(:segment)/(:segment)/(:segment)', 'Visitor\SinglePost::index/$3'); // post/category/created_at/slug
+    $routes->get('(:segment)/(:segment)', 'Visitor\SinglePost::index/$2'); // post/category/slug
+});
 
 // Recent Posts
 $routes->get('posts', 'Visitor\RecentPosts::index');

@@ -5,7 +5,7 @@
 <div class="relative mb-10 overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 p-8">
     <div class="absolute inset-0 bg-grid-white/20 bg-grid-8"></div>
     <div class="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
-        <div class="text-white">
+        <div class="text-white flex-1 min-w-0">
             <?php
             $title = !empty($post['title']) ? esc($post['title']) : 'Create Post';
             $titleLength = strlen($title);
@@ -23,7 +23,7 @@
                 $titleClass = 'text-xl md:text-2xl';
             }
             ?>
-            <h1 class="<?php echo $titleClass ?> font-bold leading-tight mb-2">
+            <h1 class="<?php echo $titleClass ?> font-bold leading-tight mb-2 truncate">
                 <?php echo $title ?>
             </h1>
             <p class="text-blue-100 text-xl">
@@ -41,7 +41,7 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3 flex-shrink-0">
             <div class="flex items-center bg-white text-blue-600 px-4 py-2 rounded-lg shadow-md">
                 <i class="fas fa-chart-bar mr-2"></i>
                 <span class="font-medium"><?php echo isset($post['views_count']) ? number_format($post['views_count']) : '0' ?></span>
@@ -49,7 +49,7 @@
             </div>
 
             <?php if (! empty($post['slug']) && $post['status'] === 'published'): ?>
-                <a href="<?php echo base_url('blog/post/' . $post['slug']) ?>" class="bg-white text-purple-600 px-4 py-2 rounded-lg shadow-md hover:bg-purple-50 transition-colors flex items-center" target="_blank">
+                <a href="<?= postUrl($post); ?>" class="bg-white text-purple-600 px-4 py-2 rounded-lg shadow-md hover:bg-purple-50 transition-colors flex items-center" target="_blank">
                     <i class="fas fa-eye mr-2"></i>
                     <span>Open</span>
                 </a>
@@ -328,11 +328,19 @@
                                     id="description"
                                     name="description"
                                     rows="3"
-                                    maxlength="160"
-                                    placeholder="Enter a brief description for search engines..."><?php echo old('description', $post['description'] ?? '') ?></textarea>
-                                <p class="mt-1 text-sm text-gray-500">
-                                    <span id="description-counter" class="font-medium">0</span>/160 characters. This description appears in search engine results.
-                                </p>
+                                    maxlength="1024"
+                                    placeholder="Enter a description for search engines..."><?php echo old('description', $post['description'] ?? '') ?></textarea>
+                                <div class="mt-2">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div class="flex items-center">
+                                            <span id="description-counter" class="font-medium">0</span>/1024 characters
+                                        </div>
+                                        <div id="description-status" class="flex items-center">
+                                            <span id="description-status-text" class="mr-2"></span>
+                                            <div id="description-status-indicator" class="w-3 h-3 rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <?php if (session('errors.description')): ?>
                                     <p class="mt-1 text-sm text-red-600"><?php echo session('errors.description') ?></p>
                                 <?php endif; ?>
@@ -421,11 +429,11 @@
                     'buttonsVisible': 3
                 },
                 'moreRich': {
-                    'buttons': ['insertTable', 'insertImage', 'insertVideo', 'emoticons', 'insertLink', 'specialCharacters'],
-                    'buttonsVisible': 2
+                    'buttons': ['insertTable', 'html', 'insertImage', 'insertVideo', 'emoticons', 'insertLink', 'specialCharacters'],
+                    'buttonsVisible': 3
                 },
                 'moreMisc': {
-                    'buttons': ['fullscreen', 'html', 'undo', 'redo', 'getPDF', 'spellChecker', 'help'],
+                    'buttons': ['fullscreen', 'undo', 'redo', 'getPDF', 'spellChecker', 'help'],
                     'align': 'right',
                     'buttonsVisible': 1
                 }
@@ -518,6 +526,20 @@
                 renderTags();
             }
         });
+
+        // Add paste event handler
+        tagsInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const pastedTags = pastedText.split(/[,\n]/).map(tag => tag.trim()).filter(tag => tag && !tags.includes(tag));
+
+            if (pastedTags.length > 0) {
+                tags.push(...pastedTags);
+                tagsInput.value = '';
+                renderTags();
+            }
+        });
+
         tagsWrapper.addEventListener('click', function(e) {
             if (e.target.tagName === 'BUTTON' && e.target.dataset.idx) {
                 tags.splice(e.target.dataset.idx, 1);
@@ -690,6 +712,8 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    if (!slugStatus) return;
+
                     if (data.valid) {
                         slugStatus.innerHTML = '<i class="fas fa-check text-green-500"></i>';
                         slugInput.classList.remove('border-red-500');
@@ -739,14 +763,10 @@
         if (editSlugBtn) {
             editSlugBtn.addEventListener('click', function() {
                 const input = this.previousElementSibling;
-                input.readOnly = false;
-                input.classList.remove('bg-gray-50');
-                input.focus();
-                this.innerHTML = '<i class="fas fa-check"></i> Save';
-                this.classList.remove('text-primary-600', 'hover:text-primary-700');
-                this.classList.add('text-green-600', 'hover:text-green-700');
+                const isEditing = !input.readOnly;
 
-                this.addEventListener('click', function saveSlug() {
+                if (isEditing) {
+                    // Save mode
                     const newSlug = input.value.trim();
                     if (newSlug) {
                         validateSlug(newSlug);
@@ -755,25 +775,72 @@
                         this.innerHTML = '<i class="fas fa-edit"></i> Edit';
                         this.classList.remove('text-green-600', 'hover:text-green-700');
                         this.classList.add('text-primary-600', 'hover:text-primary-700');
-                        this.removeEventListener('click', saveSlug);
                     }
-                }, {
-                    once: true
-                });
+                } else {
+                    // Edit mode
+                    input.readOnly = false;
+                    input.classList.remove('bg-gray-50');
+                    input.focus();
+                    this.innerHTML = '<i class="fas fa-check"></i> Save';
+                    this.classList.remove('text-primary-600', 'hover:text-primary-700');
+                    this.classList.add('text-green-600', 'hover:text-green-700');
+                }
             });
         }
 
         // Add character counter for SEO description
         const descriptionField = document.getElementById('description');
         const descriptionCounter = document.getElementById('description-counter');
+        const descriptionStatusText = document.getElementById('description-status-text');
+        const descriptionStatusIndicator = document.getElementById('description-status-indicator');
+
+        function updateDescriptionStatus(length) {
+            let status = '';
+            let color = '';
+            let text = '';
+
+            if (length === 0) {
+                status = 'empty';
+                color = 'bg-gray-400';
+                text = 'Empty';
+            } else if (length < 100) {
+                status = 'too-short';
+                color = 'bg-red-500';
+                text = 'Too short';
+            } else if (length < 140) {
+                status = 'short';
+                color = 'bg-yellow-500';
+                text = 'Short';
+            } else if (length <= 160) {
+                status = 'optimal';
+                color = 'bg-green-500';
+                text = 'Optimal';
+            } else if (length <= 300) {
+                status = 'good';
+                color = 'bg-yellow-500';
+                text = 'Good';
+            } else {
+                status = 'too-long';
+                color = 'bg-red-500';
+                text = 'Too long';
+            }
+
+            descriptionStatusIndicator.className = `w-3 h-3 rounded-full ${color}`;
+            descriptionStatusText.textContent = text;
+            descriptionStatusText.className = `mr-2 ${status === 'optimal' ? 'text-green-600' : status.includes('too') ? 'text-red-600' : 'text-yellow-600'}`;
+        }
 
         if (descriptionField && descriptionCounter) {
-            // Update counter on load
-            descriptionCounter.textContent = descriptionField.value.length;
+            // Update counter and status on load
+            const initialLength = descriptionField.value.length;
+            descriptionCounter.textContent = initialLength;
+            updateDescriptionStatus(initialLength);
 
-            // Update counter on input
+            // Update counter and status on input
             descriptionField.addEventListener('input', function() {
-                descriptionCounter.textContent = this.value.length;
+                const length = this.value.length;
+                descriptionCounter.textContent = length;
+                updateDescriptionStatus(length);
             });
         }
 
@@ -893,6 +960,104 @@
 
     .animate-fade-in {
         animation: fade-in 0.3s ease-out;
+    }
+
+    /* Froala Editor Custom Styles */
+    .fr-element {
+        font-size: 1.125rem !important;
+        line-height: 1.8 !important;
+    }
+
+    .fr-element h2 {
+        font-size: 1.875rem !important;
+        margin-top: 2.5rem !important;
+        margin-bottom: 1.5rem !important;
+        color: #1a202c !important;
+    }
+
+    .fr-element h3 {
+        font-size: 1.5rem !important;
+        margin-top: 2rem !important;
+        margin-bottom: 1rem !important;
+        color: #2d3748 !important;
+    }
+
+    .fr-element h4 {
+        font-size: 1.25rem !important;
+        margin-top: 1.5rem !important;
+        margin-bottom: 1rem !important;
+        color: #2d3748 !important;
+    }
+
+    .fr-element p {
+        margin-bottom: 1.5rem !important;
+    }
+
+    .fr-element img {
+        border-radius: 0.5rem !important;
+        margin: 2rem 0 !important;
+    }
+
+    .fr-element blockquote {
+        border-left: 4px solid #4299e1 !important;
+        padding-left: 1rem !important;
+        font-style: italic !important;
+        color: #4a5568 !important;
+    }
+
+    .fr-element code {
+        background-color: #f7fafc !important;
+        padding: 0.2rem 0.4rem !important;
+        border-radius: 0.25rem !important;
+        font-size: 0.875em !important;
+    }
+
+    .fr-element pre {
+        background-color: #2d3748 !important;
+        color: #e2e8f0 !important;
+        padding: 1rem !important;
+        border-radius: 0.5rem !important;
+        overflow-x: auto !important;
+    }
+
+    /* List styles */
+    .fr-element ul,
+    .fr-element ol {
+        margin-bottom: 1.5rem !important;
+        padding-left: 1.5rem !important;
+    }
+
+    .fr-element ul li,
+    .fr-element ol li {
+        margin-bottom: 0.5rem !important;
+    }
+
+    /* Table styles */
+    .fr-element table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .fr-element table th,
+    .fr-element table td {
+        border: 1px solid #e2e8f0 !important;
+        padding: 0.75rem !important;
+    }
+
+    .fr-element table th {
+        background-color: #f7fafc !important;
+        font-weight: 600 !important;
+    }
+
+    /* Link styles */
+    .fr-element a {
+        color: #3b82f6 !important;
+        text-decoration: underline !important;
+    }
+
+    .fr-element a:hover {
+        color: #2563eb !important;
     }
 </style>
 <?php echo $this->endSection() ?>

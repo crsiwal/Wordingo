@@ -89,6 +89,9 @@ vendor/
 # Ignore Node Modules
 node_modules/
 
+# Ignore Local Files
+local/
+
 #-------------------------
 # IDE / Development Files
 #-------------------------

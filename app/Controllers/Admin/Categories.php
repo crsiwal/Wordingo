@@ -46,7 +46,7 @@ class Categories extends BaseController {
                 $categoryQuery = $categoryQuery->where('posts.id IS NULL OR (posts.user_id = ' . intval($userId) . ' AND users.status != "banned")');
             }
         } else { // editor
-            $categoryQuery = $categoryQuery->where('posts.id IS NULL OR (posts.user_id = ? AND users.status != "banned")', [$userId]);
+            $categoryQuery = $categoryQuery->where('posts.id IS NULL OR (posts.user_id = ' . intval($userId) . ' AND users.status != "banned")');
         }
 
         // Search filter
@@ -73,7 +73,6 @@ class Categories extends BaseController {
         }
 
         $categories = $categoryQuery->paginate($this->showRecords);
-
         $data = [
             'title'        => 'Manage Categories',
             'categories'   => $categories,

@@ -212,7 +212,7 @@ class Posts extends BaseController {
     }
 
     public function edit($id) {
-        $post = $this->postModel->find($id);
+        $post = $this->postModel->withCategoryAndUser($this->postModel->detailedFields)->find($id);
 
         if (! $post) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
