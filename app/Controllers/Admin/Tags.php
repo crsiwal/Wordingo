@@ -43,7 +43,13 @@ class Tags extends BaseController
                 $tagsQuery = $tagsQuery->where('posts.id IS NULL OR (posts.user_id = ' . intval($userId) . ' AND users.status != "banned")');
             }
         } else { // editor
-            $tagsQuery = $tagsQuery->where('posts.id IS NULL OR (posts.user_id = ? AND users.status != "banned")', [$userId]);
+            $tagsQuery = $tagsQuery->groupStart()
+                ->where('posts.id IS NULL')
+                ->orGroupStart()
+                    ->where('posts.user_id', $userId)
+                    ->where('users.status !=', 'banned')
+                ->groupEnd()
+            ->groupEnd();
         }
 
         // Search filter

@@ -43,6 +43,7 @@ class Posts extends BaseController {
         $searchQuery = $this->request->getGet('q'); // q for search query
         $userId = $this->request->getGet('u'); // u for user ID
         $sort = $this->request->getGet('sort');
+        $featured = $this->request->getGet('featured');
         $sortOptions = [
             'name_asc' => ['posts.title', 'ASC'],
             'name_desc' => ['posts.title', 'DESC'],
@@ -96,6 +97,11 @@ class Posts extends BaseController {
                 ->orLike('posts.content', $searchQuery)
                 ->orLike('posts.description', $searchQuery)
                 ->groupEnd();
+        }
+
+        // Apply featured filter if provided
+        if ($featured !== null && $featured !== '') {
+            $builder->where('posts.is_featured', (int)$featured);
         }
 
         // Filter posts based on user role
@@ -271,6 +277,11 @@ class Posts extends BaseController {
                     'status'       => $this->request->getPost('status'),
                     'published_at' => $this->request->getPost('published_at') ?? null,
                 ];
+
+                // Only admin/manager can set featured
+                if (in_array($this->userRole, ['admin', 'manager'])) {
+                    $content['is_featured'] = $this->request->getPost('is_featured') ? 1 : 0;
+                }
 
                 // Only update slug if it's changed or newly created
                 if ($newSlug && ($post['slug'] === '' || $post['slug'] !== $newSlug)) {

@@ -32,18 +32,22 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
             <article class="max-w-4xl mx-auto">
                 <!-- Post Header -->
                 <header class="mb-8">
-                    <div class="flex items-center text-gray-600 text-sm mb-4">
-                        <a href="<?= base_url('category/' . $post['category_slug']) ?>" class="text-primary-600 hover:text-primary-800 mr-4">
-                            <i class="fas fa-folder"></i> <?= esc($post['category_name']) ?>
+                    <div class="flex flex-wrap items-center gap-3 text-gray-600 text-sm mb-4">
+                        <a href="<?= base_url('category/' . $post['category_slug']) ?>" class="inline-flex items-center gap-1.5 text-primary-600 hover:text-primary-800">
+                            <i class="fas fa-folder text-primary-500 mr-1"></i>
+                            <span class="truncate"><?= esc($post['category_name']) ?></span>
                         </a>
-                        <span class="mr-4">
-                            <i class="fas fa-calendar"></i> <?= date('M d, Y', strtotime($post['published_at'])) ?>
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fas fa-calendar text-gray-500 mr-1"></i>
+                            <span class="truncate"><?= date('M d, Y', strtotime($post['published_at'])) ?></span>
                         </span>
-                        <span class="mr-4">
-                            <i class="fas fa-user"></i> <?= esc($post['author_name']) ?>
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fas fa-user text-gray-500 mr-1"></i>
+                            <span class="truncate"><?= esc($post['author_name']) ?></span>
                         </span>
-                        <span class="mr-4">
-                            <i class="fas fa-eye"></i> <?= number_format($post['views']) ?> views
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="fas fa-eye text-gray-500 mr-1"></i>
+                            <span class="truncate"><?= number_format($post['views']) ?> views</span>
                         </span>
                     </div>
                     <h1 class="text-4xl font-bold mb-4 leading-tight"><?= esc($post['title']) ?></h1>
@@ -155,16 +159,19 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
 <button id="back-to-top" class="fixed bottom-8 right-8 bg-primary-600 text-white p-3 rounded-full shadow-lg hover:bg-primary-700 transition-all duration-300 opacity-0 invisible">
     <i class="fas fa-arrow-up"></i>
 </button>
+<?= $this->endSection() ?>
 
+
+<?= $this->section('scripts') ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Reading Progress Bar
-        const progressBar = document.getElementById('reading-progress');
-        const postContent = document.getElementById('post-content');
-        const tocContainer = document.getElementById('toc-container');
-        const article = document.querySelector('article');
-        const toc = document.getElementById('toc');
-        const headings = postContent.querySelectorAll('h2, h3, h4');
+    $(document).ready(function() {
+        // Reading Progress Bar and TOC Elements
+        const $progressBar = $('#reading-progress');
+        const $postContent = $('#post-content');
+        const $tocContainer = $('#toc-container');
+        const $article = $('article');
+        const $toc = $('#toc');
+        const $headings = $postContent.find('h2, h3, h4');
         let firstSection = true;
         let currentParent = null;
 
@@ -172,15 +179,14 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         const parentContainers = new Map();
         const headingRelations = new Map();
 
-        if (tocContainer && toc && postContent) {
-
+        if ($tocContainer.length && $toc.length && $postContent.length) {
             // Build heading relationships
             let currentH2 = null;
-            headings.forEach((heading) => {
-                const level = parseInt(heading.tagName.charAt(1));
+            $headings.each(function() {
+                const level = parseInt(this.tagName.charAt(1));
                 if (level === 2) {
-                    currentH2 = heading.id;
-                    headingRelations.set(heading.id, {
+                    currentH2 = this.id;
+                    headingRelations.set(this.id, {
                         parent: null,
                         children: new Set()
                     });
@@ -191,8 +197,8 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
                             children: new Set()
                         });
                     }
-                    headingRelations.get(currentH2).children.add(heading.id);
-                    headingRelations.set(heading.id, {
+                    headingRelations.get(currentH2).children.add(this.id);
+                    headingRelations.set(this.id, {
                         parent: currentH2,
                         children: new Set()
                     });
@@ -200,124 +206,130 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
             });
 
             // Generate TOC
-            headings.forEach((heading, index) => {
-                if (!heading.id) {
-                    heading.id = `heading-${index}`;
+            $headings.each(function(index) {
+                if (!this.id) {
+                    this.id = `heading-${index}`;
                 }
-                const level = parseInt(heading.tagName.charAt(1));
+                const level = parseInt(this.tagName.charAt(1));
                 const indent = (level - 2) * 1.5;
-                const linkContainer = document.createElement('div');
-                linkContainer.className = 'toc-item';
-                const link = document.createElement('a');
-                link.href = `#${heading.id}`;
-                const icon = document.createElement('i');
-                icon.className = `mr-2 text-primary-500 ${level === 2 ? 'fas fa-circle' : level === 3 ? 'fas fa-circle-dot' : 'far fa-circle'}`;
-                const text = document.createElement('span');
-                text.textContent = heading.textContent;
-                link.appendChild(icon);
-                link.appendChild(text);
-                link.className = 'block py-2 px-3 rounded-lg hover:bg-gray-50 hover:text-primary-600 transition-all duration-200 flex items-center group';
-                link.style.marginLeft = `${indent}rem`;
+                const $linkContainer = $('<div>').addClass('toc-item');
+                const $link = $('<a>').attr('href', `#${this.id}`);
+                const $icon = $('<i>').addClass(`mr-2 text-primary-500 ${level === 2 ? 'fas fa-circle' : level === 3 ? 'fas fa-circle-dot' : 'far fa-circle'}`);
+                const $text = $('<span>').text($(this).text());
+
+                $link.append($icon, $text)
+                    .addClass('block py-2 px-3 rounded-lg hover:bg-gray-50 hover:text-primary-600 transition-all duration-200 flex items-center group')
+                    .css('marginLeft', `${indent}rem`);
+
                 if (level === 2) {
-                    const toggleIcon = document.createElement('i');
-                    toggleIcon.className = 'fas fa-chevron-down ml-auto text-gray-400 transition-transform duration-200';
-                    link.appendChild(toggleIcon);
-                    const childrenContainer = document.createElement('div');
-                    childrenContainer.className = 'toc-children';
+                    const $toggleIcon = $('<i>').addClass('fas fa-chevron-down ml-auto text-gray-400 transition-transform duration-200');
+                    const $childrenContainer = $('<div>').addClass('toc-children');
+
                     if (!firstSection) {
-                        childrenContainer.classList.add('hidden');
-                        toggleIcon.style.transform = 'rotate(0deg)';
+                        $childrenContainer.addClass('hidden');
+                        $toggleIcon.css('transform', 'rotate(0deg)');
                     } else {
-                        toggleIcon.style.transform = 'rotate(-180deg)';
+                        $toggleIcon.css('transform', 'rotate(-180deg)');
                         firstSection = false;
                     }
-                    const relation = headingRelations.get(heading.id) || {
+
+                    const relation = headingRelations.get(this.id) || {
                         children: new Set()
                     };
-                    parentContainers.set(heading.id, {
-                        container: childrenContainer,
-                        toggleIcon: toggleIcon,
-                        link: link,
+                    parentContainers.set(this.id, {
+                        container: $childrenContainer,
+                        toggleIcon: $toggleIcon,
+                        link: $link,
                         children: relation.children
                     });
-                    link.addEventListener('click', (e) => {
+
+                    $link.on('click', function(e) {
                         e.preventDefault();
-                        const isExpanded = !childrenContainer.classList.contains('hidden');
-                        childrenContainer.classList.toggle('hidden');
-                        toggleIcon.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(-180deg)';
+                        const isExpanded = !$childrenContainer.hasClass('hidden');
+                        $childrenContainer.toggleClass('hidden');
+                        $toggleIcon.css('transform', isExpanded ? 'rotate(0deg)' : 'rotate(-180deg)');
                     });
-                    linkContainer.appendChild(link);
-                    linkContainer.appendChild(childrenContainer);
-                    toc.appendChild(linkContainer);
-                    currentParent = childrenContainer;
+
+                    $linkContainer.append($link, $childrenContainer);
+                    $toc.append($linkContainer);
+                    currentParent = $childrenContainer;
                 } else {
-                    linkContainer.appendChild(link);
+                    $linkContainer.append($link);
                     if (currentParent) {
-                        currentParent.appendChild(linkContainer);
+                        currentParent.append($linkContainer);
                     } else {
-                        toc.appendChild(linkContainer);
+                        $toc.append($linkContainer);
                     }
                 }
-                link.addEventListener('mouseenter', () => {
-                    icon.classList.add('scale-110');
-                });
-                link.addEventListener('mouseleave', () => {
-                    icon.classList.remove('scale-110');
-                });
+
+                $link.hover(
+                    function() {
+                        $icon.addClass('scale-110');
+                    },
+                    function() {
+                        $icon.removeClass('scale-110');
+                    }
+                );
             });
 
             // Reading Progress Bar
             function updateReadingProgress() {
-                const contentHeight = postContent.offsetHeight;
-                const scrollPosition = window.scrollY;
-                const windowHeight = window.innerHeight;
-                const contentTop = postContent.offsetTop;
-                const scrolled = scrollPosition + windowHeight - contentTop;
-                const totalScrollable = contentHeight + windowHeight;
-                const progress = (scrolled / totalScrollable) * 100;
-                progressBar.style.transform = `scaleX(${Math.min(Math.max(progress, 0), 100) / 100})`;
+                const contentHeight = $postContent[0].scrollHeight;
+                const contentTop = $postContent[0].getBoundingClientRect().top + window.scrollY;
+                const windowHeight = $(window).height();
+                const scrollPosition = $(window).scrollTop();
+                const totalScrollable = contentHeight - windowHeight;
+                let progress = (scrollPosition - contentTop) / totalScrollable;
+                progress = Math.max(0, Math.min(progress, 1));
+                $progressBar.css('transform', `scaleX(${progress})`);
             }
 
             // TOC Position
             function updateTOCPosition() {
-                const scrollPosition = window.scrollY;
-                const windowHeight = window.innerHeight;
-                const articleBottom = article.offsetTop + article.offsetHeight;
-                const tocHeight = tocContainer.offsetHeight;
-                const tocParent = tocContainer.parentElement;
+                const scrollPosition = $(window).scrollTop();
+                const windowHeight = $(window).height();
+                const articleBottom = $article.offset().top + $article.outerHeight();
+                const tocHeight = $tocContainer.outerHeight();
+                const $tocParent = $tocContainer.parent();
                 const maxScroll = articleBottom - tocHeight - 24;
+
                 if (scrollPosition + windowHeight > articleBottom) {
-                    tocContainer.style.position = 'absolute';
-                    tocContainer.style.top = `${Math.max(24, maxScroll)}px`;
-                    tocParent.style.height = `${articleBottom - tocContainer.offsetTop}px`;
+                    $tocContainer.css({
+                        position: 'absolute',
+                        top: `${Math.max(24, maxScroll)}px`
+                    });
+                    $tocParent.css('height', `${articleBottom - $tocContainer.offset().top}px`);
                 } else {
-                    tocContainer.style.position = 'sticky';
-                    tocContainer.style.top = '6rem';
-                    tocParent.style.height = 'auto';
+                    $tocContainer.css({
+                        position: 'sticky',
+                        top: '6rem'
+                    });
+                    $tocParent.css('height', 'auto');
                 }
             }
 
-            // Highlight current section in TOC and scroll TOC to keep current section visible
+            // Intersection Observer for TOC highlighting
             const observerOptions = {
                 root: null,
                 rootMargin: '-20% 0px -70% 0px',
                 threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
             };
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         const id = entry.target.getAttribute('id');
-                        const activeLink = toc.querySelector(`a[href="#${id}"]`);
+                        const $activeLink = $toc.find(`a[href="#${id}"]`);
                         const relation = headingRelations.get(id);
-                        toc.querySelectorAll('a').forEach(link => {
-                            link.classList.remove('bg-gray-100', 'text-primary-600', 'font-medium');
-                        });
-                        if (activeLink) {
-                            activeLink.classList.add('bg-gray-100', 'text-primary-600', 'font-medium');
+
+                        $toc.find('a').removeClass('bg-gray-100 text-primary-600 font-medium');
+
+                        if ($activeLink.length) {
+                            $activeLink.addClass('bg-gray-100 text-primary-600 font-medium');
                             if (relation && relation.parent) {
                                 const parentData = parentContainers.get(relation.parent);
                                 if (parentData) {
-                                    parentData.link.classList.add('bg-gray-100', 'text-primary-600', 'font-medium');
+                                    $(parentData.link).addClass('bg-gray-100 text-primary-600 font-medium');
                                 }
                             }
                         }
@@ -325,9 +337,11 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
                 });
             }, observerOptions);
 
-            headings.forEach(heading => observer.observe(heading));
+            $headings.each(function() {
+                observer.observe(this);
+            });
 
-            // Combined scroll/resize event listeners
+            // Scroll and resize handlers
             let ticking = false;
 
             function onScrollOrResize() {
@@ -335,60 +349,54 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
                 updateTOCPosition();
                 ticking = false;
             }
-            window.addEventListener('scroll', () => {
+
+            $(window).on('scroll resize', function() {
                 if (!ticking) {
                     window.requestAnimationFrame(onScrollOrResize);
                     ticking = true;
                 }
             });
-            window.addEventListener('resize', onScrollOrResize);
 
             // Back to Top Button
-            const backToTop = document.getElementById('back-to-top');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
-                    backToTop.classList.remove('opacity-0', 'invisible');
-                    backToTop.classList.add('opacity-100', 'visible');
+            const $backToTop = $('#back-to-top');
+            $(window).on('scroll', function() {
+                if ($(this).scrollTop() > 300) {
+                    $backToTop.removeClass('opacity-0 invisible').addClass('opacity-100 visible');
                 } else {
-                    backToTop.classList.add('opacity-0', 'invisible');
-                    backToTop.classList.remove('opacity-100', 'visible');
+                    $backToTop.addClass('opacity-0 invisible').removeClass('opacity-100 visible');
                 }
             });
-            backToTop.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+
+            $backToTop.on('click', function() {
+                $('html, body').animate({
+                    scrollTop: 0
+                }, 'smooth');
             });
 
             // Smooth scroll for TOC links
-            if (toc) {
-                toc.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        const targetId = link.getAttribute('href');
-                        const targetElement = document.querySelector(targetId);
-                        if (targetElement) {
-                            e.preventDefault();
-                            targetElement.scrollIntoView({
-                                behavior: 'smooth',
-                                block: 'start'
-                            });
-                        }
-                    });
-                });
-            }
+            $toc.find('a').on('click', function(e) {
+                const targetId = $(this).attr('href');
+                const $targetElement = $(targetId);
+                if ($targetElement.length) {
+                    e.preventDefault();
+                    $('html, body').animate({
+                        scrollTop: $targetElement.offset().top
+                    }, 'smooth');
+                }
+            });
         }
 
         // Modern Copy Link
-        const copyBtn = document.getElementById('copy-link');
-        const postLink = document.getElementById('post-link');
-        const copySuccess = document.getElementById('copy-success');
-        if (copyBtn && postLink && copySuccess) {
-            copyBtn.addEventListener('click', async () => {
+        const $copyBtn = $('#copy-link');
+        const $postLink = $('#post-link');
+        const $copySuccess = $('#copy-success');
+
+        if ($copyBtn.length && $postLink.length && $copySuccess.length) {
+            $copyBtn.on('click', async function() {
                 try {
-                    await navigator.clipboard.writeText(postLink.value);
-                    copySuccess.classList.remove('hidden');
-                    setTimeout(() => copySuccess.classList.add('hidden'), 2000);
+                    await navigator.clipboard.writeText($postLink.val());
+                    $copySuccess.removeClass('hidden');
+                    setTimeout(() => $copySuccess.addClass('hidden'), 2000);
                 } catch (err) {
                     alert('Failed to copy link');
                 }
@@ -396,34 +404,108 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         }
 
         // Read in Short toggle
-        const toggleBtn = document.getElementById('toggle-summary');
-        const postSummary = document.getElementById('post-summary');
-        if (toggleBtn && postSummary && postContent) {
+        const $toggleBtn = $('#toggle-summary');
+        const $postSummary = $('#post-summary');
+
+        if ($toggleBtn.length && $postSummary.length && $postContent.length) {
             let showingSummary = false;
-            toggleBtn.addEventListener('click', function() {
+            $toggleBtn.on('click', function() {
                 showingSummary = !showingSummary;
                 if (showingSummary) {
-                    postSummary.classList.remove('hidden');
-                    postContent.classList.add('hidden');
-                    toggleBtn.querySelector('span').textContent = 'Read Full';
-                    toggleBtn.querySelector('i').className = 'fas fa-book-open';
+                    $postSummary.removeClass('hidden');
+                    $postContent.addClass('hidden');
+                    $(this).find('span').text('Read Full');
+                    $(this).find('i').removeClass('fa-align-left').addClass('fa-book-open');
                 } else {
-                    postSummary.classList.add('hidden');
-                    postContent.classList.remove('hidden');
-                    toggleBtn.querySelector('span').textContent = 'Read in Short';
-                    toggleBtn.querySelector('i').className = 'fas fa-align-left';
+                    $postSummary.addClass('hidden');
+                    $postContent.removeClass('hidden');
+                    $(this).find('span').text('Read in Short');
+                    $(this).find('i').removeClass('fa-book-open').addClass('fa-align-left');
                 }
             });
         }
 
+
+        // Function to get IP details from free service
+        async function getIPDetails() {
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+                return {
+                    ip: data.ip,
+                    city: data.city,
+                    country: data.country_name,
+                    region: data.region
+                };
+            } catch (error) {
+                console.error('Error fetching IP details:', error);
+                return null;
+            }
+        }
+
+        // Function to track post view with IP details
+        async function trackPostView() {
+            let ipDetails = localStorage.getItem('ipDetails');
+            const startTime = Date.now();
+
+            if (!ipDetails) {
+                ipDetails = await getIPDetails();
+                if (ipDetails) {
+                    localStorage.setItem('ipDetails', JSON.stringify(ipDetails));
+                }
+            } else {
+                ipDetails = JSON.parse(ipDetails);
+            }
+
+            // Create tracking URL with available data
+            let trackingUrl = '/tracking/post?post_id=<?= $post['id'] ?>';
+
+            if (ipDetails) {
+                trackingUrl += `&ip=${ipDetails.ip}&city=${ipDetails.city}&country=${ipDetails.country}&region=${ipDetails.region}`;
+            }
+
+            // Track initial view
+            $('<img>')
+                .attr('src', trackingUrl)
+                .css('display', 'none')
+                .appendTo('body');
+
+            // Track view duration when user leaves the page
+            $(window).on('beforeunload', function() {
+                const duration = Math.floor((Date.now() - startTime) / 1000); // Convert to seconds
+                const durationUrl = `${trackingUrl}&view_duration=${duration}`;
+                console.log(durationUrl);
+                // Use sendBeacon for more reliable tracking on page unload
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon(durationUrl);
+                } else {
+                    // Fallback to image if sendBeacon is not supported
+                    $('<img>')
+                        .attr('src', durationUrl)
+                        .css('display', 'none')
+                        .appendTo('body');
+                }
+            });
+        }
+
+        // Track post view by calling trackPostView when page loads
+        trackPostView();
+        updateReadingProgress(); // Initialize progress bar on page load
     });
 </script>
+<?= $this->endSection() ?>
 
+<?= $this->section('styles') ?>
 <style>
     /* Custom styles for better typography */
     .prose {
         font-size: 1.125rem;
         line-height: 1.8;
+        color: #1a202c;
+    }
+
+    .dark .prose {
+        color: #e2e8f0;
     }
 
     .prose h2 {
@@ -434,12 +516,20 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         scroll-margin-top: 100px;
     }
 
+    .dark .prose h2 {
+        color: #f7fafc;
+    }
+
     .prose h3 {
         font-size: 1.5rem;
         margin-top: 2rem;
         margin-bottom: 1rem;
         color: #2d3748;
         scroll-margin-top: 100px;
+    }
+
+    .dark .prose h3 {
+        color: #e2e8f0;
     }
 
     .prose h4 {
@@ -450,6 +540,10 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         scroll-margin-top: 100px;
     }
 
+    .dark .prose h4 {
+        color: #e2e8f0;
+    }
+
     .prose p {
         margin-bottom: 1.5rem;
     }
@@ -457,6 +551,8 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
     .prose img {
         border-radius: 0.5rem;
         margin: 2rem 0;
+        max-width: 100%;
+        height: auto;
     }
 
     .prose blockquote {
@@ -466,11 +562,20 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         color: #4a5568;
     }
 
+    .dark .prose blockquote {
+        color: #a0aec0;
+    }
+
     .prose code {
         background-color: #f7fafc;
         padding: 0.2rem 0.4rem;
         border-radius: 0.25rem;
         font-size: 0.875em;
+    }
+
+    .dark .prose code {
+        background-color: #2d3748;
+        color: #e2e8f0;
     }
 
     .prose pre {
@@ -481,6 +586,10 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         overflow-x: auto;
     }
 
+    .dark .prose pre {
+        background-color: #1a202c;
+    }
+
     /* Smooth transitions */
     .transition-all {
         transition-property: all;
@@ -489,6 +598,17 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
     }
 
     /* TOC Container Styles */
+    #toc-container {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .dark #toc-container {
+        background-color: #1a202c;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    }
+
     #toc-container #toc {
         position: sticky;
         top: 6rem;
@@ -500,6 +620,10 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         overscroll-behavior: contain;
     }
 
+    .dark #toc-container #toc {
+        scrollbar-color: #4a5568 #2d3748;
+    }
+
     #toc-container::-webkit-scrollbar {
         width: 6px;
     }
@@ -509,13 +633,25 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         border-radius: 3px;
     }
 
+    .dark #toc-container::-webkit-scrollbar-track {
+        background: #2d3748;
+    }
+
     #toc-container::-webkit-scrollbar-thumb {
         background-color: #cbd5e0;
         border-radius: 3px;
     }
 
+    .dark #toc-container::-webkit-scrollbar-thumb {
+        background-color: #4a5568;
+    }
+
     #toc-container::-webkit-scrollbar-thumb:hover {
         background-color: #a0aec0;
+    }
+
+    .dark #toc-container::-webkit-scrollbar-thumb:hover {
+        background-color: #718096;
     }
 
     /* TOC Item Styles */
@@ -542,16 +678,32 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         transform: translateX(4px);
     }
 
+    .dark #toc a.active,
+    .dark #toc a.bg-gray-100 {
+        background-color: #2d3748;
+        color: #63b3ed;
+    }
+
     #toc a.active i,
     #toc a.bg-gray-100 i {
         color: #3b82f6;
         transform: scale(1.1);
     }
 
+    .dark #toc a.active i,
+    .dark #toc a.bg-gray-100 i {
+        color: #63b3ed;
+    }
+
     /* TOC link hover effects */
     #toc a {
         position: relative;
         overflow: hidden;
+        color: #4a5568;
+    }
+
+    .dark #toc a {
+        color: #a0aec0;
     }
 
     #toc a::before {
@@ -564,6 +716,10 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         background-color: #3b82f6;
         transform: scaleY(0);
         transition: transform 0.2s ease;
+    }
+
+    .dark #toc a::before {
+        background-color: #63b3ed;
     }
 
     #toc a:hover::before,
@@ -592,6 +748,13 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         padding-bottom: 0.5rem;
         margin-bottom: 1rem;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        color: #1a202c;
+    }
+
+    .dark #toc-container h3 {
+        background: #1a202c;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        color: #f7fafc;
     }
 
     /* Reading Progress Bar Styles */
@@ -605,6 +768,9 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         transform-origin: 0 50%;
         z-index: 9999;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        width: 100vw;
+        will-change: transform;
+        transform: scaleX(0);
     }
 
     /* Modern Share Box Styles */
@@ -635,6 +801,10 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
         background: #f0f9ff;
     }
 
+    .dark input#post-link:focus {
+        background: #2d3748;
+    }
+
     #toggle-summary {
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         font-size: 1rem;
@@ -663,6 +833,87 @@ $hasToc = preg_match('/<h[234][^>]*>/', $post['content']);
             transform: translateY(0);
         }
     }
-</style>
 
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+        .container {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .prose {
+            font-size: 1rem;
+        }
+
+        .prose h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .prose h3 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .prose h4 {
+            font-size: 1.125rem;
+            margin-top: 1.25rem;
+        }
+
+        .prose img {
+            margin: 1.5rem 0;
+        }
+
+        #toc-container {
+            display: none;
+        }
+
+        .share-box {
+            padding: 1rem;
+        }
+
+        .share-box .flex {
+            flex-wrap: wrap;
+        }
+
+        .share-box .gap-4 {
+            gap: 0.5rem;
+        }
+    }
+
+    /* Dark mode styles for share box */
+    .dark .share-box {
+        background-color: #1a202c;
+        border-color: #2d3748;
+    }
+
+    .dark .share-box .text-gray-900 {
+        color: #f7fafc;
+    }
+
+    .dark .share-box .text-gray-400 {
+        color: #a0aec0;
+    }
+
+    .dark .share-box .bg-gray-50 {
+        background-color: #2d3748;
+    }
+
+    .dark .share-box .text-gray-700 {
+        color: #e2e8f0;
+    }
+
+    /* Dark mode styles for tags */
+    .dark .bg-gray-100 {
+        background-color: #2d3748;
+    }
+
+    .dark .text-gray-800 {
+        color: #e2e8f0;
+    }
+
+    .dark .hover\:bg-gray-200:hover {
+        background-color: #4a5568;
+    }
+</style>
 <?= $this->endSection() ?>

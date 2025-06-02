@@ -1,36 +1,35 @@
 <?php
+
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Models\CategoryModel;
-use App\Models\PostModel;
-use App\Models\UserModel;
+use App\Services\AdminDashboardService;
+use App\Services\ManagerDashboardService;
+use App\Services\EditorDashboardService;
 
-class Dashboard extends BaseController
-{
-    protected $postModel;
-    protected $categoryModel;
-    protected $userModel;
+class Dashboard extends BaseController {
+    protected $userId;
+    protected $userRole;
+    protected $adminDashboardService;
+    protected $managerDashboardService;
+    protected $editorDashboardService;
 
-    public function __construct()
-    {
-        $this->postModel     = new PostModel();
-        $this->categoryModel = new CategoryModel();
-        $this->userModel     = new UserModel();
+    public function __construct() {
+        $this->userId = session()->get('user_id');
+        $this->userRole = session()->get('user_role');
+        $this->adminDashboardService = new AdminDashboardService();
+        $this->managerDashboardService = new ManagerDashboardService($this->userId);
+        $this->editorDashboardService = new EditorDashboardService($this->userId);
     }
 
-    public function index()
-    {
-        $data = [
-            'title'           => 'Admin Dashboard',
-            'totalPosts'      => $this->postModel->countAll(),
-            'publishedPosts'  => $this->postModel->where('status', 'published')->countAllResults(),
-            'totalViews'      => $this->postModel->selectSum('views')->first()['views'] ?? 0,
-            'totalCategories' => $this->categoryModel->countAll(),
-            'totalUsers'      => $this->userModel->countAll(),
-            'recentPosts'     => $this->postModel->orderBy('created_at', 'DESC')->limit(5)->find(),
-        ];
-
-        return $this->render('admin/dashboard', $data);
+    public function index() {
+        if ($this->userRole === 'admin') {
+            return $this->render('admin/dashboard/admin', $this->adminDashboardService->getDashboardData());
+        } elseif ($this->userRole === 'manager') {
+            return $this->render('admin/dashboard/manager', $this->managerDashboardService->getDashboardData());
+        } elseif ($this->userRole === 'editor') {
+            return $this->render('admin/dashboard/editor', $this->editorDashboardService->getDashboardData());
+        }
+        return $this->render('admin/dashboard');
     }
 }

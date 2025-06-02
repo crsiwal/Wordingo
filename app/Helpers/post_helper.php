@@ -1,4 +1,6 @@
 <?php
+
+// Post URL
 if (!function_exists('postUrl')) {
     function postUrl($post) {
         $categorySlug = isset($post['category_slug']) ? $post['category_slug'] : 'uncategorized';
@@ -8,6 +10,7 @@ if (!function_exists('postUrl')) {
     }
 }
 
+// Author image link
 if (!function_exists('authorImageLink')) {
     function authorImageLink($post) {
         return (
@@ -22,6 +25,7 @@ if (!function_exists('authorImageLink')) {
     }
 }
 
+// Author name and role link
 if (!function_exists('authorNameRoleLink')) {
     function authorNameRoleLink($post, $includeRole = true) {
         $role = $includeRole ? esc($post['author_role'] ?? '') : '';
@@ -62,5 +66,37 @@ if (!function_exists('layout_posts')) {
                 return view('visitor/sections/layouts/layout_posts', array_merge($layoutData, ['layout_id' => $key]));
             }
         }
+    }
+}
+
+// Time elapsed string
+if (!function_exists('time_elapsed_string')) {
+    function time_elapsed_string($datetime, $full = false) {
+        $now = new DateTime;
+        $ago = new DateTime($datetime);
+        $diff = $now->diff($ago);
+
+        $diff->w = floor($diff->d / 7);
+        $diff->d -= $diff->w * 7;
+
+        $string = [
+            'y' => 'year',
+            'm' => 'month',
+            'w' => 'week',
+            'd' => 'day',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
+        ];
+        foreach ($string as $k => &$v) {
+            if ($diff->$k) {
+                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        }
+
+        if (!$full) $string = array_slice($string, 0, 1);
+        return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 }

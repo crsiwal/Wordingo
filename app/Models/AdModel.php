@@ -12,6 +12,7 @@ class AdModel extends Model {
     protected $useSoftDeletes   = false;
 
     protected $allowedFields    = [
+        'user_id',
         'title',
         'slot_id',
         'category_id',

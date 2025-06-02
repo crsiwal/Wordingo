@@ -26,6 +26,12 @@ $routes->group('post', function ($routes) {
 // Recent Posts
 $routes->get('posts', 'Visitor\RecentPosts::index');
 
+// Post view tracking
+$routes->group('tracking', function ($routes) {
+    $routes->get('post', 'Visitor\PostTracker::track');
+    $routes->post('post', 'Visitor\PostTracker::track');
+});
+
 // Category Routes
 $routes->get('category/(:segment)', 'Visitor\Category::index/$1'); // category/slug
 

@@ -18,48 +18,50 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    <!-- CKEditor -->
-    <script src="https://cdn.ckeditor.com/ckeditor5/27.1.0/classic/ckeditor.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <script>
+        // Dropdown toggle function
         function toggleDropdown(id) {
-            const dropdown = document.getElementById(id);
-            dropdown.classList.toggle('hidden');
+            $('#' + id).toggleClass('hidden');
         }
 
         // Close dropdowns when clicking outside
-        document.addEventListener('click', function(event) {
+        $(document).on('click', function(event) {
             const dropdowns = ['userDropdown', 'mobileMenu'];
             dropdowns.forEach(id => {
-                const dropdown = document.getElementById(id);
-                const button = document.getElementById(id + 'Button');
-                if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
-                    dropdown.classList.add('hidden');
+                const $dropdown = $('#' + id);
+                const $button = $('#' + id + 'Button');
+                if ($dropdown.length && $button.length && !$button.is(event.target) && !$dropdown.is(event.target) && !$dropdown.has(event.target).length) {
+                    $dropdown.addClass('hidden');
                 }
             });
         });
 
         // Theme toggle
         function toggleTheme() {
-            const html = document.documentElement;
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
+            const $html = $('html');
+            if ($html.hasClass('dark')) {
+                $html.removeClass('dark');
                 localStorage.setItem('theme', 'light');
-                document.getElementById('themeIcon').classList.replace('fa-sun', 'fa-moon');
+                $('#themeIcon').removeClass('fa-sun').addClass('fa-moon');
             } else {
-                html.classList.add('dark');
+                $html.addClass('dark');
                 localStorage.setItem('theme', 'dark');
-                document.getElementById('themeIcon').classList.replace('fa-moon', 'fa-sun');
+                $('#themeIcon').removeClass('fa-moon').addClass('fa-sun');
             }
         }
 
         // Check for saved theme preference or respect OS preference
-        if (localStorage.getItem('theme') === 'dark' ||
-            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
+        $(document).ready(function() {
+            if (localStorage.getItem('theme') === 'dark' ||
+                (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                $('html').addClass('dark');
+            } else {
+                $('html').removeClass('dark');
+            }
+        });
     </script>
 
     <style>
@@ -176,6 +178,8 @@
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
     </style>
+
+    <?php echo $this->renderSection('styles') ?>
 </head>
 
 <body class="dark-transition bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
@@ -345,6 +349,7 @@
         </div>
     </footer>
     <script src="<?= base_url('js/script.js') ?>"></script>
+    <?php echo $this->renderSection('scripts') ?>
 </body>
 
 </html>

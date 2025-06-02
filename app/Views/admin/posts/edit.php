@@ -49,21 +49,24 @@
             </div>
 
             <?php if (! empty($post['slug']) && $post['status'] === 'published'): ?>
-                <a href="<?= postUrl($post); ?>" class="bg-white text-purple-600 px-4 py-2 rounded-lg shadow-md hover:bg-purple-50 transition-colors flex items-center" target="_blank">
-                    <i class="fas fa-eye mr-2"></i>
+                <a href="<?php echo postUrl($post); ?>"
+                   class="group bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-600 transition-all flex items-center gap-2 font-semibold"
+                   target="_blank">
+                    <i class="fas fa-eye mr-1"></i>
                     <span>Open</span>
                 </a>
             <?php endif; ?>
 
-            <a href="<?php echo base_url('admin/posts/create') ?>" class="bg-white text-green-600 px-4 py-2 rounded-lg shadow-md hover:bg-green-50 transition-colors flex items-center">
-                <i class="fas fa-plus mr-2"></i>
+            <a href="<?php echo base_url('admin/posts/create') ?>"
+               class="group bg-gradient-to-r from-green-400 to-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:from-green-600 hover:to-green-400 transition-all flex items-center gap-2 font-semibold">
+                <i class="fas fa-plus mr-1"></i>
                 <span>New</span>
             </a>
 
             <a href="<?php echo base_url('admin/posts/delete/' . $post['id']) ?>"
-                class="bg-white text-red-600 px-4 py-2 rounded-lg shadow-md hover:bg-red-50 transition-colors flex items-center"
-                onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.')">
-                <i class="fas fa-trash mr-2"></i>
+               class="group bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-pink-600 hover:to-red-600 transition-all flex items-center gap-2 font-semibold"
+               onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.')">
+                <i class="fas fa-trash mr-1"></i>
                 <span>Trash</span>
             </a>
         </div>
@@ -358,16 +361,31 @@
                                 <input type="hidden" name="tags" id="tags-hidden" value="<?php echo old('tags', $post['tags']) ?>">
                                 <p class="mt-1 text-sm text-gray-500">Type a tag and press Enter or comma. Tags are optional.</p>
                             </div>
+
+                            <!-- Featured Post Toggle -->
+                            <?php if (in_array($post["author_role"], ['admin', 'manager'])): ?>
+                                <div>
+                                    <label class="inline-flex items-center mt-2" for="is_featured">
+                                        <input type="checkbox" id="is_featured" name="is_featured" value="1"
+                                            class="form-checkbox h-5 w-5 text-yellow-500"
+                                            <?php echo (int)old('is_featured', $post['is_featured'] ?? 0) === 1 ? 'checked' : ''; ?>>
+                                        <span class="ml-2 text-sm text-gray-700">Mark as Featured Post</span>
+                                    </label>
+                                    <p class="mt-1 text-sm text-gray-500">Featured posts can be highlighted on the homepage or special sections.</p>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="flex items-center justify-end space-x-4 pt-6 border-t">
-                <a href="<?php echo base_url('admin/posts') ?>" class="text-gray-600 hover:text-gray-800">
+                <a href="<?php echo base_url('admin/posts') ?>" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 text-gray-600 bg-white hover:bg-gray-100 transition font-semibold">
+                    <i class="fas fa-arrow-left"></i>
                     Cancel
                 </a>
-                <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700">
+                <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2 rounded-lg shadow-md hover:from-purple-600 hover:to-blue-500 transition font-semibold">
+                    <i class="fas fa-save"></i>
                     <?php echo $post['title'] ? 'Update Post' : 'Create Post' ?>
                 </button>
             </div>
@@ -1058,6 +1076,18 @@
 
     .fr-element a:hover {
         color: #2563eb !important;
+    }
+
+    .group:hover .fa-plus,
+    .group:hover .fa-eye,
+    .group:hover .fa-trash {
+        transform: scale(1.15) rotate(-8deg);
+        transition: transform 0.2s;
+    }
+    .group .fa-plus,
+    .group .fa-eye,
+    .group .fa-trash {
+        transition: transform 0.2s;
     }
 </style>
 <?php echo $this->endSection() ?>

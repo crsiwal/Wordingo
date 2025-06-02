@@ -37,6 +37,7 @@ class Filters extends BaseConfig
             // 'honeypot',
             'csrf' => [
                 'except' => [
+                    'tracking/post',
                     'admin/files/upload',
                     'admin/files/delete',
                     'admin/posts/validate-slug',
