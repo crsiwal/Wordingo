@@ -32,7 +32,7 @@
                         </div>
                         <div class="ml-4">
                             <h3 class="text-xl font-semibold text-gray-900">Email Us</h3>
-                            <p class="text-gray-600">support@wordingo.com</p>
+                            <p class="text-gray-600"><?= site_support_email() ?></p>
                         </div>
                     </div>
                     <p class="text-gray-500">We'll respond within 24 hours</p>

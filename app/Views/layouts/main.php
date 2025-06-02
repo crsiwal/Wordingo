@@ -188,7 +188,7 @@
         <div class="flex items-center justify-between px-4 sm:px-8 py-3 max-w-screen-2xl mx-auto">
             <a href="<?= base_url() ?>" class="flex items-center gap-3 text-2xl font-bold text-indigo-700">
                 <span class="bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl shadow">W</span>
-                <span class="tracking-tight">Wordingo</span>
+                <span class="tracking-tight"><?= site_name() ?></span>
             </a>
             <nav class="hidden md:flex gap-6 text-base font-medium">
                 <a href="<?= base_url() ?>"
@@ -306,7 +306,7 @@
     <footer class="bg-white border-t border-gray-100 pt-12 pb-6 mt-12">
         <div class="max-w-screen-2xl mx-auto px-4 sm:px-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10 mb-8">
             <div class="min-w-0 break-words">
-                <h3 class="text-lg sm:text-xl font-bold mb-3 text-indigo-700">About Wordingo</h3>
+                <h3 class="text-lg sm:text-xl font-bold mb-3 text-indigo-700">About <?= site_name() ?></h3>
                 <p class="text-gray-600 mb-4 text-sm sm:text-base">A modern blogging platform built with CodeIgniter 4 and Tailwind CSS, focusing on a clean design and great user experience.</p>
                 <div class="flex gap-3 text-xl text-indigo-600">
                     <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
@@ -338,14 +338,14 @@
             <div class="min-w-0 break-words">
                 <h3 class="text-lg sm:text-xl font-bold mb-3">Contact</h3>
                 <p class="text-gray-600 mb-2 text-sm sm:text-base">Want to discuss with us?</p>
-                <a href="mailto:support@wordingo.com" class="text-indigo-600 hover:underline">support@wordingo.com</a>
+                <a href="mailto:<?= site_support_email() ?>" class="text-indigo-600 hover:underline"><?= site_support_email() ?></a>
                 <div class="mt-4">
                     <a href="#" class="text-sm text-gray-500 hover:underline">Unsubscribe from this email</a>
                 </div>
             </div>
         </div>
         <div class="border-t border-gray-100 pt-4 sm:pt-6 text-center text-gray-400 text-xs sm:text-sm">
-            &copy; <?= date('Y') ?> Wordingo. All rights reserved.
+            &copy; <?= date('Y') ?> <?= site_name() ?>. All rights reserved.
         </div>
     </footer>
     <script src="<?= base_url('js/script.js') ?>"></script>

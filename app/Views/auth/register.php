@@ -6,7 +6,7 @@
         <div class="max-w-6xl mx-auto">
             <!-- Header -->
             <div class="text-center mb-12">
-                <h1 class="text-4xl font-bold text-indigo-900 mb-4">Join Wordingo</h1>
+                <h1 class="text-4xl font-bold text-indigo-900 mb-4">Join <?= site_name() ?></h1>
                 <p class="text-gray-600">Start your writing journey today</p>
     </div>
 
@@ -292,7 +292,7 @@
                     <!-- Right: Info Section -->
                     <div class="hidden lg:block bg-gradient-to-br from-indigo-600 to-purple-600 p-12 text-white">
                         <div class="max-w-md mx-auto">
-                            <h2 class="text-3xl font-bold mb-8">Welcome to Wordingo</h2>
+                            <h2 class="text-3xl font-bold mb-8">Welcome to <?= site_name() ?></h2>
 
                             <div class="space-y-8">
                                 <div class="flex items-start gap-4">
@@ -333,7 +333,7 @@
                                         <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
                                         <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
                                     </div>
-                                    <p class="text-sm text-white/80">Join thousands of writers already on Wordingo</p>
+                                    <p class="text-sm text-white/80">Join thousands of writers already on <?= site_name() ?></p>
                                 </div>
                             </div>
                         </div>

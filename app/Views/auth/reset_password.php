@@ -119,7 +119,7 @@
                                     </div>
                                     <div>
                                         <h3 class="text-lg font-semibold mb-2">Stay Secure</h3>
-                                        <p class="text-white/80">Use a unique password for your Wordingo account.</p>
+                                        <p class="text-white/80">Use a unique password for your <?= site_name() ?> account.</p>
                                     </div>
                                 </div>
                                 <div class="flex items-start gap-4">
@@ -148,7 +148,7 @@
                                         <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
                                         <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
                                     </div>
-                                    <p class="text-sm text-white/80">Join thousands of writers already on Wordingo</p>
+                                    <p class="text-sm text-white/80">Join thousands of writers already on <?= site_name() ?></p>
                                 </div>
                             </div>
                         </div>

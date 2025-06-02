@@ -11,11 +11,11 @@
         <div class="text-center mb-16 relative">
             <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 w-20 h-20 bg-primary-100 rounded-full opacity-50 animate-pulse"></div>
             <h1 class="text-5xl font-bold text-gray-900 mb-6 relative">
-                About Wordingo
+                About <?= site_name() ?>
                 <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-primary-600 rounded-full"></span>
             </h1>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                A modern platform where writers share their stories and readers discover compelling content.
+                <?= site_name() ?> is dedicated to empowering writers and connecting them with readers worldwide.
                 Join our vibrant community of storytellers, thought leaders, and passionate readers.
             </p>
         </div>
@@ -34,7 +34,7 @@
                         <h2 class="text-2xl font-semibold text-gray-900 ml-4">Our Mission</h2>
                     </div>
                     <p class="text-gray-700 leading-relaxed mb-4">
-                        Wordingo is dedicated to empowering writers and connecting them with readers worldwide.
+                        <?= site_name() ?> is dedicated to empowering writers and connecting them with readers worldwide.
                         We believe in the power of storytelling and the impact of well-crafted content.
                     </p>
                     <p class="text-gray-700 leading-relaxed">
@@ -142,7 +142,7 @@
                         <h2 class="text-2xl font-semibold text-gray-900 ml-4">Our Story</h2>
                     </div>
                     <p class="text-gray-700 leading-relaxed mb-4">
-                        Founded in 2024, Wordingo emerged from a vision to create a platform that puts content creators first.
+                        Founded in 2024, <?= site_name() ?> emerged from a vision to create a platform that puts content creators first.
                         We understand the challenges writers face in today's digital landscape and are committed to providing
                         the tools and support they need to succeed.
                     </p>
@@ -166,7 +166,7 @@
                         <h2 class="text-2xl font-semibold text-gray-900 ml-4">Join Our Community</h2>
                     </div>
                     <p class="text-gray-700 leading-relaxed mb-6">
-                        Whether you're a seasoned writer or just starting your journey, Wordingo provides the perfect
+                        Whether you're a seasoned writer or just starting your journey, <?= site_name() ?> provides the perfect
                         environment to grow your audience and share your voice with the world.
                     </p>
                     <div class="space-y-4 mb-6">
@@ -210,7 +210,7 @@
                         <h2 class="text-2xl font-semibold text-gray-900 ml-4">Our Team</h2>
                     </div>
                     <p class="text-gray-700 leading-relaxed mb-6">
-                        Behind Wordingo is a dedicated team of professionals passionate about writing, technology, and community building.
+                        Behind <?= site_name() ?> is a dedicated team of professionals passionate about writing, technology, and community building.
                         We work tirelessly to create the best platform for our users.
                     </p>
                     <div class="grid grid-cols-2 gap-4">

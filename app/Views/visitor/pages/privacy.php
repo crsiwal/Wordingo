@@ -5,10 +5,10 @@
     <div class="container mx-auto px-4">
         <div class="max-w-3xl mx-auto bg-white rounded-3xl shadow-xl p-10">
             <h1 class="text-4xl font-bold text-indigo-900 mb-4">Privacy Policy</h1>
-            <p class="text-gray-600 mb-8">Your privacy is important to us. This policy explains how Wordingo collects, uses, and protects your information.</p>
+            <p class="text-gray-600 mb-8">Your privacy is important to us. This policy explains how <?= site_name() ?> collects, uses, and protects your information.</p>
 
             <h2 class="text-2xl font-semibold text-indigo-800 mt-8 mb-2">1. Introduction</h2>
-            <p class="text-gray-700 mb-4">This Privacy Policy describes how Wordingo ("we", "us", or "our") collects, uses, and shares your personal information when you use our website and services.</p>
+            <p class="text-gray-700 mb-4">This Privacy Policy describes how <?= site_name() ?> ("we", "us", or "our") collects, uses, and shares your personal information when you use our website and services.</p>
 
             <h2 class="text-2xl font-semibold text-indigo-800 mt-8 mb-2">2. Information We Collect</h2>
             <ul class="list-disc list-inside text-gray-700 mb-4">
@@ -42,7 +42,7 @@
             <p class="text-gray-700 mb-4">We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the new policy on this page.</p>
 
             <h2 class="text-2xl font-semibold text-indigo-800 mt-8 mb-2">8. Contact Us</h2>
-            <p class="text-gray-700">If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@wordingo.com" class="text-indigo-600 hover:underline">support@wordingo.com</a>.</p>
+            <p class="text-gray-700">If you have any questions about this Privacy Policy, please contact us at <a href="mailto:<?= site_support_email() ?>" class="text-indigo-600 hover:underline"><?= site_support_email() ?></a>.</p>
         </div>
     </div>
 </div>

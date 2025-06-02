@@ -136,7 +136,7 @@
                                         <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
                                         <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=random" alt="User" class="w-10 h-10 rounded-full border-2 border-white">
                                     </div>
-                                    <p class="text-sm text-white/80">Join thousands of writers already on Wordingo</p>
+                                    <p class="text-sm text-white/80">Join thousands of writers already on <?= site_name() ?></p>
                                 </div>
                             </div>
                         </div>
