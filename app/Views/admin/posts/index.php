@@ -305,14 +305,14 @@ if (!empty($queryString)) {
                                             Edit
                                         </a>
                                     <?php endif; ?>
-                                    <a href="<?php echo base_url('blog/' . $post['slug']) ?>"
+                                    <a href="<?= postUrl($post); ?>"
                                         target="_blank"
                                         class="px-3 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors inline-flex items-center justify-center text-sm"
                                         aria-label="View post">
                                         <i class="fas fa-external-link-alt mr-1"></i>
                                         View
                                     </a>
-                                    <button onclick="navigator.clipboard.writeText('<?php echo base_url('blog/' . $post['slug']) ?>'); this.setAttribute('aria-label','Copied!'); setTimeout(()=>this.setAttribute('aria-label','Copy post link'),1000);" class="px-3 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors inline-flex items-center justify-center text-sm" aria-label="Copy post link">
+                                    <button onclick="navigator.clipboard.writeText('<?= postUrl($post); ?>'); this.innerHTML = '<i class=\'fas fa-check mr-1\'></i>Copied!'; setTimeout(()=>this.innerHTML = '<i class=\'fas fa-link mr-1\'></i>Copy', 1000);" class="px-3 py-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors inline-flex items-center justify-center text-sm" aria-label="Copy post link">
                                         <i class="fas fa-link mr-1"></i>
                                         Copy
                                     </button>
@@ -492,60 +492,54 @@ if (!empty($queryString)) {
         pointer-events: none;
     }
 </style>
+
 <script>
-    // Modal open/close
-    const openBtn = document.getElementById('openFilterModal');
-    const modal = document.getElementById('filterModal');
-    const closeBtn = document.getElementById('closeFilterModal');
-    openBtn.addEventListener('click', () => modal.classList.remove('hidden'));
-    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.add('hidden');
-    });
-
-    // Filter tab switching
-    const tabs = document.querySelectorAll('.filter-tab');
-    const panels = document.querySelectorAll('.filter-panel');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('bg-blue-100', 'font-bold'));
-            tab.classList.add('bg-blue-100', 'font-bold');
-            panels.forEach(panel => {
-                if (panel.dataset.filterPanel === tab.dataset.filter) {
-                    panel.classList.remove('hidden');
-                } else {
-                    panel.classList.add('hidden');
-                }
-            });
+    $(document).ready(function() {
+        // Modal open/close functionality
+        $('#openFilterModal').on('click', function() {
+            $('#filterModal').removeClass('hidden');
         });
-    });
-    // Default: show first tab
-    if (tabs.length) tabs[0].click();
 
-    // Sort dropdown logic
-    const sortBtn = document.getElementById('sortDropdownBtn');
-    const sortDropdown = document.getElementById('sortDropdown');
-    sortBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        sortDropdown.classList.toggle('hidden');
-    });
-    document.addEventListener('click', function(e) {
-        if (!sortDropdown.classList.contains('hidden')) {
-            sortDropdown.classList.add('hidden');
-        }
-    });
-    const sortOptions = document.querySelectorAll('.sort-option');
-    const sortInput = document.getElementById('sortInput');
-    sortOptions.forEach(option => {
-        option.addEventListener('click', function(e) {
-            // Get current URL and params
+        $('#closeFilterModal').on('click', function() {
+            $('#filterModal').addClass('hidden');
+        });
+
+        $('#filterModal').on('click', function(e) {
+            if (e.target === this) {
+                $(this).addClass('hidden');
+            }
+        });
+
+        // Filter tab switching
+        $('.filter-tab').on('click', function() {
+            $('.filter-tab').removeClass('bg-blue-100 font-bold');
+            $(this).addClass('bg-blue-100 font-bold');
+
+            const filterType = $(this).data('filter');
+            $('.filter-panel').addClass('hidden');
+            $(`.filter-panel[data-filter-panel="${filterType}"]`).removeClass('hidden');
+        });
+
+        // Show first tab by default
+        $('.filter-tab:first').trigger('click');
+
+        // Sort dropdown functionality
+        $('#sortDropdownBtn').on('click', function(e) {
+            e.stopPropagation();
+            $('#sortDropdown').toggleClass('hidden');
+        });
+
+        $(document).on('click', function(e) {
+            if (!$('#sortDropdown').hasClass('hidden')) {
+                $('#sortDropdown').addClass('hidden');
+            }
+        });
+
+        // Sort options handling
+        $('.sort-option').on('click', function() {
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
-
-            // Update or add sort parameter
-            params.set('sort', option.dataset.value);
-
-            // Update URL with new params
+            params.set('sort', $(this).data('value'));
             url.search = params.toString();
             window.location.href = url.toString();
         });

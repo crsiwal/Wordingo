@@ -50,22 +50,22 @@
 
             <?php if (! empty($post['slug']) && $post['status'] === 'published'): ?>
                 <a href="<?php echo postUrl($post); ?>"
-                   class="group bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-600 transition-all flex items-center gap-2 font-semibold"
-                   target="_blank">
+                    class="group bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-blue-600 hover:to-purple-600 transition-all flex items-center gap-2 font-semibold"
+                    target="_blank">
                     <i class="fas fa-eye mr-1"></i>
                     <span>Open</span>
                 </a>
             <?php endif; ?>
 
             <a href="<?php echo base_url('admin/posts/create') ?>"
-               class="group bg-gradient-to-r from-green-400 to-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:from-green-600 hover:to-green-400 transition-all flex items-center gap-2 font-semibold">
+                class="group bg-gradient-to-r from-green-400 to-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:from-green-600 hover:to-green-400 transition-all flex items-center gap-2 font-semibold">
                 <i class="fas fa-plus mr-1"></i>
                 <span>New</span>
             </a>
 
             <a href="<?php echo base_url('admin/posts/delete/' . $post['id']) ?>"
-               class="group bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-pink-600 hover:to-red-600 transition-all flex items-center gap-2 font-semibold"
-               onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.')">
+                class="group bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow-md hover:from-pink-600 hover:to-red-600 transition-all flex items-center gap-2 font-semibold"
+                onclick="return confirm('Are you sure you want to delete this post? This action cannot be undone.')">
                 <i class="fas fa-trash mr-1"></i>
                 <span>Trash</span>
             </a>
@@ -363,7 +363,7 @@
                             </div>
 
                             <!-- Featured Post Toggle -->
-                            <?php if (in_array($post["author_role"], ['admin', 'manager'])): ?>
+                            <?php if (in_array(session()->get('user_role'), ['admin', 'manager'])): ?>
                                 <div>
                                     <label class="inline-flex items-center mt-2" for="is_featured">
                                         <input type="checkbox" id="is_featured" name="is_featured" value="1"
@@ -1084,6 +1084,7 @@
         transform: scale(1.15) rotate(-8deg);
         transition: transform 0.2s;
     }
+
     .group .fa-plus,
     .group .fa-eye,
     .group .fa-trash {

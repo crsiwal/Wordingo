@@ -166,13 +166,11 @@
                         <i class="fas fa-bars"></i>
                     </button>
 
-                    <a href="<?php echo base_url("users") ?>" class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-full animated-gradient flex items-center justify-center">
-                            <span class="text-white font-bold text-lg">B</span>
-                        </div>
-                        <span class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-                            Wordiqo
+                    <a href="<?= base_url("users") ?>" class="flex items-center gap-3 text-2xl font-bold text-indigo-600">
+                        <span class="rounded-full w-10 h-10 flex items-center justify-center">
+                            <img src="<?= base_url('assets/images/icon.png') ?>" alt="Depto Words Logo" class="w-10 h-10">
                         </span>
+                        <span class="tracking-tight"><?= site_name() ?></span>
                     </a>
                 </div>
 

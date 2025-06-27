@@ -4,7 +4,7 @@
 <article class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
     <a href="<?= postUrl($post) ?>">
         <?php if (!empty($post['thumbnail'])): ?>
-            <img src="<?= $post['thumbnail']; ?>" alt="<?= esc($post['title']) ?>" class="w-full h-40 object-cover">
+            <img src="<?= str_replace('/raw/', '/thumb/', $post['thumbnail']); ?>" alt="<?= esc($post['title']) ?>" class="w-full h-40 object-cover">
         <?php else: ?>
             <div class="w-full h-40 bg-gray-200 rounded-t-xl flex items-center justify-center">
                 <i class="fas fa-image text-gray-500 text-2xl"></i>

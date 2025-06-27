@@ -4,13 +4,16 @@ namespace App\Controllers\Visitor;
 
 use CodeIgniter\Controller;
 use App\Models\PostViewModel;
+use App\Models\PostModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class PostTracker extends Controller {
     protected $postViewModel;
+    protected $postModel;
 
     public function __construct() {
         $this->postViewModel = new PostViewModel();
+        $this->postModel = new PostModel();
     }
 
     /**
@@ -51,11 +54,13 @@ class PostTracker extends Controller {
 
         // Save the view data
         if ($this->postViewModel->insert($data)) {
-            // Update post view count
-            $this->postViewModel->db->table('posts')
-                ->where('id', $postId)
-                ->set('views', 'views + 1', false)
-                ->update();
+
+            if ($view_duration == 0 && !in_array($data['device_type'], ['bot'])) {
+                // Update post view count
+                $this->postModel->where('id', $postId)
+                    ->set('views', 'views + 1', false)
+                    ->update();
+            }
         }
 
         // Return 204 No Content
@@ -70,18 +75,35 @@ class PostTracker extends Controller {
      */
     protected function getDeviceType(): string {
         $userAgent = $this->request->getUserAgent();
+        $agent = strtolower($userAgent->getAgentString());
 
+        // Check for bots first
         if ($userAgent->isRobot()) {
             return 'bot';
         }
-        if ($userAgent->isMobile()) {
-            // Check if it's a tablet by looking for common tablet identifiers in the user agent
-            $agent = strtolower($userAgent->getAgentString());
-            if (strpos($agent, 'ipad') !== false || strpos($agent, 'tablet') !== false) {
+
+        // Check for tablets
+        $tabletKeywords = ['ipad', 'tablet', 'kindle', 'playbook', 'silk', 'gt-p', 'sm-t'];
+        foreach ($tabletKeywords as $keyword) {
+            if (strpos($agent, $keyword) !== false) {
                 return 'tablet';
             }
+        }
+
+        // Check for mobile devices
+        if ($userAgent->isMobile()) {
             return 'mobile';
         }
-        return 'desktop';
+
+        // Check for desktop browsers
+        $desktopKeywords = ['windows', 'macintosh', 'linux', 'x11', 'chrome', 'firefox', 'safari', 'opera'];
+        foreach ($desktopKeywords as $keyword) {
+            if (strpos($agent, $keyword) !== false) {
+                return 'desktop';
+            }
+        }
+
+        // Return unknown if no specific device type is detected
+        return 'unknown';
     }
 }

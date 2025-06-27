@@ -181,8 +181,11 @@
                 <!-- Logo - Left Aligned -->
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <a href="<?php echo base_url("admin") ?>" class="flex items-center">
-                            <span class="text-2xl font-bold text-gray-800">Wordiqo</span>
+                        <a href="<?= base_url("admin") ?>" class="flex items-center gap-3 text-2xl font-bold text-indigo-600">
+                            <span class="rounded-full w-10 h-10 flex items-center justify-center">
+                                <img src="<?= base_url('assets/images/icon.png') ?>" alt="Depto Words Logo" class="w-10 h-10">
+                            </span>
+                            <span class="tracking-tight"><?= site_name() ?></span>
                         </a>
                     </div>
 

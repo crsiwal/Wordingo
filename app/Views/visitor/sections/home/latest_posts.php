@@ -7,7 +7,11 @@
         <?php foreach ($latestPosts as $post): ?>
             <article class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
                 <?php if (!empty($post['thumbnail'])): ?>
-                    <img src="<?= $post['thumbnail']; ?>" alt="<?= esc($post['title']) ?>" class="w-full h-40 object-cover">
+                    <img src="<?= str_replace('/raw/', '/thumb/', $post['thumbnail']); ?>" alt="<?= esc($post['title']) ?>" class="w-full h-40 object-cover">
+                <?php else: ?>
+                    <div class="w-full h-40 bg-gray-200 rounded-t-xl flex items-center justify-center">
+                        <i class="fas fa-image text-gray-500 text-2xl"></i>
+                    </div>
                 <?php endif; ?>
                 <div class="p-5 flex-1 flex flex-col justify-between">
                     <div class="flex items-center justify-between mb-2">

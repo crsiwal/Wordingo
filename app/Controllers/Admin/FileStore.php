@@ -80,7 +80,7 @@ class FileStore extends BaseController {
             $urls[$folder] = base_url($this->basePath . $folder . '/' . $newName);
         }
 
-        $fileTitle = $this->request->getPost('title') ?: $file->getClientName();
+        $fileTitle = $this->request->getPost('title') ?: pathinfo($file->getClientName(), PATHINFO_FILENAME);
 
         // Get post_id from either POST data or query string (for TinyMCE)
         $postId = $this->request->getPost('post_id') ?: $this->request->getGet('post_id') ?: null;
@@ -135,6 +135,7 @@ class FileStore extends BaseController {
 
         $formattedPhotos = array_map(function ($photo) {
             $item = [
+                'tag' => $photo['file_title'],
                 'name' => $photo['file_title'],
                 'id'   => $photo['id'],
             ];
@@ -142,6 +143,7 @@ class FileStore extends BaseController {
             foreach ($this->sizes as $size => $value) {
                 $item[$size] = base_url(str_replace('/raw/', '/' . $size . '/', $photo['file_path']));
             }
+            $item['url'] = $item["large"] ?? $item["medium"] ?? $item["thumb"] ?? null;
             return $item;
         }, $photos);
 

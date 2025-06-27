@@ -73,6 +73,7 @@ class Categories extends BaseController {
         }
 
         $categories = $categoryQuery->paginate($this->showRecords);
+
         $data = [
             'title'        => 'Manage Categories',
             'categories'   => $categories,

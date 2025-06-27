@@ -49,15 +49,12 @@ class SinglePost extends BaseController {
 
         $post['tags'] = $post['tags'] ? json_decode($post['tags'], true) : [];
 
-        // Increment view count
-        $this->postModel->incrementViews($post['id']);
-
         // Get related posts
-        $relatedPosts = $this->postModel->related($post['category_id'], $post['id'])->posts(30);
+        $relatedPosts = $this->postModel->exclude($post['id'])->related($post['category_id'], $post['id'])->posts(30);
 
         $data = [
             'title' => $post['title'],
-            'description' => !empty($post['description']) ? $post['description'] : substr(strip_tags($post['content']), 0, 160),
+            'description' => !empty($post['description']) ? $post['description'] : substr(strip_tags($post['in_short']), 0, 160),
             'post' => $post,
             'relatedPosts' => $relatedPosts,
         ];

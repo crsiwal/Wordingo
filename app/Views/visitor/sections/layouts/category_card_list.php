@@ -5,7 +5,7 @@
     <div class="flex items-center justify-center flex-col">
         <a href="<?= postUrl($post) ?>">
             <?php if (!empty($post['thumbnail'])): ?>
-                <img src="<?= $post['thumbnail']; ?>" alt="<?= esc($post['title']) ?>" class="w-32 h-24 object-cover rounded-lg">
+                <img src="<?= str_replace('/raw/', '/thumb/', $post['thumbnail']); ?>" alt="<?= esc($post['title']) ?>" class="w-32 h-24 object-cover rounded-lg">
             <?php else: ?>
                 <div class="w-32 h-24 bg-gray-200 rounded-lg flex items-center justify-center">
                     <i class="fas fa-image text-gray-500 text-2xl"></i>

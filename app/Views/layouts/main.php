@@ -186,8 +186,10 @@
     <!-- Modernized Header -->
     <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
         <div class="flex items-center justify-between px-4 sm:px-8 py-3 max-w-screen-2xl mx-auto">
-            <a href="<?= base_url() ?>" class="flex items-center gap-3 text-2xl font-bold text-indigo-700">
-                <span class="bg-gradient-to-tr from-indigo-600 to-purple-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl shadow">W</span>
+            <a href="<?= base_url() ?>" class="flex items-center gap-3 text-2xl font-bold text-indigo-600">
+                <span class="rounded-full w-10 h-10 flex items-center justify-center">
+                    <img src="<?= base_url('assets/images/icon.png') ?>" alt="Depto Words Logo" class="w-10 h-10">
+                </span>
                 <span class="tracking-tight"><?= site_name() ?></span>
             </a>
             <nav class="hidden md:flex gap-6 text-base font-medium">

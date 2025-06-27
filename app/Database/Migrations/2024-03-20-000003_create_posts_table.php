@@ -64,6 +64,11 @@ class CreatePostsTable extends Migration {
                 'constraint' => 11,
                 'default'    => 0,
             ],
+            'is_featured' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'default'    => 0,
+            ],            
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

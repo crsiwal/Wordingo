@@ -36,8 +36,8 @@ class Database extends Config
         'DBPrefix' => '',
         'pConnect' => false,
         'DBDebug'  => true,
-        'charset'  => 'utf8',
-        'DBCollat' => 'utf8_general_ci',
+        'charset'  => 'utf8mb4', // utf8
+        'DBCollat' => 'utf8mb4_unicode_ci', // utf8_general_ci
         'swapPre'  => '',
         'encrypt'  => false,
         'compress' => false,
@@ -86,4 +86,4 @@ class Database extends Config
             $this->defaultGroup = 'tests';
         }
     }
-} 
+}
